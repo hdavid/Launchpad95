@@ -1,0 +1,6 @@
+Launchpad85 : Improved Novation Launchpad remote scripts with Step Sequencer and Device Controller
+
+These scripts are modified version of Ableton Live 8.2.7 scripts for Novation Launchpad and provide the same functionality but add support for editing the midi clips using a step sequencer and Device Controller. It does not require any external tool like Max for Live (M4L) in order to work. This script is just a plain Live Control Surface Python Script. 
+
+manual and download : http://motscousus.com/stuff/2011-07_Novation_Launchpad_Ableton_Live_Scripts/
+
