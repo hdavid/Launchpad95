@@ -182,4 +182,3 @@ class PreciseButtonSliderElement(ButtonSliderElement):
 		else:
 			midi_value = int(127 * abs(param_value - self._parameter_to_map_to.min) / param_range)
 		self.send_value(midi_value)
-

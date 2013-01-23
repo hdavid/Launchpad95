@@ -16,7 +16,7 @@ class ConfigurableButtonElement(ButtonElement):
 	def set_on_off_values(self, on_value, off_value):
 		assert (on_value in range(128))
 		assert (off_value in range(128))
-		self._last_sent_value = -1
+		self.clear_send_cache()
 		self._on_value = on_value
 		self._off_value = off_value
 
@@ -59,4 +59,3 @@ class ConfigurableButtonElement(ButtonElement):
 			ButtonElement.install_connections(self, install_translation_callback, install_mapping_callback, install_forwarding_callback)
 		elif self._msg_channel != self._original_channel or self._msg_identifier != self._original_identifier:
 			install_translation_callback(self._msg_type, self._original_identifier, self._original_channel, self._msg_identifier, self._msg_channel)
-

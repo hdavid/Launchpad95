@@ -283,4 +283,3 @@ class SubSelectorComponent(ModeSelectorComponent):
 		self._session.set_stop_track_clip_buttons(None)
 		self._session.set_stop_all_clips_button(None)
 		self._mixer.set_global_buttons(None, None, None)
-
