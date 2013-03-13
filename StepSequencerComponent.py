@@ -752,7 +752,7 @@ class StepSequencerComponent(ControlSurfaceComponent):
 		if self.is_enabled() and self._is_active and self._mode==STEPSEQ_MODE_NORMAL:
 			if self._sequencer_clip != None:
 				if ((value is not 0) or (not sender.is_momentary())):
-					if(self._loop_end - self._width * self._quantization >=0):
+					if(self._loop_end - self._width * self._quantization >0):
 						self._loop_end -= self._width * self._quantization
 						self._sequencer_clip.loop_end = self._loop_end
 					self._update_nav_buttons()
