@@ -138,7 +138,7 @@ class PreciseButtonSliderElement(ButtonSliderElement):
 		assert isinstance(value, int)
 		assert (sender in self._buttons)
 		self._last_sent_value = -1
-		if ((not self._disabled) and ((value != 0) or (not sender.is_momentary()))):
+		if (self._parameter_to_map_to != None and (not self._disabled) and ((value != 0) or (not sender.is_momentary()))):
 			index_of_sender = list(self._buttons).index(sender)
 			## handle precision mode
 			if(not self._precision_mode):

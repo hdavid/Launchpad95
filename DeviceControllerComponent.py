@@ -29,7 +29,8 @@ class DeviceControllerComponent(DeviceComponent):
 		self._remaining_buttons=None
 		self._device= None
 		self._is_active = False
-
+		self._force=True
+		
 		DeviceComponent.__init__(self)
 
 		#Sliders
@@ -82,9 +83,12 @@ class DeviceControllerComponent(DeviceComponent):
 		self._precision_mode=None
 		self._remaining_buttons=None
 		self._device=None
+
 		
 
 	def set_enabled(self,active):
+		if active:
+			self.force=True
 		#disable matrix.
 		for slider in self._sliders:
 			slider.set_disabled(not active)
@@ -128,6 +132,12 @@ class DeviceControllerComponent(DeviceComponent):
 					self._prev_bank_button.set_on_off_values(LED_OFF,LED_OFF)
 					self._next_bank_button.set_on_off_values(LED_OFF,LED_OFF)
 			#update parent
+			for x in range(8):
+				for y in range(8):
+					self._matrix.get_button(x,y).set_on_off_values(AMBER_FULL,LED_OFF)
+					if self._force:
+							self._matrix.get_button(x,y).turn_off()
+						
 			DeviceComponent.update(self)
 			#reset sliders if no device
 			if(self._device==None):
@@ -140,6 +150,7 @@ class DeviceControllerComponent(DeviceComponent):
 			self.update_on_off_button()
 			self.update_precision_button()
 			self.update_remaining_buttons()
+			self._force=False
 			
 
 #REMAINING buttons
@@ -275,7 +286,6 @@ class DeviceControllerComponent(DeviceComponent):
 		assert (value in range(128))
 		if self.is_enabled() and self._is_active:
 			if ((not sender.is_momentary()) or (value is not 0)):
-				#self._parent._parent.log_message(str(self.selected_track_idx()))
 				if(self.selected_track_idx() < len(self.song().tracks)-1 and not self._locked_to_device):
 					self.song().view.selected_track=self.song().tracks[self.selected_track_idx() + 1]
 	
@@ -340,7 +350,6 @@ class DeviceControllerComponent(DeviceComponent):
 		assert (value in range(128))
 		if self.is_enabled() and self._is_active:
 			if ((not sender.is_momentary()) or (value is not 0)):
-				#self._parent._parent.log_message(str(self.selected_track()))
 				if self.selected_track()!=None and len(self.selected_track().devices)>0:
 					if(self.selected_device_idx() < len(self.selected_track().devices)-1 and not self._locked_to_device):
 						self.song().view.select_device(self.selected_track().devices[self.selected_device_idx() + 1])
@@ -379,5 +388,3 @@ class DeviceControllerComponent(DeviceComponent):
 				return i
 		return(False)
 
-	def log_message(self, message):
-		self._parent.log_message(message)

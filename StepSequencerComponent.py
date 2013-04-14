@@ -79,6 +79,8 @@ class StepSequencerComponent(ControlSurfaceComponent):
 		self._parent = parent
 		self._mode = 1
 		self._step_offset = 0
+		self._drum_group_device = None
+		self._all_drum_pads = []
 		
 		#matrix
 		self._matrix = matrix
@@ -244,7 +246,28 @@ class StepSequencerComponent(ControlSurfaceComponent):
 
 	def on_clip_slot_changed(self):
 		if not self._is_locked:#self.is_enabled() and self._is_active:
+			
+			#select drumrack device
+			if self.song().view.selected_track != None:
+				track = self.song().view.selected_track
+				if(track.devices != None and len(track.devices)>0):
+					device = track.devices[0];
+					if(device.can_have_drum_pads and device.has_drum_pads):
+						self._drum_group_device  = device
+						#self._parent._parent.log_message(str(len(self._drum_group_device.drum_pads)))
+						#for index in range(len(self._drum_group_device.drum_pads)):
+						#	if(self._drum_group_device.drum_pads[index].chains):
+						#		self._parent._parent.log_message(str(index))
+					else:
+						self._drum_group_device  = None
+				else:
+					self._drum_group_device  = None
+			else:
+				self._drum_group_device  = None
+
+			#select clip
 			if self.song().view.highlighted_clip_slot != None:
+				
 				clip_slot = self.song().view.highlighted_clip_slot
 				if clip_slot.has_clip: # and clip_slot.clip.is_midi_clip:
 					if self._sequencer_clip != clip_slot.clip:
@@ -666,6 +689,7 @@ class StepSequencerComponent(ControlSurfaceComponent):
 			
 #FOLD NOTE
 	def _compute_key_indexes(self,force=False,up=True,down=True):
+				
 		if (self._is_fold or self._is_scale_fold) and not self._scale_fold_shift:
 			if force:
 				#when switching to fold mode 
@@ -708,7 +732,19 @@ class StepSequencerComponent(ControlSurfaceComponent):
 							#self._parent._parent.log_message("found note"+str(i+1)+": +"+str(inc))
 						inc=inc+1
 					self._key_indexes[i+1]=new_key_index #set found value
-		
+					
+		elif (self._drum_group_device!=None):
+			i = 0
+			for index in range(len(self._drum_group_device.drum_pads)):
+				if(index>=self._key_indexes[0]):
+					if(self._drum_group_device.drum_pads[index].chains):
+						if(i<len(self._key_indexes)):
+							#self._parent._parent.log_message(str(index))
+							self._key_indexes[i] = index
+						i = i + 1
+						#fill in empty slots
+			for j in range(i,i<len(self._key_indexes)):
+				self._key_indexes[i]=-1
 
 		else:
 			#when switching to unfold mode
@@ -724,6 +760,10 @@ class StepSequencerComponent(ControlSurfaceComponent):
 	def _is_used(self,key):
 		if self._sequencer_clip != None:# and self._sequencer_clip.is_midi_clip:
 			if self._sequencer_clip.is_midi_clip:
+				if self._drum_group_device!=None:
+					#return False if drum slot is empty
+					if self._drum_group_device.drum_pads[key].chains==False:
+						return False
 				for note in self._clip_notes:
 					if note[0]==key: #key: 0-127 MIDI note #
 						return(True)

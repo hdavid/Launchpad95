@@ -73,7 +73,7 @@ class Launchpad(ControlSurface):
 			#self.set_suppress_rebuild_requests(False)
 
 			self.log_message("LaunchPad95 Loaded !")
-
+	
 	def disconnect(self):
 		self._suppress_send_midi = True
 		for control in self.controls:
@@ -147,6 +147,7 @@ class Launchpad(ControlSurface):
 		ControlSurface.build_midi_map(self, midi_map_handle)
 		if self._selector.mode_index == 1:
 			new_channel = self._selector.channel_for_current_mode()
+			#self.log_message(str(new_channel))
 			for note in DRUM_NOTES:
 				self._translate_message(MIDI_NOTE_TYPE, note, 0, note, new_channel)
 
