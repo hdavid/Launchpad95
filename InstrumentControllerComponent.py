@@ -235,12 +235,10 @@ class ScalesComponent(ControlSurfaceComponent):
 				self._matrix.get_button(i, 0).set_on_off_values(LED_OFF,LED_OFF)
 				self._matrix.get_button(i, 0).turn_off()
 			
-			self._matrix.get_button(1, 7).set_on_off_values(LED_OFF,LED_OFF)
-			self._matrix.get_button(1, 7).force_next_send()
-			self._matrix.get_button(1, 7).turn_off()	
-			self._matrix.get_button(2, 7).set_on_off_values(LED_OFF,LED_OFF)
-			self._matrix.get_button(2, 7).force_next_send()
-			self._matrix.get_button(2, 7).turn_off()
+			self._matrix.get_button(7, 1).set_on_off_values(LED_OFF,LED_OFF)
+			self._matrix.get_button(7, 1).turn_on()	
+			self._matrix.get_button(7, 2).set_on_off_values(LED_OFF,LED_OFF)
+			self._matrix.get_button(7, 2).turn_off()
 			
 			drumrack_button  = self._matrix.get_button(7, 0)  
 			drumrack_button.set_on_off_values(RED_FULL,RED_THIRD)
@@ -334,14 +332,15 @@ class InstrumentControllerComponent(CompoundComponent):
 		self._parent = parent
 		self._matrix = None
 		self._scene_buttons=scene_buttons
+		self._remaining_button = scene_buttons[1]
 		
 		self._drum_group_device  = None
 		self._octave_up_button = None
 		self._octave_down_button = None
 		self._scales_toggle_button = None
 		self.set_scales_toggle_button(scene_buttons[0])
-		self.set_octave_up_button(scene_buttons[1])
-		self.set_octave_down_button(scene_buttons[2])
+		#self.set_octave_up_button(scene_buttons[1])
+		#self.set_octave_down_button(scene_buttons[2])
 		
 		self.set_enabled(False)
 		self.set_matrix(matrix)
@@ -417,6 +416,9 @@ class InstrumentControllerComponent(CompoundComponent):
 		if self.is_enabled():
 			self._track_controller.set_enabled(True)
 			self._update_matrix()
+			
+			self._remaining_button.set_on_off_values(LED_OFF,LED_OFF)
+			self._remaining_button.turn_off()
 			
 			if self._scales_toggle_button != None:
 				self._scales_toggle_button.set_on_off_values(AMBER_FULL,AMBER_THIRD)

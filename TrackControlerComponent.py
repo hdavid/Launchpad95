@@ -26,6 +26,7 @@ class TrackControlerComponent(MixerComponent):
 		self._overdub_button = None
 		self._mute_button = None
 		self._solo_button = None
+		self._undo_button = None
 		self._arm_button = None
 		self._last_arm_button_press=int(round(time.time() * 1000))
 		self._last_overdub_button_press=int(round(time.time() * 1000))
@@ -39,7 +40,8 @@ class TrackControlerComponent(MixerComponent):
 		self.set_next_scene_button(top_buttons[1])
 		self.set_prev_track_button(top_buttons[2])
 		self.set_next_track_button(top_buttons[3])
-
+		
+		self.set_undo_button(side_buttons[2])
 		self.set_play_button(side_buttons[3])
 		self.set_stop_button(side_buttons[4])
 		#self.set_mute_button(side_buttons[4])
@@ -138,6 +140,15 @@ class TrackControlerComponent(MixerComponent):
 		if (self._arm_button != None):
 			self._arm_button.add_value_listener(self._arm_value)
 			self._arm_button.turn_off()
+
+	def set_undo_button(self, button=None):
+		assert isinstance(button, (ButtonElement,type(None)))	
+		if (self._undo_button != None):
+			self._undo_button.remove_value_listener(self._undo_value)
+		self._undo_button = button
+		if (self._undo_button != None):
+			self._undo_button.add_value_listener(self._undo_value)
+			self._undo_button.turn_off()
 	
 # TRACKS Buttons
 	def update_track_buttons(self):
@@ -298,12 +309,12 @@ class TrackControlerComponent(MixerComponent):
 	def _undo_value(self, value):
 		if self.is_enabled():
 			if value != 0 or not self._undo_button.is_momentary():
-				if not self._shift_button.is_pressed():
-					if self.song().can_undo:
-						self.song().undo()
-				elif self.song().can_redo:
-					self.song().redo()
-				self._update_undo_button()
+				#if not self._shift_button.is_pressed():
+				if self.song().can_undo:
+					self.song().undo()
+				#elif self.song().can_redo:
+				#	self.song().redo()
+				self.update()
 				
 	def _arm_value(self, value):
 		assert (self._arm_button != None)
@@ -351,6 +362,13 @@ class TrackControlerComponent(MixerComponent):
 					self._mute_button.turn_off()
 				else:
 					self._mute_button.turn_on()
+
+			if self._undo_button != None:
+				self._undo_button.set_on_off_values(GREEN_FULL,GREEN_THIRD)
+				if(self.song().can_undo):
+					self._undo_button.turn_on()
+				else:
+					self._undo_button.turn_off()
 
 			if self._solo_button != None:
 				self._solo_button.set_on_off_values(AMBER_FULL,AMBER_THIRD)

@@ -165,8 +165,8 @@ class MainSelectorComponent(ModeSelectorComponent):
 				#session
 				self._setup_mixer(not as_active)
 				self._setup_device_controller(not as_active)
-				self._setup_instrument_controller(not as_active)
 				self._setup_step_sequencer(not as_active)
+				self._setup_instrument_controller(not as_active)
 				self._setup_session(as_active, as_enabled)
 				
 			elif (self._mode_index == 1):
@@ -225,6 +225,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 		for scene_index in range(8):
 			scene = self._session.scene(scene_index)
 			if as_active:
+				self._activate_matrix(True)
 				scene_button = self._side_buttons[scene_index]
 				scene_button.set_on_off_values(127, LED_OFF)
 				scene.set_launch_button(scene_button)
