@@ -15,10 +15,10 @@ class TrackControlerComponent(MixerComponent):
 		enable/disable overdub
 	"""
 
-	def __init__(self,top_buttons,side_buttons):
+	def __init__(self):
 		
 		self._prev_track_button = None
-		self._next_track_button=None
+		self._next_track_button = None
 		self._prev_scene_button = None
 		self._next_scene_button = None
 		self._play_button = None
@@ -28,31 +28,18 @@ class TrackControlerComponent(MixerComponent):
 		self._solo_button = None
 		self._undo_button = None
 		self._arm_button = None
-		self._last_arm_button_press=int(round(time.time() * 1000))
-		self._last_overdub_button_press=int(round(time.time() * 1000))
+		self._parent = None
 		self._auto_arm = True
 		
 		MixerComponent.__init__(self,1)
+		
+		self._last_arm_button_press=int(round(time.time() * 1000))
+		self._last_overdub_button_press=int(round(time.time() * 1000))
+		self._last_undo_button_press=int(round(time.time() * 1000))
+		self._long_press = 500
+		
 		self._selected_track = self.song().view.selected_track
 		self._selected_scene = self.song().view.selected_scene
-		
-		self.set_prev_scene_button(top_buttons[0])
-		self.set_next_scene_button(top_buttons[1])
-		self.set_prev_track_button(top_buttons[2])
-		self.set_next_track_button(top_buttons[3])
-		
-		self.set_undo_button(side_buttons[2])
-		self.set_play_button(side_buttons[3])
-		self.set_stop_button(side_buttons[4])
-		#self.set_mute_button(side_buttons[4])
-		self.set_overdub_button(side_buttons[5])
-		self.set_solo_button(side_buttons[6])
-		self.set_arm_button(side_buttons[7])
-	
-	def _do_select_scene(self, scene):
-		view = self.song().view
-		if view.selected_scene != self._scene:
-			view.selected_scene = self._scene	
 		
 	def disconnect(self):
 		self.set_prev_scene_button(None)
@@ -68,7 +55,14 @@ class TrackControlerComponent(MixerComponent):
 
 		MixerComponent.disconnect(self)
 
-
+	def _do_select_scene(self, scene):
+		view = self.song().view
+		if view.selected_scene != self._scene:
+			view.selected_scene = self._scene
+			
+	def set_parent(self, parent):
+		self._parent = parent
+		
 	def set_prev_scene_button(self, prev_scene=None):
 		assert isinstance(prev_scene, (ButtonElement,type(None)))
 		if (self._prev_scene_button != None):
@@ -254,13 +248,11 @@ class TrackControlerComponent(MixerComponent):
 			if ((value != 0) or (not self._overdub_button.is_momentary())):
 				self._last_overdub_button_press=now
 			else:
-				if now-self._last_overdub_button_press > 500:
+				if now-self._last_overdub_button_press > self._long_press:
 					self.song().metronome = not self.song().metronome
 				else:
 					self.song().overdub = not self.song().overdub
-					self.update()
-				
-				
+					self.update()	
 	
 	def _play_value(self, value):
 		assert (self._play_button != None)
@@ -308,13 +300,17 @@ class TrackControlerComponent(MixerComponent):
 	
 	def _undo_value(self, value):
 		if self.is_enabled():
-			if value != 0 or not self._undo_button.is_momentary():
-				#if not self._shift_button.is_pressed():
-				if self.song().can_undo:
-					self.song().undo()
-				#elif self.song().can_redo:
-				#	self.song().redo()
-				self.update()
+			now = int(round(time.time() * 1000))
+			if ((value != 0) or (not self._overdub_button.is_momentary())):
+				self._last_undo_button_press=now
+			else:
+				if now-self._last_undo_button_press < self._long_press:
+					if self.song().can_undo:
+						self.song().undo()
+				else:
+					if self.song().can_redo:
+						self.song().redo()
+			self.update()
 				
 	def _arm_value(self, value):
 		assert (self._arm_button != None)
@@ -326,10 +322,9 @@ class TrackControlerComponent(MixerComponent):
 				self._last_arm_button_press=now
 			else:
 				if (self._selected_track.can_be_armed):
-					if now-self._last_arm_button_press > 500:
+					if now-self._last_arm_button_press > self._long_press:
 						self._auto_arm = not self._auto_arm
-						if self._auto_arm:
-							self._do_auto_arm()
+						self._do_auto_arm()
 					else:
 						self._selected_track.arm = not self._selected_track.arm
 					self.update()
@@ -349,11 +344,11 @@ class TrackControlerComponent(MixerComponent):
 					self._overdub_button.turn_off()
 			
 			if self._play_button != None:
-				self._play_button.set_on_off_values(AMBER_FULL,AMBER_THIRD)
+				self._play_button.set_on_off_values(RED_FULL,RED_THIRD)
 				self._play_button.turn_off()
 				
 			if self._stop_button != None:
-				self._stop_button.set_on_off_values(AMBER_FULL,AMBER_THIRD)
+				self._stop_button.set_on_off_values(RED_FULL,RED_THIRD)
 				self._stop_button.turn_off()
 					
 			if self._mute_button != None:
@@ -364,7 +359,7 @@ class TrackControlerComponent(MixerComponent):
 					self._mute_button.turn_on()
 
 			if self._undo_button != None:
-				self._undo_button.set_on_off_values(GREEN_FULL,GREEN_THIRD)
+				self._undo_button.set_on_off_values(AMBER_FULL,AMBER_THIRD)
 				if(self.song().can_undo):
 					self._undo_button.turn_on()
 				else:
@@ -390,13 +385,21 @@ class TrackControlerComponent(MixerComponent):
 
 		MixerComponent.update(self)
 
+	def can_auto_arm_track(self, track):
+		return track.can_be_armed and track.has_midi_input
+		
 	def _do_auto_arm(self):
 		self._selected_track=self.song().view.selected_track
-		if self._auto_arm and self._selected_track.has_midi_input and self._selected_track.can_be_armed:
+		if(self._parent != None):
+			self._parent.set_controlled_track(self._selected_track)
 			for track in self.song().tracks:
-				if track.can_be_armed and track.has_midi_input:
-					track.arm = False
-				self._selected_track.arm = True
+				if self.can_auto_arm_track(track):
+					track.implicit_arm = self._auto_arm and self._selected_track == track and self._is_enabled
+		#if self._auto_arm and self._selected_track.has_midi_input and self._selected_track.can_be_armed:
+		#	for track in self.song().tracks:
+		#		if track.can_be_armed and track.has_midi_input:
+		#			track.arm = False
+		#		self._selected_track.arm = True
 
 	def selected_track(self):
 		return self.song().view.selected_track
@@ -408,7 +411,8 @@ class TrackControlerComponent(MixerComponent):
 		return self.tuple_idx(self.song().scenes, self.song().view.selected_scene)
 	
 	def on_selected_track_changed(self):
-		self._selected_track = self.song().view.selected_track				
+		self._selected_track = self.song().view.selected_track
+		self._do_auto_arm()
 		self.update()
 
 	def on_selected_scene_changed(self):

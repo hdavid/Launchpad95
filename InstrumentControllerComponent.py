@@ -213,7 +213,7 @@ class ScalesComponent(ControlSurfaceComponent):
 					self._set_key(self._index[x])
 					
 				if y==3:
-					self._octave_index = x + 1
+					self._octave_index = x
 					
 				if y>3 and not self.is_drumrack():
 					self._set_selected_modus((y-4)*8+x)
@@ -271,7 +271,7 @@ class ScalesComponent(ControlSurfaceComponent):
 			for track_index in range(8):
 				button  = self._matrix.get_button(track_index, scene_index)
 				button.set_on_off_values(RED_FULL,RED_THIRD)
-				if track_index+1==self._octave_index:
+				if track_index==self._octave_index:
 					button.turn_on()
 				else:
 					button.turn_off()
@@ -327,27 +327,37 @@ class ScalesComponent(ControlSurfaceComponent):
 
 class InstrumentControllerComponent(CompoundComponent):
 	
-	def __init__(self, matrix, scene_buttons, top_buttons, parent):
+	def __init__(self, matrix, side_buttons, top_buttons, parent):
 		super(InstrumentControllerComponent, self).__init__()
 		self._parent = parent
 		self._matrix = None
-		self._scene_buttons=scene_buttons
-		self._remaining_button = scene_buttons[1]
+		self._side_buttons=side_buttons
+		self._remaining_buttons = []
 		
 		self._drum_group_device  = None
 		self._octave_up_button = None
 		self._octave_down_button = None
 		self._scales_toggle_button = None
-		self.set_scales_toggle_button(scene_buttons[0])
-		#self.set_octave_up_button(scene_buttons[1])
-		#self.set_octave_down_button(scene_buttons[2])
+		self.set_scales_toggle_button(side_buttons[0])
+		self.set_octave_up_button(side_buttons[2])
+		self.set_octave_down_button(side_buttons[3])
 		
 		self.set_enabled(False)
 		self.set_matrix(matrix)
 		
-		self._track_controller = self.register_component(TrackControlerComponent(top_buttons, scene_buttons))
+		self._track_controller = self.register_component(TrackControlerComponent())
 		self._track_controller.set_enabled(False)
-	
+		self._track_controller.set_parent(self._parent._parent)
+		self._track_controller.set_prev_scene_button(top_buttons[0])
+		self._track_controller.set_next_scene_button(top_buttons[1])
+		self._track_controller.set_prev_track_button(top_buttons[2])
+		self._track_controller.set_next_track_button(top_buttons[3])
+		self._track_controller.set_undo_button(side_buttons[1])
+		self._track_controller.set_stop_button(side_buttons[4])
+		self._track_controller.set_play_button(side_buttons[5])
+		self._track_controller.set_overdub_button(side_buttons[7])
+		self._track_controller.set_solo_button(side_buttons[6])
+		
 		self._scales = self.register_component(ScalesComponent())
 		self._scales.set_enabled(False)
 		self._scales.set_parent(self)
@@ -417,8 +427,9 @@ class InstrumentControllerComponent(CompoundComponent):
 			self._track_controller.set_enabled(True)
 			self._update_matrix()
 			
-			self._remaining_button.set_on_off_values(LED_OFF,LED_OFF)
-			self._remaining_button.turn_off()
+			for button in self._remaining_buttons:
+				button.set_on_off_values(LED_OFF,LED_OFF)
+				button.turn_off()
 			
 			if self._scales_toggle_button != None:
 				self._scales_toggle_button.set_on_off_values(AMBER_FULL,AMBER_THIRD)
@@ -501,7 +512,7 @@ class InstrumentControllerComponent(CompoundComponent):
 				button.force_next_send()
 
 			i=0
-			for button in self._scene_buttons:
+			for button in self._side_buttons:
 					button.use_default_message()
 					#button.turn_off()
 					button.set_channel(NON_FEEDBACK_CHANNEL)

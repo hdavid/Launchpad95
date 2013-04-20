@@ -37,8 +37,8 @@ class DeviceControllerComponent(DeviceComponent):
 		self._sliders = []
 		self.set_enabled(False)
 		
-		for column in range(8):
-			slider = PreciseButtonSliderElement(tuple([self._matrix.get_button(column, (7 - row)) for row in range(8) ]))
+		for column in range(self._matrix.width()):
+			slider = PreciseButtonSliderElement(tuple([self._matrix.get_button(column, (self._matrix.height() - 1 - row)) for row in range(self._matrix.height()) ]))
 			slider.set_parent(self)
 			slider.set_mode(3)
 			self._sliders.append(slider)
@@ -131,13 +131,14 @@ class DeviceControllerComponent(DeviceComponent):
 			else :
 					self._prev_bank_button.set_on_off_values(LED_OFF,LED_OFF)
 					self._next_bank_button.set_on_off_values(LED_OFF,LED_OFF)
-			#update parent
-			for x in range(8):
-				for y in range(8):
+			
+			for x in range(self._matrix.width()):
+				for y in range(self._matrix.height()):
 					self._matrix.get_button(x,y).set_on_off_values(AMBER_FULL,LED_OFF)
 					if self._force:
 							self._matrix.get_button(x,y).turn_off()
-						
+							
+			#update parent			
 			DeviceComponent.update(self)
 			#reset sliders if no device
 			if(self._device==None):
@@ -373,7 +374,6 @@ class DeviceControllerComponent(DeviceComponent):
 				if self.selected_track()!=None and len(self.selected_track().devices)>0:
 					if(self.selected_device_idx()>0 and not self._locked_to_device):
 						self.song().view.select_device(self.selected_track().devices[self.selected_device_idx() - 1])
-						#self.update()
 
 	def selected_device_idx(self):
 		return self.tuple_idx(self.song().view.selected_track.devices, self._device)

@@ -626,7 +626,7 @@ class StepSequencerComponent(ControlSurfaceComponent):
 		assert isinstance(is_momentary, type(False))
 		if self._multiline_mode:
 			x = (self._bank_index)* self._width*self._height+  y * self._height + x
-			y = 7
+			y = self._height - 1
 			
 		"""(pitch, time, duration, velocity, mute state)
 		e.g.: (46, 0.25, 0.25, 127, False)"""
