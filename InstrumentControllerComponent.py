@@ -342,8 +342,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		self.set_octave_up_button(side_buttons[2])
 		self.set_octave_down_button(side_buttons[3])
 		
-		self.set_enabled(False)
-		self.set_matrix(matrix)
+		
 		
 		self._track_controller = self.register_component(TrackControlerComponent())
 		self._track_controller.set_enabled(False)
@@ -360,8 +359,13 @@ class InstrumentControllerComponent(CompoundComponent):
 		
 		self._scales = self.register_component(ScalesComponent())
 		self._scales.set_enabled(False)
+		self.set_matrix(matrix)
 		self._scales.set_parent(self)
 		self._scales.set_matrix(matrix)
+
+	def set_enabled(self, enabled):
+		CompoundComponent.set_enabled(self,enabled)
+		self._track_controller._do_auto_arm(enabled)
 
 	def set_scales_toggle_button(self, button):
 		assert isinstance(button, (ButtonElement,type(None)))

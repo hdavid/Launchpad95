@@ -32,15 +32,16 @@ class TrackControlerComponent(MixerComponent):
 		self._auto_arm = True
 		
 		MixerComponent.__init__(self,1)
-		
-		self._last_arm_button_press=int(round(time.time() * 1000))
-		self._last_overdub_button_press=int(round(time.time() * 1000))
-		self._last_undo_button_press=int(round(time.time() * 1000))
+		now = int(round(time.time() * 1000))
+		self._last_arm_button_press = now
+		self._last_overdub_button_press = now
+		self._last_undo_button_press = now
+		self._last_solo_button_press = now
 		self._long_press = 500
 		
 		self._selected_track = self.song().view.selected_track
 		self._selected_scene = self.song().view.selected_scene
-		
+			
 	def disconnect(self):
 		self.set_prev_scene_button(None)
 		self.set_next_scene_button(None)
@@ -293,9 +294,15 @@ class TrackControlerComponent(MixerComponent):
 		assert (value in range(128))
 		assert(self._selected_track != None)
 		if self.is_enabled():
-			if ((value != 0) or (not self._solo_button.is_momentary())):
-				self._selected_track.solo = not self._selected_track.solo
-				self.update()
+			now = int(round(time.time() * 1000))
+			if ((value != 0) or (not self._overdub_button.is_momentary())):
+				self._last_solo_button_press=now
+			else:
+				if now-self._last_solo_button_press > self._long_press:
+					self._selected_track.mute = not self._selected_track.mute
+				else:
+					self._selected_track.solo = not self._selected_track.solo
+					self.update()
 	
 	
 	def _undo_value(self, value):
@@ -311,6 +318,7 @@ class TrackControlerComponent(MixerComponent):
 					if self.song().can_redo:
 						self.song().redo()
 			self.update()
+			
 				
 	def _arm_value(self, value):
 		assert (self._arm_button != None)
@@ -329,7 +337,6 @@ class TrackControlerComponent(MixerComponent):
 						self._selected_track.arm = not self._selected_track.arm
 					self.update()
 					
-
 
 	def update(self):
 		if self.is_enabled():
@@ -388,13 +395,13 @@ class TrackControlerComponent(MixerComponent):
 	def can_auto_arm_track(self, track):
 		return track.can_be_armed and track.has_midi_input
 		
-	def _do_auto_arm(self):
+	def _do_auto_arm(self, arm=True):
 		self._selected_track=self.song().view.selected_track
 		if(self._parent != None):
 			self._parent.set_controlled_track(self._selected_track)
 			for track in self.song().tracks:
 				if self.can_auto_arm_track(track):
-					track.implicit_arm = self._auto_arm and self._selected_track == track and self._is_enabled
+					track.implicit_arm = arm and self._auto_arm and self._selected_track == track and self._is_enabled
 		#if self._auto_arm and self._selected_track.has_midi_input and self._selected_track.can_be_armed:
 		#	for track in self.song().tracks:
 		#		if track.can_be_armed and track.has_midi_input:
