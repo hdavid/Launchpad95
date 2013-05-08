@@ -12,7 +12,7 @@ class TrackControlerComponent(MixerComponent):
 		navigate in tracks left/right
 		navigate in scenes up and down
 		fire/stop selected clip.
-		enable/disable overdub
+		enable/disable session_record
 	"""
 
 	def __init__(self):
@@ -23,7 +23,7 @@ class TrackControlerComponent(MixerComponent):
 		self._next_scene_button = None
 		self._play_button = None
 		self._stop_button = None
-		self._overdub_button = None
+		self._session_record_button = None
 		self._mute_button = None
 		self._solo_button = None
 		self._undo_button = None
@@ -34,7 +34,7 @@ class TrackControlerComponent(MixerComponent):
 		MixerComponent.__init__(self,1)
 		now = int(round(time.time() * 1000))
 		self._last_arm_button_press = now
-		self._last_overdub_button_press = now
+		self._last_session_record_button_press = now
 		self._last_undo_button_press = now
 		self._last_solo_button_press = now
 		self._long_press = 500
@@ -50,7 +50,7 @@ class TrackControlerComponent(MixerComponent):
 		self.set_mute_button(None)
 		self.set_play_button(None)
 		self.set_stop_button(None)
-		self.set_overdub_button(None)
+		self.set_session_record_button(None)
 		self.set_solo_button(None)
 		self.set_arm_button(None)
 
@@ -82,14 +82,14 @@ class TrackControlerComponent(MixerComponent):
 			self._next_scene_button.add_value_listener(self._next_scene_value, identify_sender=True)
 			self._next_scene_button.turn_off()
 			
-	def set_overdub_button(self, overdub=None):
-		assert isinstance(overdub, (ButtonElement,type(None)))	
-		if (self._overdub_button != None):
-			self._overdub_button.remove_value_listener(self._overdub_value)
-		self._overdub_button = overdub
-		if (self._overdub_button != None):
-			self._overdub_button.add_value_listener(self._overdub_value)
-			self._overdub_button.turn_off()
+	def set_session_record_button(self, session_record=None):
+		assert isinstance(session_record, (ButtonElement,type(None)))	
+		if (self._session_record_button != None):
+			self._session_record_button.remove_value_listener(self._session_record_value)
+		self._session_record_button = session_record
+		if (self._session_record_button != None):
+			self._session_record_button.add_value_listener(self._session_record_value)
+			self._session_record_button.turn_off()
 			
 	def set_play_button(self, play=None):
 		assert isinstance(play, (ButtonElement,type(None)))		
@@ -241,18 +241,18 @@ class TrackControlerComponent(MixerComponent):
 						self.song().view.selected_scene=self.song().scenes[self.selected_scene_idx() + 1]
 						self.update()
 
-	def _overdub_value(self, value):
-		assert (self._overdub_button != None)
+	def _session_record_value(self, value):
+		assert (self._session_record_button != None)
 		assert (value in range(128))
 		if self.is_enabled():
 			now = int(round(time.time() * 1000))
-			if ((value != 0) or (not self._overdub_button.is_momentary())):
-				self._last_overdub_button_press=now
+			if ((value != 0) or (not self._session_record_button.is_momentary())):
+				self._last_session_record_button_press=now
 			else:
-				if now-self._last_overdub_button_press > self._long_press:
+				if now-self._last_session_record_button_press > self._long_press:
 					self.song().metronome = not self.song().metronome
 				else:
-					self.song().overdub = not self.song().overdub
+					self.song().session_record = not self.song().session_record
 					self.update()	
 	
 	def _play_value(self, value):
@@ -295,7 +295,7 @@ class TrackControlerComponent(MixerComponent):
 		assert(self._selected_track != None)
 		if self.is_enabled():
 			now = int(round(time.time() * 1000))
-			if ((value != 0) or (not self._overdub_button.is_momentary())):
+			if ((value != 0) or (not self._session_record_button.is_momentary())):
 				self._last_solo_button_press=now
 			else:
 				if now-self._last_solo_button_press > self._long_press:
@@ -308,7 +308,7 @@ class TrackControlerComponent(MixerComponent):
 	def _undo_value(self, value):
 		if self.is_enabled():
 			now = int(round(time.time() * 1000))
-			if ((value != 0) or (not self._overdub_button.is_momentary())):
+			if ((value != 0) or (not self._session_record_button.is_momentary())):
 				self._last_undo_button_press=now
 			else:
 				if now-self._last_undo_button_press < self._long_press:
@@ -343,12 +343,12 @@ class TrackControlerComponent(MixerComponent):
 			self.update_track_buttons()
 			self.update_scene_buttons()
 			
-			if self._overdub_button != None:
-				self._overdub_button.set_on_off_values(RED_FULL,RED_THIRD)
-				if(self.song().overdub):
-					self._overdub_button.turn_on()
+			if self._session_record_button != None:
+				self._session_record_button.set_on_off_values(RED_FULL,RED_THIRD)
+				if(self.song().session_record):
+					self._session_record_button.turn_on()
 				else:
-					self._overdub_button.turn_off()
+					self._session_record_button.turn_off()
 			
 			if self._play_button != None:
 				self._play_button.set_on_off_values(RED_FULL,RED_THIRD)

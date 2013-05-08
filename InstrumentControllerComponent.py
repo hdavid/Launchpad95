@@ -354,7 +354,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		self._track_controller.set_undo_button(side_buttons[1])
 		self._track_controller.set_stop_button(side_buttons[4])
 		self._track_controller.set_play_button(side_buttons[5])
-		self._track_controller.set_overdub_button(side_buttons[7])
+		self._track_controller.set_session_record_button(side_buttons[7])
 		self._track_controller.set_solo_button(side_buttons[6])
 		
 		self._scales = self.register_component(ScalesComponent())
