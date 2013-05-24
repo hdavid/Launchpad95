@@ -333,6 +333,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		self._matrix = None
 		self._side_buttons=side_buttons
 		self._remaining_buttons = []
+		self._track_controller = None
 		
 		self._drum_group_device  = None
 		self._octave_up_button = None
@@ -341,8 +342,6 @@ class InstrumentControllerComponent(CompoundComponent):
 		self.set_scales_toggle_button(side_buttons[0])
 		self.set_octave_up_button(side_buttons[2])
 		self.set_octave_down_button(side_buttons[3])
-		
-		
 		
 		self._track_controller = self.register_component(TrackControlerComponent())
 		self._track_controller.set_enabled(False)
@@ -365,7 +364,10 @@ class InstrumentControllerComponent(CompoundComponent):
 
 	def set_enabled(self, enabled):
 		CompoundComponent.set_enabled(self,enabled)
-		self._track_controller._do_auto_arm(enabled)
+		if self._track_controller!=None:
+			self._track_controller._do_auto_arm(enabled)
+			#self._track_controller.set_enabled(True)
+		#self.update()
 
 	def set_scales_toggle_button(self, button):
 		assert isinstance(button, (ButtonElement,type(None)))
@@ -417,18 +419,20 @@ class InstrumentControllerComponent(CompoundComponent):
 			if ((not sender.is_momentary()) or (value is not 0)):
 				if self._can_scroll_octave_up():
 					self._scales._octave_index += 1
-				self.update()
+					self.update()
 
 	def _scroll_octave_down(self,value, sender):
 		if self.is_enabled():
 			if ((not sender.is_momentary()) or (value is not 0)):
 				if self._can_scroll_octave_down():
 					self._scales._octave_index -= 1
-				self.update()
+					self.update()
 
 	def update(self):
 		if self.is_enabled():
-			self._track_controller.set_enabled(True)
+			if self._track_controller != None:
+				self._track_controller.set_enabled(True)
+
 			self._update_matrix()
 			
 			for button in self._remaining_buttons:
@@ -455,7 +459,6 @@ class InstrumentControllerComponent(CompoundComponent):
 		
 	def set_matrix(self, matrix):
 		self._matrix = matrix
-		#self._on_matrix_value.subject = matrix
 		if matrix:
 			matrix.reset()
 		self._update_matrix()
@@ -483,7 +486,7 @@ class InstrumentControllerComponent(CompoundComponent):
 			self._drum_group_device  = None
 		
 	def _update_matrix(self):
-			
+		
 		if not self.is_enabled() or not self._matrix or self._scales.is_enabled():
 			#self._parent._parent.set_controlled_track(None)
 			self._parent._parent.set_feedback_channels([])
