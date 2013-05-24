@@ -117,6 +117,7 @@ class SubSelectorComponent(ModeSelectorComponent):
 
 			strip = self._mixer.channel_strip(track)
 			strip.set_default_buttons(None, None, None, None)
+			strip.set_mute_button(None)
 			strip.set_solo_button(None)
 			strip.set_arm_button(None)
 			strip.set_send_controls((None, None))
