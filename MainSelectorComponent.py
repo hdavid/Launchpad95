@@ -168,6 +168,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 				self._setup_step_sequencer(not as_active)
 				self._setup_instrument_controller(not as_active)
 				self._setup_session(as_active, as_enabled)
+				self._update_control_channels()
 				
 			elif (self._mode_index == 1):
 				self._setup_session(not as_active, not as_enabled)
@@ -176,15 +177,17 @@ class MainSelectorComponent(ModeSelectorComponent):
 				#user mode + device controller + instrument controller
 				if (self._sub_mode_index[self._mode_index]==0):
 					self._setup_device_controller(not as_active)
+					self._update_control_channels()
 					self._setup_instrument_controller(as_active)
 				elif (self._sub_mode_index[self._mode_index]==1):
 					self._setup_instrument_controller(not as_active)
 					self._setup_device_controller(as_active)
+					self._update_control_channels()
 				else:
 					self._setup_device_controller(not as_active)
 					self._setup_instrument_controller(not as_active)
 					self._setup_user_mode(True, True, False, True)
-					
+					self._update_control_channels()
 			elif (self._mode_index == 2):
 				self._setup_session(not as_active, not as_enabled)
 				self._setup_instrument_controller(not as_active)
@@ -195,13 +198,14 @@ class MainSelectorComponent(ModeSelectorComponent):
 					self._setup_user_mode(True, True, False, False)
 				else:
 					self._setup_step_sequencer(as_active, self._sub_mode_index[self._mode_index])
-					
+				self._update_control_channels()
 			elif (self._mode_index == 3):
 				self._setup_device_controller(not as_active)
 				self._setup_step_sequencer(not as_active)
 				self._setup_instrument_controller(not as_active)
 				self._setup_session(not as_active, as_enabled)
 				self._setup_mixer(as_active)
+				self._update_control_channels()
 			else:
 				assert False
 			
@@ -209,7 +213,6 @@ class MainSelectorComponent(ModeSelectorComponent):
 			
 			self._session.set_allow_update(True)
 			self._zooming.set_allow_update(True)
-			self._update_control_channels()
 				
 				
 
