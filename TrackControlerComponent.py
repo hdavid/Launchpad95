@@ -37,6 +37,7 @@ class TrackControlerComponent(MixerComponent):
 		self._last_session_record_button_press = now
 		self._last_undo_button_press = now
 		self._last_solo_button_press = now
+		self._last_stop_button_press = now
 		self._long_press = 500
 		
 		self._selected_track = self.song().view.selected_track
@@ -155,7 +156,6 @@ class TrackControlerComponent(MixerComponent):
 					self._prev_track_button.turn_on()
 				else:
 					self._prev_track_button.turn_off()
-
 			if(self._next_track_button!=None):
 				self._next_track_button.set_on_off_values(GREEN_FULL,GREEN_THIRD)
 				if(self.selected_track_idx() < len(self.song().tracks)-1):
@@ -249,11 +249,19 @@ class TrackControlerComponent(MixerComponent):
 			if ((value != 0) or (not self._session_record_button.is_momentary())):
 				self._last_session_record_button_press=now
 			else:
-				if now-self._last_session_record_button_press > self._long_press:
+				if now-self._last_session_record_button_press > self._long_press*4:
+					self._auto_arm = not self._auto_arm
+					self._do_auto_arm()
+					self.update()
+				elif now-self._last_session_record_button_press > self._long_press:
 					self.song().metronome = not self.song().metronome
 				else:
-					self.song().session_record = not self.song().session_record
-					self.update()	
+					if self._auto_arm:
+						self.song().session_record = not self.song().session_record
+					else:
+						if (self._selected_track.can_be_armed):
+							self._selected_track.arm = not self._selected_track.arm
+					self.update()
 	
 	def _play_value(self, value):
 		assert (self._play_button != None)
@@ -271,13 +279,22 @@ class TrackControlerComponent(MixerComponent):
 		assert (self._stop_button != None)
 		assert (value in range(128))
 		assert(self._selected_track != None)
+		now = int(round(time.time() * 1000))
 		if self.is_enabled():
 			if ((value != 0) or (not self._stop_button.is_momentary())):
+				self._last_stop_button_press=now
 				self._stop_button.turn_on()
-				if self.song().view.selected_scene!=None:
-					slot = self.song().view.selected_scene.clip_slots[self.selected_track_idx()]
-					slot.stop()
 			else:
+				if now-self._last_stop_button_press > self._long_press:
+					if self.song().view.selected_scene!=None:
+						slot = self.song().view.selected_scene.clip_slots[self.selected_track_idx()]
+						if slot and slot.has_clip:
+							slot.delete_clip()
+				else:
+					
+					if self.song().view.selected_scene!=None:
+						slot = self.song().view.selected_scene.clip_slots[self.selected_track_idx()]
+						slot.stop()
 				self._stop_button.turn_off()
 					
 	def _mute_value(self, value):
@@ -344,7 +361,10 @@ class TrackControlerComponent(MixerComponent):
 			self.update_scene_buttons()
 			
 			if self._session_record_button != None:
-				self._session_record_button.set_on_off_values(RED_FULL,RED_THIRD)
+				if self._auto_arm:
+					self._session_record_button.set_on_off_values(RED_FULL,RED_THIRD)
+				else:
+					self._session_record_button.set_on_off_values(AMBER_FULL,AMBER_THIRD)
 				if(self.song().session_record):
 					self._session_record_button.turn_on()
 				else:
