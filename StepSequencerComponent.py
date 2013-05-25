@@ -214,6 +214,10 @@ class StepSequencerComponent(ControlSurfaceComponent):
 			
 	def update(self):
 		if self._is_active:
+			if self._multiline_mode and self._drum_group_device != None:
+				self._key_indexes[0] = index_of(self._drum_group_device.drum_pads,self._drum_group_device.view.selected_drum_pad)
+				
+				
 			self.on_clip_slot_changed()
 			self._update_nav_buttons()
 			if(not self._is_locked):
@@ -616,7 +620,7 @@ class StepSequencerComponent(ControlSurfaceComponent):
 		x = values[1]
 		y = values[2]
 		is_momentary=values[3]
-		
+		self._parent._parent.log_message("got: x:"+ str(x)+" y:"+str(y))
 		#self._parent._parent.log_message(str(x)+"."+str(y)+"."+str(value)+" "+ "processing")
 	
 		assert (self._buttons != None)
@@ -624,10 +628,11 @@ class StepSequencerComponent(ControlSurfaceComponent):
 		assert (x in range(self._buttons.width()))
 		assert (y in range(self._buttons.height()))
 		assert isinstance(is_momentary, type(False))
+		
 		if self._multiline_mode:
-			x = (self._bank_index)* self._width*self._height+  y * self._height + x
+			x = (self._bank_index) * self._width * (self._height -1) +  y * self._width + x
 			y = self._height - 1
-			
+		
 		"""(pitch, time, duration, velocity, mute state)
 		e.g.: (46, 0.25, 0.25, 127, False)"""
 		if self.is_enabled() and self._is_active:
@@ -1258,7 +1263,14 @@ class StepSequencerComponent(ControlSurfaceComponent):
 					else:
 						self._scroll_right_ticks_delay = -1			
 				if ((value != 0) or (not self._nav_right_button.is_momentary())):
-					if (self._bank_index+1)<int(self._sequencer_clip.loop_end / self._quantization / self._width):
+					can_do=False
+					if self._multiline_mode:
+						if (self._bank_index+1) * self._quantization * self._width * self._height < self._sequencer_clip.loop_end:
+							can_do=True
+					else:
+						if (self._bank_index+1) * self._quantization * self._width < self._sequencer_clip.loop_end:
+							can_do=True
+					if can_do:
 						self._bank_index += 1
 						self._update_nav_buttons()
 						self._display_bank_time = time.time()
@@ -1273,11 +1285,19 @@ class StepSequencerComponent(ControlSurfaceComponent):
 					self._nav_left_button.turn_off()
 				else:
 					self._nav_left_button.turn_on()
+					
 				self._nav_right_button.set_on_off_values(GREEN_FULL,GREEN_THIRD)
-				if (self._bank_index+1)>=int(self._sequencer_clip.loop_end / self._quantization / self._width):
-					self._nav_right_button.turn_off()
+				can_do=False
+				if self._multiline_mode:
+					if (self._bank_index+1) * self._quantization * self._width * self._height < self._sequencer_clip.loop_end:
+						can_do=True
 				else:
+					if (self._bank_index+1) * self._quantization * self._width < self._sequencer_clip.loop_end:
+						can_do=True
+				if can_do:
 					self._nav_right_button.turn_on()
+				else:
+					self._nav_right_button.turn_off()
 				
 				self._nav_down_button.set_on_off_values(GREEN_FULL,GREEN_THIRD)
 				if self._key_indexes[0]>0:
