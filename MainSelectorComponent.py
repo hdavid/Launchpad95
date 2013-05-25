@@ -269,7 +269,6 @@ class MainSelectorComponent(ModeSelectorComponent):
 			self._activate_scene_buttons(True)
 			self._activate_navigation_buttons(True)
 		else:
-			self._parent.set_feedback_channels([])
 			for scene_index in range(8):
 				scene_button = self._side_buttons[scene_index]
 				scene_button.use_default_message()
@@ -279,6 +278,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 					button.use_default_message()
 					button.force_next_send()
 		self._instrument_controller.set_enabled(enabled)
+		
 
 	def _setup_device_controller(self, as_active):
 		if self._device_controller!=None:
@@ -390,7 +390,6 @@ class MainSelectorComponent(ModeSelectorComponent):
 	def _activate_matrix(self,active):
 		for scene_index in range(8):
 			for track_index in range(8):
-				#update matrix
 				self._matrix.get_button(track_index, scene_index).set_enabled(active)
 				
 

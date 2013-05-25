@@ -364,9 +364,12 @@ class InstrumentControllerComponent(CompoundComponent):
 
 	def set_enabled(self, enabled):
 		CompoundComponent.set_enabled(self,enabled)
+		if not enabled:
+			self._parent._parent.set_feedback_channels([])
+			
 		if self._track_controller!=None:
 			self._track_controller._do_auto_arm(enabled)
-			#self._track_controller.set_enabled(True)
+			self._track_controller.set_enabled(enabled)
 		#self.update()
 
 	def set_scales_toggle_button(self, button):
@@ -489,7 +492,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		
 		if not self.is_enabled() or not self._matrix or self._scales.is_enabled():
 			#self._parent._parent.set_controlled_track(None)
-			self._parent._parent.set_feedback_channels([])
+			#self._parent._parent.set_feedback_channels([])
 			pass
 		else:
 			
@@ -573,9 +576,9 @@ class InstrumentControllerComponent(CompoundComponent):
 							note_channel[note_info.index]=note_channel[note_info.index]+1
 						else:
 							button.set_channel(NON_FEEDBACK_CHANNEL)
-							button.force_next_send()
 							button.set_light(note_info.color)
 							button.set_enabled(True)
+							button.force_next_send()
 						button.turn_off()
 							
 			self._parent._config_button.send_value(32, force_send=True)
