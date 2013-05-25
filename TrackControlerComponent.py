@@ -314,7 +314,9 @@ class TrackControlerComponent(MixerComponent):
 			now = int(round(time.time() * 1000))
 			if ((value != 0) or (not self._session_record_button.is_momentary())):
 				self._last_solo_button_press=now
+				self._solo_button.turn_on()
 			else:
+				self._solo_button.turn_off()
 				if now-self._last_solo_button_press > self._long_press:
 					self._selected_track.mute = not self._selected_track.mute
 				else:
