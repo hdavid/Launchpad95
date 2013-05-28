@@ -195,7 +195,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 				self._setup_mixer(not as_active)
 				if (self._sub_mode_index[self._mode_index]==0):
 					self._setup_step_sequencer(not as_active)
-					self._setup_user_mode(True, True, False, False)
+					self._setup_user_mode(False, False, False, False)
 				else:
 					self._setup_step_sequencer(as_active, self._sub_mode_index[self._mode_index])
 				self._update_control_channels()
