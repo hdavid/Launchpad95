@@ -446,17 +446,24 @@ class StepSequencerComponent(ControlSurfaceComponent):
 
 					if self._multiline_mode:
 						#one note ranging on multiple lines
-						
+
+								
 						#play back position
 						play_position = self._sequencer_clip.playing_position #position in beats (1/4 notes in 4/4 time)
 						play_x_position = int(play_position / self._quantization)%(self._width) #position in beats (1/4 notes in 4/4 time)
 						play_y_position = int(play_position / self._quantization / self._width)%self._height 
-						play_bank = int(play_x_position / self._quantization / self._width / self._height) # 0.25 for 16th notes;  0.5 for 8th notes
+						play_bank = int(play_position / self._quantization / self._width / self._height) # 0.25 for 16th notes;  0.5 for 8th notes
 						
+
+								
 						# add play positition in amber	
 						if(DISPLAY_METRONOME):
 							if self._sequencer_clip.is_playing:
-								self._grid_back_buffer[play_x_position][play_y_position%self._height] = METRONOME_COLOUR
+								for i in range(play_bank+1):
+									play_position2 = self._sequencer_clip.playing_position +self._quantization*i #position in beats (1/4 notes in 4/4 time)
+									play_x_position2 = int(play_position2 / self._quantization)%(self._width) #position in beats (1/4 notes in 4/4 time)
+									play_y_position2 = int(play_position2 / self._quantization / self._width)%self._height
+									self._grid_back_buffer[play_x_position2][play_y_position2%self._height] = AMBER_THIRD
 					
 						#display clip notes
 						for note in self._clip_notes:
@@ -473,7 +480,7 @@ class StepSequencerComponent(ControlSurfaceComponent):
 								#invert note row.
 								note_grid_y_position=self._height-1-note_grid_y_position
 								#compute colors
-								highlight_color = RED_THIRD
+								highlight_color = RED_FULL
 								for index in range(len(VELOCITY_MAP)):
 									if note_velocity>=VELOCITY_MAP[index]:
 										highlight_color=VELOCITY_COLOR_HIGHLIGHT_MAP[index]
@@ -483,18 +490,20 @@ class StepSequencerComponent(ControlSurfaceComponent):
 										velocity_color=VELOCITY_COLOR_MAP[index]
 								#highligh playing notes in red. even if they are from other banks.		
 								if (not note_muted)  and note_bank == play_bank and play_x_position==note_grid_x_position and play_y_position==note_grid_y_position and self._sequencer_clip.is_playing:
-										self._grid_back_buffer[note_grid_x_position][note_grid_y_position]=highlight_color;
+									self._grid_back_buffer[note_grid_x_position][note_grid_y_position]=highlight_color;
 								elif note_bank == self._bank_index: #if note is in current bank, then update grid
+									#do not erase current note highlight
+									if self._grid_back_buffer[note_grid_x_position][note_grid_y_position]!=highlight_color:
 										if note_muted:
 											self._grid_back_buffer[note_grid_x_position][note_grid_y_position]=RED_THIRD
 										else:
-											#do not erase current note highlight
-											if self._grid_back_buffer[note_grid_x_position][note_grid_y_position]!=highlight_color:
-												self._grid_back_buffer[note_grid_x_position][note_grid_y_position]=velocity_color;
+											self._grid_back_buffer[note_grid_x_position][note_grid_y_position]=velocity_color
 					
-					
-					
-						
+						if(self._display_bank):
+							self._update_matrix_bank()
+							if self._display_bank_time+0.25<time.time():
+								self._display_bank=False
+								
 					else:
 						#one note per line
 						if self._scale_fold_shift:
@@ -534,7 +543,7 @@ class StepSequencerComponent(ControlSurfaceComponent):
 									#invert note row.
 									note_grid_y_position=self._height-1-note_grid_y_position
 									#compute colors
-									highlight_color = RED_THIRD
+									highlight_color = RED_FULL
 									for index in range(len(VELOCITY_MAP)):
 										if note_velocity>=VELOCITY_MAP[index]:
 											highlight_color=VELOCITY_COLOR_HIGHLIGHT_MAP[index]
@@ -546,12 +555,13 @@ class StepSequencerComponent(ControlSurfaceComponent):
 									if (not note_muted)  and note_bank == grid_play_bank and grid_play_position==note_grid_x_position and self._sequencer_clip.is_playing:
 											self._grid_back_buffer[note_grid_x_position][note_grid_y_position]=highlight_color;
 									elif note_bank == self._bank_index: #if note is in current bank, then update grid
-											if note_muted:
-												self._grid_back_buffer[note_grid_x_position][note_grid_y_position]=RED_THIRD
-											else:
-												#do not erase current note highlight
-												if self._grid_back_buffer[note_grid_x_position][note_grid_y_position]!=highlight_color:
-													self._grid_back_buffer[note_grid_x_position][note_grid_y_position]=velocity_color;
+											#do not erase current note highlight
+											if self._grid_back_buffer[note_grid_x_position][note_grid_y_position]!=highlight_color:
+												if note_muted:
+													self._grid_back_buffer[note_grid_x_position][note_grid_y_position]=RED_THIRD
+												else:
+													self._grid_back_buffer[note_grid_x_position][note_grid_y_position]=velocity_color
+													
 						if self._scale_fold_shift:
 							self._update_matrix_note_markers()
 	
