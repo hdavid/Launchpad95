@@ -122,7 +122,8 @@ class StepSequencerComponent(ControlSurfaceComponent):
 		self._velocity_shift_button = None
 		self._mute_shift_button = None
 		self._lane_mute_buttons = None
-		
+		self._loop_point1 = -1
+		self._loop_point2 = -1
 		#quantization
 		self._quantization_index = 2
 		self._quantization = QUANTIZATION_MAP[self._quantization_index]
@@ -447,38 +448,48 @@ class StepSequencerComponent(ControlSurfaceComponent):
 					if self._multiline_mode:
 						#one note ranging on multiple lines
 
-								
+						self._update_drumrack()
+						self._update_loop_selector()
+						height = self._height
+						if self._drum_group_device:
+							height = self._height / 2
+							
 						#play back position
 						play_position = self._sequencer_clip.playing_position #position in beats (1/4 notes in 4/4 time)
 						play_x_position = int(play_position / self._quantization)%(self._width) #position in beats (1/4 notes in 4/4 time)
-						play_y_position = int(play_position / self._quantization / self._width)%self._height 
-						play_bank = int(play_position / self._quantization / self._width / self._height) # 0.25 for 16th notes;  0.5 for 8th notes
+						play_y_position = int(play_position / self._quantization / self._width)%height 
+						play_bank = int(play_position / self._quantization / self._width / height) # 0.25 for 16th notes;  0.5 for 8th notes
 						
-
-								
 						# add play positition in amber	
 						if(DISPLAY_METRONOME):
 							if self._sequencer_clip.is_playing:
-								for i in range(play_bank+1):
+								if self._drum_group_device != None and self._drum_group_device.can_have_drum_pads and self._drum_group_device.has_drum_pads:
+									i=0
 									play_position2 = self._sequencer_clip.playing_position +self._quantization*i #position in beats (1/4 notes in 4/4 time)
 									play_x_position2 = int(play_position2 / self._quantization)%(self._width) #position in beats (1/4 notes in 4/4 time)
-									play_y_position2 = int(play_position2 / self._quantization / self._width)%self._height
-									self._grid_back_buffer[play_x_position2][play_y_position2%self._height] = AMBER_THIRD
+									play_y_position2 = int(play_position2 / self._quantization / self._width)%height
+									self._grid_back_buffer[play_x_position2][play_y_position2%height] = AMBER_THIRD
+								else:
+									for i in range(play_bank+1):
+										play_position2 = self._sequencer_clip.playing_position +self._quantization*i #position in beats (1/4 notes in 4/4 time)
+										play_x_position2 = int(play_position2 / self._quantization)%(self._width) #position in beats (1/4 notes in 4/4 time)
+										play_y_position2 = int(play_position2 / self._quantization / self._width)%height
+										self._grid_back_buffer[play_x_position2][play_y_position2%height] = AMBER_THIRD
 					
 						#display clip notes
 						for note in self._clip_notes:
 							note_position = note[1] #position in beats; range is 0.x to 15.x for 4 measures in 4/4 time (equivalent to 1/4 notes)
-							note_bank = int(note_position / self._quantization / self._width / self._height) #at 1/16th resolution in 4/4 time, each bank is 1/2 measure wide
+							note_bank = int(note_position / self._quantization / self._width / height) #at 1/16th resolution in 4/4 time, each bank is 1/2 measure wide
 							note_grid_x_position = int(note_position / self._quantization)%self._width #stepped postion at quantize resolution
-							note_grid_y_position = self._height - 1 - int(note_position / self._quantization)/self._width%self._height
+							note_grid_y_position = height - 1 - int(note_position / self._quantization)/self._width%height
 							note_key = note[0] #key: 0-127 MIDI note #
 							note_velocity = note[3]
 							note_muted = note[4]
 							#get row index for this note.
 							#display note
+							#invert note row.
+							note_grid_y_position=height-1-note_grid_y_position
 							if index_of(self._key_indexes,note_key)==0:
-								#invert note row.
-								note_grid_y_position=self._height-1-note_grid_y_position
 								#compute colors
 								highlight_color = RED_FULL
 								for index in range(len(VELOCITY_MAP)):
@@ -498,6 +509,15 @@ class StepSequencerComponent(ControlSurfaceComponent):
 											self._grid_back_buffer[note_grid_x_position][note_grid_y_position]=RED_THIRD
 										else:
 											self._grid_back_buffer[note_grid_x_position][note_grid_y_position]=velocity_color
+							
+							if self._drum_group_device != None:
+								if self._sequencer_clip.is_playing and note_bank == play_bank and play_x_position==note_grid_x_position and play_y_position==note_grid_y_position :
+									noteidx = ((self._key_indexes[0]-4)/16)*16+4
+									if(note_key>=noteidx and note_key<noteidx+16):
+										x = (note_key-noteidx)%4
+										y = 7-(note_key-noteidx)/4
+										if not note_muted:
+											self._grid_back_buffer[x][y]=RED_FULL
 					
 						if(self._display_bank):
 							self._update_matrix_bank()
@@ -584,6 +604,33 @@ class StepSequencerComponent(ControlSurfaceComponent):
 				else:
 					self._grid_back_buffer[note_grid_x_position][note_grid_y_position] = SCALE_OFF_COLOUR
 					
+	
+	def _update_loop_selector(self):
+		if self._drum_group_device != None and self._drum_group_device.can_have_drum_pads and self._drum_group_device.has_drum_pads:
+			for i in range(16):
+				if(i<self._loop_end / self._width  / self._quantization) and (i>=self._loop_start / self._width / self._quantization):
+					self._grid_back_buffer[4+i%4][4+i/4] = RED_FULL
+				else:
+					self._grid_back_buffer[4+i%4][4+i/4] = RED_THIRD
+					
+	def _update_drumrack(self):
+		if self._drum_group_device != None and self._drum_group_device.can_have_drum_pads and self._drum_group_device.has_drum_pads:
+			note = ((self._key_indexes[0]-4)/16)*16+4
+			for i in range(16):
+				x=i%4
+				y=7-i/4
+				#self._parent._parent.log_message(str(x)+"."+str(y)+" note : "+str(note))
+				if self._drum_group_device.drum_pads[note+i].chains:
+					if index_of(self._drum_group_device.drum_pads,self._drum_group_device.view.selected_drum_pad)==note+i :
+						self._grid_back_buffer[x][y] = AMBER_FULL
+					else:
+						self._grid_back_buffer[x][y] = AMBER_THIRD
+				else:
+					if index_of(self._drum_group_device.drum_pads,self._drum_group_device.view.selected_drum_pad)==note+i :
+						self._grid_back_buffer[x][y] = AMBER_FULL
+					else:
+						self._grid_back_buffer[x][y] = LED_OFF
+					
 	def _update_matrix_note_markers(self):
 		# add C and A notes markers
 		for note in range(0,127):
@@ -618,9 +665,48 @@ class StepSequencerComponent(ControlSurfaceComponent):
 		for i in range(0,self._height):
 			self._grid_back_buffer[self._bank_index%self._width][i]=AMBER_FULL
 
+	def _set_loop(self,down,x):
+		if self.is_enabled() and self._is_active:
+			if self._sequencer_clip != None and self._sequencer_clip.is_midi_clip:
+				if down:
+					if self._loop_point1==-1:
+						self._loop_point1 = x
+					elif self._loop_point2==-1:
+							self._loop_point2 = x
+				elif self._loop_point1!=-1:
+					if self._loop_point2==-1:
+						self._loop_point2=x	
+					if self._loop_point1>self._loop_point2:
+						loop_start = self._loop_point2
+						loop_end = self._loop_point1
+					else:
+						loop_start = self._loop_point1
+						loop_end = self._loop_point2
+					loop_end=loop_end+1
+					self._loop_end = self._width * self._quantization * loop_end
+					self._loop_start = self._width * self._quantization * loop_start
+					if self._loop_start >= self._sequencer_clip.loop_end:
+						self._sequencer_clip.loop_end = self._loop_end
+						self._sequencer_clip.loop_start = self._loop_start
+						self._sequencer_clip.end_marker = self._loop_end
+						self._sequencer_clip.start_marker = self._loop_start
+					else:
+						self._sequencer_clip.loop_start = self._loop_start
+						self._sequencer_clip.loop_end = self._loop_end
+						self._sequencer_clip.start_marker = self._loop_start
+						self._sequencer_clip.end_marker = self._loop_end
+					self._bank_index=int(self._loop_start/4)
+					self.update()
+					self._loop_point1=-1
+					self._loop_point2=-1
+			
+					
+				
 	def _matrix_value(self, value, x, y, is_momentary): #matrix buttons listener
 		if self.is_enabled() and self._is_active:
-			if ((value != 0) or (not is_momentary)):
+			if self._multiline_mode and self._drum_group_device and x>=4 and y>=4:
+				self._set_loop(value!=0, x-4+(y-4)*4)
+			elif ((value != 0) or (not is_momentary)):
 				#self._parent._parent.log_message(str(x)+"."+str(y)+"."+str(value)+" "+"scheduled")
 				#self._parent._parent.schedule_message(1, self._matrix_value_message,[value,x,y,is_momentary])
 				self._matrix_value_message([value,x,y,is_momentary])
@@ -629,8 +715,10 @@ class StepSequencerComponent(ControlSurfaceComponent):
 		value = values[0]
 		x = values[1]
 		y = values[2]
+		xx = values[1]
+		yy = values[2]
 		is_momentary=values[3]
-		self._parent._parent.log_message("got: x:"+ str(x)+" y:"+str(y))
+		#self._parent._parent.log_message("got: x:"+ str(x)+" y:"+str(y))
 		#self._parent._parent.log_message(str(x)+"."+str(y)+"."+str(value)+" "+ "processing")
 	
 		assert (self._buttons != None)
@@ -639,20 +727,31 @@ class StepSequencerComponent(ControlSurfaceComponent):
 		assert (y in range(self._buttons.height()))
 		assert isinstance(is_momentary, type(False))
 		
+		height = self._height
 		if self._multiline_mode:
-			x = (self._bank_index) * self._width * (self._height -1) +  y * self._width + x
-			y = self._height - 1
+			if self._drum_group_device:
+				height = self._height / 2
+			x = (self._bank_index) * self._width * (height -1) +  y * self._width + x
+			y = height - 1
 		
 		"""(pitch, time, duration, velocity, mute state)
 		e.g.: (46, 0.25, 0.25, 127, False)"""
 		if self.is_enabled() and self._is_active:
 			if self._sequencer_clip != None and self._sequencer_clip.is_midi_clip:
-				if ((value != 0) or (not is_momentary)):
+				if ((value != 0) or (not is_momentary)) and yy>=height and xx<4:
+					if self._multiline_mode and self._drum_group_device!=None:
+						noteidx = ((self._key_indexes[0]-4)/16)*16+4+ xx + (7-yy)*4
+						self._key_indexes[0]=noteidx
+						self._compute_key_indexes()
+						self._drum_group_device.view.selected_drum_pad=self._drum_group_device.drum_pads[noteidx]
+						self._update_matrix()
+						
+				if ((value != 0) or (not is_momentary)) and yy<height :
 					if(self._is_velocity_shifted):
 						self._velocity_notes_pressed = self._velocity_notes_pressed+1
 					#pitch = (self._key_index + self._height - 1) - y #invert top to bottom
 					#self._parent._parent.log_message("y:"+str(y))
-					pitch = self._key_indexes[self._height-1-y]
+					pitch = self._key_indexes[height-1-y]
 					time = (x + (self._bank_index * self._width)) * self._quantization #convert position to time in beats
 					velocity = self._velocity
 					duration = self._quantization # 0.25 = 1/16th note; 0.5 = 1/8th note
@@ -807,9 +906,15 @@ class StepSequencerComponent(ControlSurfaceComponent):
 		if self.is_enabled() and self._is_active and self._mode==STEPSEQ_MODE_NORMAL:
 			if self._sequencer_clip != None:
 				if ((value is not 0) or (not sender.is_momentary())):
-					if(self._loop_end - self._width * self._quantization >0):
-						self._loop_end -= self._width * self._quantization
-						self._sequencer_clip.loop_end = self._loop_end
+					if self._drum_group_device != None and self._multiline_mode:
+						if(self._loop_end - self._width * self._quantization*4 > 0):
+							self._loop_end -= self._width * self._quantization * 4
+							self._sequencer_clip.loop_end = self._loop_end
+					else:
+						if(self._loop_end - self._width * self._quantization >0):
+							self._loop_end -= self._width * self._quantization
+							self._sequencer_clip.loop_end = self._loop_end
+
 					self._update_nav_buttons()
 			
 	def _update_loop_length_dec_button(self):
@@ -841,7 +946,10 @@ class StepSequencerComponent(ControlSurfaceComponent):
 			if self._sequencer_clip != None:
 				if ((value is not 0) or (not sender.is_momentary())):
 					old_loop_end = self._loop_end
-					self._loop_end += self._width * self._quantization
+					if self._drum_group_device != None and self._multiline_mode:
+						self._loop_end += self._width * self._quantization * 4
+					else:
+						self._loop_end += self._width * self._quantization
 					self._sequencer_clip.loop_end = self._loop_end
 					self._extend_clip_content(old_loop_end,self._loop_end)
 			self._update_nav_buttons()
@@ -1182,13 +1290,13 @@ class StepSequencerComponent(ControlSurfaceComponent):
 							for i in range(PAGE_SCROLL):
 								self._key_indexes[0] += 1
 								self._compute_key_indexes(True,True,False)
-						self._update_matrix()
-						self._update_nav_buttons()
 					if self._is_scale_fold and self._key_indexes[self._height-1] < 127-PAGE_SCROLL+1:
 						for i in range(self._height):
 							self._key_indexes[i]=self._key_indexes[i] + PAGE_SCROLL
-						self._update_matrix()
-						self._update_nav_buttons()
+					if self._multiline_mode and self._drum_group_device!=None:
+						self._drum_group_device.view.selected_drum_pad=self._drum_group_device.drum_pads[self._key_indexes[0]]
+					self._update_matrix()
+					self._update_nav_buttons()
 			else:
 				button_is_momentary = self._nav_up_button.is_momentary()
 				if button_is_momentary:
@@ -1200,6 +1308,8 @@ class StepSequencerComponent(ControlSurfaceComponent):
 					if self._key_indexes[self._height-1] < 127:
 						self._key_indexes[0] += 1
 						self._compute_key_indexes(True,True,False)
+						if self._multiline_mode and self._drum_group_device!=None:
+							self._drum_group_device.view.selected_drum_pad=self._drum_group_device.drum_pads[self._key_indexes[0]]
 						self._update_matrix()
 						self._update_nav_buttons()
 
@@ -1215,11 +1325,15 @@ class StepSequencerComponent(ControlSurfaceComponent):
 							for i in range(PAGE_SCROLL):
 								self._key_indexes[0] -= 1
 								self._compute_key_indexes(True,True,False)
+						if self._multiline_mode and self._drum_group_device!=None:
+							self._drum_group_device.view.selected_drum_pad=self._drum_group_device.drum_pads[self._key_indexes[0]]
 						self._update_matrix()
 						self._update_nav_buttons()
 					if self._is_scale_fold and self._key_indexes[0] > PAGE_SCROLL-1:
 						for i in range(self._height):
 							self._key_indexes[i]=self._key_indexes[i] -PAGE_SCROLL
+						if self._multiline_mode and self._drum_group_device!=None:
+							self._drum_group_device.view.selected_drum_pad=self._drum_group_device.drum_pads[self._key_indexes[0]]
 						self._update_matrix()
 						self._update_nav_buttons()
 			else:
@@ -1233,6 +1347,8 @@ class StepSequencerComponent(ControlSurfaceComponent):
 					if self._key_indexes[0] > 0:
 						self._key_indexes[0] -= 1
 						self._compute_key_indexes(True,False,True)
+						if self._multiline_mode and self._drum_group_device!=None:
+							self._drum_group_device.view.selected_drum_pad=self._drum_group_device.drum_pads[self._key_indexes[0]]
 						self._update_matrix()
 						self._update_nav_buttons()
 
@@ -1274,8 +1390,11 @@ class StepSequencerComponent(ControlSurfaceComponent):
 						self._scroll_right_ticks_delay = -1			
 				if ((value != 0) or (not self._nav_right_button.is_momentary())):
 					can_do=False
+					height = self._height
+					if self._drum_group_device:
+						height = self._height / 2
 					if self._multiline_mode:
-						if (self._bank_index+1) * self._quantization * self._width * self._height < self._sequencer_clip.loop_end:
+						if (self._bank_index+1) * self._quantization * self._width * height < self._sequencer_clip.loop_end:
 							can_do=True
 					else:
 						if (self._bank_index+1) * self._quantization * self._width < self._sequencer_clip.loop_end:
@@ -1290,6 +1409,9 @@ class StepSequencerComponent(ControlSurfaceComponent):
 	def _update_nav_buttons(self):
 		if self.is_enabled() and self._is_active:
 			if self._sequencer_clip != None and self._sequencer_clip.is_midi_clip:
+				height = self._height
+				if self._drum_group_device:
+					height = self._height / 2
 				self._nav_left_button.set_on_off_values(GREEN_FULL,GREEN_THIRD)
 				if self._bank_index==0:
 					self._nav_left_button.turn_off()
@@ -1299,7 +1421,7 @@ class StepSequencerComponent(ControlSurfaceComponent):
 				self._nav_right_button.set_on_off_values(GREEN_FULL,GREEN_THIRD)
 				can_do=False
 				if self._multiline_mode:
-					if (self._bank_index+1) * self._quantization * self._width * self._height < self._sequencer_clip.loop_end:
+					if (self._bank_index+1) * self._quantization * self._width * height < self._sequencer_clip.loop_end:
 						can_do=True
 				else:
 					if (self._bank_index+1) * self._quantization * self._width < self._sequencer_clip.loop_end:
@@ -1316,7 +1438,7 @@ class StepSequencerComponent(ControlSurfaceComponent):
 					self._nav_down_button.turn_off()
 		
 				self._nav_up_button.set_on_off_values(GREEN_FULL,GREEN_THIRD)
-				if self._key_indexes[self._height-1]<127:
+				if self._key_indexes[height-1]<127:
 					self._nav_up_button.turn_on()
 				else:
 					self._nav_up_button.turn_off()

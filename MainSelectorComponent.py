@@ -8,11 +8,10 @@ from _Framework.SceneComponent import SceneComponent
 from _Framework.SessionZoomingComponent import SessionZoomingComponent
 from ConfigurableButtonElement import ConfigurableButtonElement
 from DeviceControllerComponent import DeviceControllerComponent
-from TrackControlerComponent import TrackControlerComponent
 from SpecialSessionComponent import SpecialSessionComponent
 from InstrumentControllerComponent import InstrumentControllerComponent
 from SubSelectorComponent import *
-from StepSequencerComponent import StepSequencerComponent
+from StepSequencerComponent2 import StepSequencerComponent
 from _Framework.MomentaryModeObserver import MomentaryModeObserver
 
 class MainSelectorComponent(ModeSelectorComponent):
@@ -44,8 +43,8 @@ class MainSelectorComponent(ModeSelectorComponent):
 		self._sub_modes = SubSelectorComponent(matrix, side_buttons, self._session)
 		self._sub_modes.name = 'Mixer_Modes'
 		self._sub_modes.set_update_callback(self._update_control_channels)
-		self._stepseq = StepSequencerComponent(self, self._matrix,self._side_buttons,self._nav_buttons)
-		self._instrument_controller = InstrumentControllerComponent( self._matrix,self._side_buttons,self._nav_buttons,self)
+		self._stepseq = StepSequencerComponent(self._matrix, self._side_buttons, self._nav_buttons, self)
+		self._instrument_controller = InstrumentControllerComponent( self._matrix, self._side_buttons, self._nav_buttons,self)
 		self._device_controller = DeviceControllerComponent(self._matrix, self._side_buttons, self._nav_buttons, self)
 		self._init_session()
 		self._all_buttons = tuple(self._all_buttons)
@@ -85,7 +84,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 				self.update()
 			elif self._mode_index==2:
 				#user mode 2  and step sequencer
-				self._sub_mode_index[self._mode_index] = (self._sub_mode_index[self._mode_index]+1)%3
+				self._sub_mode_index[self._mode_index] = (self._sub_mode_index[self._mode_index]+1)%2
 				self.update()
 			elif self._mode_index==3:
 				self.update()
@@ -264,20 +263,21 @@ class MainSelectorComponent(ModeSelectorComponent):
 			self._session.set_scene_bank_buttons(None, None)
 
 	def _setup_instrument_controller(self, enabled):
-		if enabled:
-			self._activate_matrix(False)
-			self._activate_scene_buttons(True)
-			self._activate_navigation_buttons(True)
-		else:
-			for scene_index in range(8):
-				scene_button = self._side_buttons[scene_index]
-				scene_button.use_default_message()
-				scene_button.force_next_send()
-				for track_index in range(8):
-					button = self._matrix.get_button(track_index, scene_index)
-					button.use_default_message()
-					button.force_next_send()
-		self._instrument_controller.set_enabled(enabled)
+		if self._instrument_controller != None:
+			if enabled:
+				self._activate_matrix(False)
+				self._activate_scene_buttons(True)
+				self._activate_navigation_buttons(True)
+			else:
+				for scene_index in range(8):
+					scene_button = self._side_buttons[scene_index]
+					scene_button.use_default_message()
+					scene_button.force_next_send()
+					for track_index in range(8):
+						button = self._matrix.get_button(track_index, scene_index)
+						button.use_default_message()
+						button.force_next_send()
+			self._instrument_controller.set_enabled(enabled)
 		
 
 	def _setup_device_controller(self, as_active):
@@ -326,21 +326,14 @@ class MainSelectorComponent(ModeSelectorComponent):
 
 	def _setup_step_sequencer(self, as_active, mode=0):
 		if(self._stepseq!=None):
-			if(self._stepseq._is_active!=as_active or self._stepseq._mode!=mode):
+			if(self._stepseq.is_enabled()!=as_active or self._stepseq._mode!=mode):
 				if as_active: 
 					self._activate_scene_buttons(True)
 					self._activate_matrix(True)
 					self._activate_navigation_buttons(True)
-					self._stepseq._mode=mode
-					self._stepseq._force_update = True
-					self._stepseq._is_active = True
 					self._stepseq.set_enabled(True)
-					self._stepseq._on_notes_changed()
-					self._stepseq.update_buttons()
 					self._config_button.send_value(32)
 				else:
-					self._stepseq._mode=1
-					self._stepseq._is_active = False
 					self._stepseq.set_enabled(False)
 
 
@@ -392,7 +385,9 @@ class MainSelectorComponent(ModeSelectorComponent):
 			for track_index in range(8):
 				self._matrix.get_button(track_index, scene_index).set_enabled(active)
 				
-
+	def log_message(self, msg):
+		self._parent.log_message(msg)
+		
 	#Update the channels of the buttons in the user modes..
 	def _update_control_channels(self):
 		new_channel = self.channel_for_current_mode()
