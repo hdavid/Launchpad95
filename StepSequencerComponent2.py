@@ -416,6 +416,13 @@ class LoopSelectorComponent(ControlSurfaceComponent):
 		self._top_buttons = None
 
 	@property
+	def _number_of_lines_per_note(self):
+		if self._mode == STEPSEQ_MODE_MULTINOTE:
+			return self._parent._number_of_lines_per_note
+		else: 
+			return 1
+			
+	@property
 	def _clip(self):
 		return self._parent._clip
 		
@@ -514,9 +521,9 @@ class LoopSelectorComponent(ControlSurfaceComponent):
 		if self._clip != None:
 			if (blocks+self._block)<0:
 				return False
-			if (blocks+self._block) * 8  * self._quantization < self._clip.loop_start:
+			if (blocks+self._block) * 8  * self._quantization * self._number_of_lines_per_note < self._clip.loop_start:
 				return False
-			if (blocks+self._block+1) * 8 * self._quantization > self._clip.loop_end:
+			if (blocks+self._block+1) * 8 * self._quantization * self._number_of_lines_per_note > self._clip.loop_end:
 				return False
 			return True
 		return False
@@ -617,7 +624,7 @@ class StepSequencerComponent(CompoundComponent):
 		self.set_scales_button(side_buttons[0])
 		
 		#quantization
-		self._quantization_index = 3
+		self._quantization_index = 2
 		self.set_quantization(QUANTIZATION_MAP[self._quantization_index])
 		self._quantization_button = None
 		self.set_quantization_button(side_buttons[5])
@@ -677,11 +684,17 @@ class StepSequencerComponent(CompoundComponent):
 		if self._mode != mode or number_of_lines_per_note != self._number_of_lines_per_note:
 			self._number_of_lines_per_note = number_of_lines_per_note
 		 	if mode == STEPSEQ_MODE_COMBINED:
+				if self._mode != mode:
+					self._loop_selector._block = self._loop_selector._block * self._number_of_lines_per_note 
+					self._note_editor.set_page(self._loop_selector._block/4)
 				self.set_left_button(None)
 				self.set_right_button(None)
 				self._track_controller.set_prev_track_button(self._top_buttons[2])
 				self._track_controller.set_next_track_button(self._top_buttons[3])
 			else:
+				if self._mode != mode:
+					self._loop_selector._block = self._loop_selector._block / self._number_of_lines_per_note
+					self._note_editor.set_page(self._loop_selector._block)
 				self._track_controller.set_prev_track_button(None)
 				self._track_controller.set_next_track_button(None)
 				self.set_left_button(self._top_buttons[2])
@@ -750,12 +763,12 @@ class StepSequencerComponent(CompoundComponent):
 		self.on_selected_scene_changed()
 	
 	def on_selected_scene_changed(self):
-		if not self._is_locked:
+		if not self._is_locked or self._clip == None:
 			self.on_clip_slot_changed()
 			self.update()
 	
 	def on_selected_track_changed(self):
-		if not self._is_locked:
+		if not self._is_locked or self._clip == None:
 			self._detect_scale_mode()
 			self.on_clip_slot_changed()
 			self.update()
@@ -765,45 +778,53 @@ class StepSequencerComponent(CompoundComponent):
 			self.update()
 
 	def on_clip_slot_changed(self):
-		if not self._is_locked:
+		#self._parent._parent.log_message("1")
+		if not self._is_locked or self._clip == None:
+			#self._parent._parent.log_message("2")
 			#select clip
 			if self.song().view.highlighted_clip_slot != None:
+				#self._parent._parent.log_message("3")
 				clip_slot = self.song().view.highlighted_clip_slot
 				if self._clip != clip_slot.clip:
+					#self._parent._parent.log_message("4")
 					#remove listeners
 					if self._clip != None:
-						#self._parent._parent.log_message("1")
+						#self._parent._parent.log_message("5")
 						if self._clip.is_midi_clip:
 							if self._clip.notes_has_listener(self._on_notes_changed):
 								self._clip.remove_notes_listener(self._on_notes_changed)
-						if self._clip.playing_status_has_listener(self._on_playing_status_changed):
-							self._clip.remove_playing_status_listener(self._on_playing_status_changed) 
-						if self._clip.loop_start_has_listener(self._on_loop_changed):
-							self._clip.remove_loop_start_listener(self._on_loop_changed) 
-						if self._clip.loop_end_has_listener(self._on_loop_changed):
-							self._clip.remove_loop_end_listener(self._on_loop_changed)
+							if self._clip.playing_status_has_listener(self._on_playing_status_changed):
+								self._clip.remove_playing_status_listener(self._on_playing_status_changed) 
+							if self._clip.loop_start_has_listener(self._on_loop_changed):
+								self._clip.remove_loop_start_listener(self._on_loop_changed) 
+							if self._clip.loop_end_has_listener(self._on_loop_changed):
+								self._clip.remove_loop_end_listener(self._on_loop_changed)
 
 					if clip_slot.has_clip and clip_slot.clip != None and clip_slot.clip.is_midi_clip:
+						#self._parent._parent.log_message("6")
 						#add listeners
 						clip = clip_slot.clip
-						#self._parent._parent.log_message("2")
 						self._clip = clip
+						
 						if clip.notes_has_listener(self._on_notes_changed):
 							clip.remove_notes_listener(self._on_notes_changed)
-						#self._parent._parent.log_message("3")
 						clip.add_notes_listener(self._on_notes_changed)		  
+						
 						if clip.playing_status_has_listener(self._on_playing_status_changed):
 							clip.remove_playing_status_listener(self._on_playing_status_changed) 
 						clip.add_playing_status_listener(self._on_playing_status_changed)
+						
 						if clip.loop_start_has_listener(self._on_loop_changed):
 							clip.remove_loop_start_listener(self._on_loop_changed)
 						clip.add_loop_start_listener(self._on_loop_changed)
+						
 						if clip.loop_end_has_listener(self._on_loop_changed):
 							clip.remove_loop_end_listener(self._on_loop_changed)							   
 						clip.add_loop_end_listener(self._on_loop_changed)
 					else:
+						#self._parent._parent.log_message("7")
 						self._clip = None
-						
+					#self._parent._parent.log_message("8")
 					self._note_editor.set_clip(self._clip)
 		#self.update()			
 

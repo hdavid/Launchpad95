@@ -206,13 +206,10 @@ class NoteEditorComponent(ControlSurfaceComponent):
 				play_position = self._clip.playing_position #position in beats (1/4 notes in 4/4 time)
 				play_page = int(play_position / self.quantization / self.width / self.number_of_lines_per_note)
 				play_row = int(play_position / self.quantization / self.width )%  self.number_of_lines_per_note
+				
 				play_x_position = int(play_position / self.quantization)%self.width
-				if self.is_multinote:
-					play_y_position = play_page%self.height
-				else:
-					play_y_position = int(play_position / self.quantization / self.width)%self.height 
-					
-
+				play_y_position = int(play_position / self.quantization / self.width)%self.height
+				
 				# add play positition in amber	
 				if(DISPLAY_METRONOME):
 					if self._clip.is_playing and self.song().is_playing:
