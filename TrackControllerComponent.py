@@ -152,8 +152,6 @@ class TrackControllerComponent(MixerComponent):
 	def update_track_buttons(self):
 		#tracks
 		if self.is_enabled():
-			if self._parent != None:
-				self._parent.log_message(" update idx: "+ str(self.selected_track_idx()))
 			if(self._prev_track_button!=None):
 				if(self.selected_track_idx()>0):
 					self._prev_track_button.set_on_off_values(GREEN_FULL,GREEN_FULL)
@@ -184,8 +182,6 @@ class TrackControllerComponent(MixerComponent):
 		assert (value in range(128))
 		if self.is_enabled():
 			if ((not sender.is_momentary()) or (value is not 0)):
-				if self._parent != None:
-					self._parent.log_message("next value")
 				if(self.selected_track_idx() < len(self.song().tracks)-1):
 					self.song().view.selected_track=self.song().tracks[self.selected_track_idx() + 1]
 					self._do_auto_arm()
