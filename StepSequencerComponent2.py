@@ -677,9 +677,10 @@ class StepSequencerComponent(CompoundComponent):
 				self._detect_scale_mode()
 		self._track_controller.set_enabled(enabled)
 		CompoundComponent.set_enabled(self,enabled)
+		#self.update()
 		#update clip
-		#if enabled:
-		#	self.on_clip_slot_changed()
+		if enabled:
+			self.on_clip_slot_changed()
 			
 	def set_mode(self,mode , number_of_lines_per_note = 1):
 		if self._mode != mode or number_of_lines_per_note != self._number_of_lines_per_note:
@@ -764,15 +765,14 @@ class StepSequencerComponent(CompoundComponent):
 		self.on_selected_scene_changed()
 	
 	def on_selected_scene_changed(self):
-		if not self._is_locked or self._clip == None:
-			self.on_clip_slot_changed()
-			self.update()
+		self.on_clip_slot_changed()
+		self.update()
 	
 	def on_selected_track_changed(self):
 		if not self._is_locked or self._clip == None:
 			self._detect_scale_mode()
-			self.on_clip_slot_changed()
-			self.update()
+		self.on_clip_slot_changed()
+		self.update()
 
 	def _on_loop_changed(self): 
 		if self.is_enabled() and self._clip != None:
@@ -848,7 +848,7 @@ class StepSequencerComponent(CompoundComponent):
 			
 		#update
 		self._note_editor.set_clip(self._clip)			
-
+		
 #NOTES CHANGES
 	def _on_notes_changed(self): #notes changed listener
 		if self.is_enabled() and self._clip!= None:
