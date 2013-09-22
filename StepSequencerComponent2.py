@@ -790,13 +790,13 @@ class StepSequencerComponent(CompoundComponent):
 		if not self._is_locked:
 			#self._parent._parent.log_message("update clip_slot")
 			clip_slot = self.song().view.highlighted_clip_slot
-			if clip_slot.has_clip_has_listener(self.on_clip_slot_changed_has_clip):
-				clip_slot.remove_has_clip_listener(self.on_clip_slot_changed_has_clip)
+			if clip_slot.has_clip_has_listener(self.on_clip_slot_has_clip_changed):
+				clip_slot.remove_has_clip_listener(self.on_clip_slot_has_clip_changed)
 				
 			self._clip_slot = clip_slot
-			if self._clip_slot.has_clip_has_listener(self.on_clip_slot_changed_has_clip):
-				self._clip_slot.remove_has_clip_listener(self.on_clip_slot_changed_has_clip)
-			self._clip_slot.add_has_clip_listener(self.on_clip_slot_changed_has_clip)
+			if self._clip_slot.has_clip_has_listener(self.on_clip_slot_has_clip_changed):
+				self._clip_slot.remove_has_clip_listener(self.on_clip_slot_has_clip_changed)
+			self._clip_slot.add_has_clip_listener(self.on_clip_slot_has_clip_changed)
 			
 		if self._clip_slot.has_clip and self._clip_slot.clip != None and self._clip_slot.clip.is_midi_clip:
 			if self._clip == None or self._clip != self._clip_slot.clip:
