@@ -574,6 +574,7 @@ class StepSequencerComponent(CompoundComponent):
 		
 		self._parent = parent
 		self._clip = None
+		self._clip_slot = None
 		self._playhead = 0
 		self._mode = -1
 		self._mode_backup = self._mode
@@ -777,56 +778,76 @@ class StepSequencerComponent(CompoundComponent):
 		if self.is_enabled() and self._clip != None:
 			self.update()
 
+	def on_clip_slot_has_clip_changed(self):
+		#the clip was deleted. unlock.
+		if not self._clip_slot.has_clip:
+			self._is_locked = False
+		self.update()
+		
 	def on_clip_slot_changed(self):
-		#self._parent._parent.log_message("1")
-		if not self._is_locked or self._clip == None:
-			#self._parent._parent.log_message("2")
-			#select clip
-			if self.song().view.highlighted_clip_slot != None:
-				#self._parent._parent.log_message("3")
-				clip_slot = self.song().view.highlighted_clip_slot
-				if self._clip != clip_slot.clip:
-					#self._parent._parent.log_message("4")
-					#remove listeners
-					if self._clip != None:
-						#self._parent._parent.log_message("5")
-						if self._clip.is_midi_clip:
-							if self._clip.notes_has_listener(self._on_notes_changed):
-								self._clip.remove_notes_listener(self._on_notes_changed)
-							if self._clip.playing_status_has_listener(self._on_playing_status_changed):
-								self._clip.remove_playing_status_listener(self._on_playing_status_changed) 
-							if self._clip.loop_start_has_listener(self._on_loop_changed):
-								self._clip.remove_loop_start_listener(self._on_loop_changed) 
-							if self._clip.loop_end_has_listener(self._on_loop_changed):
-								self._clip.remove_loop_end_listener(self._on_loop_changed)
-
-					if clip_slot.has_clip and clip_slot.clip != None and clip_slot.clip.is_midi_clip:
-						#self._parent._parent.log_message("6")
-						#add listeners
-						clip = clip_slot.clip
-						self._clip = clip
+		
+		#update clip slot only if not locked
+		if not self._is_locked:
+			#self._parent._parent.log_message("update clip_slot")
+			clip_slot = self.song().view.highlighted_clip_slot
+			if clip_slot.has_clip_has_listener(self.on_clip_slot_changed_has_clip):
+				clip_slot.remove_has_clip_listener(self.on_clip_slot_changed_has_clip)
+				
+			self._clip_slot = clip_slot
+			if self._clip_slot.has_clip_has_listener(self.on_clip_slot_changed_has_clip):
+				self._clip_slot.remove_has_clip_listener(self.on_clip_slot_changed_has_clip)
+			self._clip_slot.add_has_clip_listener(self.on_clip_slot_changed_has_clip)
+			
+		if self._clip_slot.has_clip and self._clip_slot.clip != None and self._clip_slot.clip.is_midi_clip:
+			if self._clip == None or self._clip != self._clip_slot.clip:
+				#self._parent._parent.log_message("link clip_slot")
+				#unlink
+				if self._clip != None and self._clip.is_midi_clip:
+					if self._clip.notes_has_listener(self._on_notes_changed):
+						self._clip.remove_notes_listener(self._on_notes_changed)
+					if self._clip.playing_status_has_listener(self._on_playing_status_changed):
+						self._clip.remove_playing_status_listener(self._on_playing_status_changed) 
+					if self._clip.loop_start_has_listener(self._on_loop_changed):
+						self._clip.remove_loop_start_listener(self._on_loop_changed) 
+					if self._clip.loop_end_has_listener(self._on_loop_changed):
+						self._clip.remove_loop_end_listener(self._on_loop_changed)
 						
-						if clip.notes_has_listener(self._on_notes_changed):
-							clip.remove_notes_listener(self._on_notes_changed)
-						clip.add_notes_listener(self._on_notes_changed)		  
-						
-						if clip.playing_status_has_listener(self._on_playing_status_changed):
-							clip.remove_playing_status_listener(self._on_playing_status_changed) 
-						clip.add_playing_status_listener(self._on_playing_status_changed)
-						
-						if clip.loop_start_has_listener(self._on_loop_changed):
-							clip.remove_loop_start_listener(self._on_loop_changed)
-						clip.add_loop_start_listener(self._on_loop_changed)
-						
-						if clip.loop_end_has_listener(self._on_loop_changed):
-							clip.remove_loop_end_listener(self._on_loop_changed)							   
-						clip.add_loop_end_listener(self._on_loop_changed)
-					else:
-						#self._parent._parent.log_message("7")
-						self._clip = None
-					#self._parent._parent.log_message("8")
-					self._note_editor.set_clip(self._clip)
-		#self.update()			
+				#relink
+				if self._clip_slot.clip.notes_has_listener(self._on_notes_changed):
+					self._clip_slot.clip.remove_notes_listener(self._on_notes_changed)
+				self._clip_slot.clip.add_notes_listener(self._on_notes_changed)		  
+				
+				if self._clip_slot.clip.playing_status_has_listener(self._on_playing_status_changed):
+					self._clip_slot.clip.remove_playing_status_listener(self._on_playing_status_changed) 
+				self._clip_slot.clip.add_playing_status_listener(self._on_playing_status_changed)
+				
+				if self._clip_slot.clip.loop_start_has_listener(self._on_loop_changed):
+					self._clip_slot.clip.remove_loop_start_listener(self._on_loop_changed)
+				self._clip_slot.clip.add_loop_start_listener(self._on_loop_changed)
+				
+				if self._clip_slot.clip.loop_end_has_listener(self._on_loop_changed):
+					self._clip_slot.clip.remove_loop_end_listener(self._on_loop_changed)							   
+				self._clip_slot.clip.add_loop_end_listener(self._on_loop_changed)
+				
+				#publish
+				self._clip = self._clip_slot.clip
+		else:
+			#self._parent._parent.log_message("empty clip_slot. cleanup")
+			#unlink
+			if self._clip != None and self._clip.is_midi_clip:
+				if self._clip.notes_has_listener(self._on_notes_changed):
+					self._clip.remove_notes_listener(self._on_notes_changed)
+				if self._clip.playing_status_has_listener(self._on_playing_status_changed):
+					self._clip.remove_playing_status_listener(self._on_playing_status_changed) 
+				if self._clip.loop_start_has_listener(self._on_loop_changed):
+					self._clip.remove_loop_start_listener(self._on_loop_changed) 
+				if self._clip.loop_end_has_listener(self._on_loop_changed):
+					self._clip.remove_loop_end_listener(self._on_loop_changed)
+			#publish
+			self._clip = None
+			
+		#update
+		self._note_editor.set_clip(self._clip)			
 
 #NOTES CHANGES
 	def _on_notes_changed(self): #notes changed listener
@@ -834,15 +855,14 @@ class StepSequencerComponent(CompoundComponent):
 			self._note_editor.update_notes()
 			self._note_selector.update_notes()
 			self._loop_selector.update_notes()
-				
+			
 #PLAY POSITION
 	def _on_playing_status_changed(self): #playing status changed listener
 		if self._clip != None:
 			if self._clip.playing_position_has_listener(self._on_playing_position_changed):
 				self._clip.remove_playing_position_listener(self._on_playing_position_changed)
-			if self._clip.is_playing:
-				self._clip.add_playing_position_listener(self._on_playing_position_changed)
-
+			#if self._clip.is_playing:
+			self._clip.add_playing_position_listener(self._on_playing_position_changed)
 
 	def _on_playing_position_changed(self): #playing position changed listener
 		if self.is_enabled() and self._clip != None and self._clip.is_playing and self.song().is_playing:
