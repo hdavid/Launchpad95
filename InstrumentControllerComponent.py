@@ -272,7 +272,7 @@ class InstrumentControllerComponent(CompoundComponent):
 							button.force_next_send()
 						button.turn_off()
 							
-			self._parent._config_button.send_value(32, force_send=True)
+			self._parent._config_button.send_value(32)
 	
 	def _get_pattern(self, interval):
 		if(self._scales.is_drumrack()):

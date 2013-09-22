@@ -320,7 +320,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 
 		if drum_rack_mode:
 			self._config_button.send_value(2)
-		self._config_button.send_value(32, force_send=True)
+		self._config_button.send_value(32)
 
 
 
