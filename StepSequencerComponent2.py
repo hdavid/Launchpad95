@@ -708,7 +708,16 @@ class StepSequencerComponent(CompoundComponent):
 
 	def update(self):
 		if self.is_enabled():
+			
+			#note editor
+			self._note_editor.set_multinote(self._mode==STEPSEQ_MODE_MULTINOTE, self._number_of_lines_per_note)
+			if self._mode==STEPSEQ_MODE_COMBINED:
+				self._note_editor.set_height(self._height-4)
+			else:
+				self._note_editor.set_height(self._height)
+			self._note_editor.set_enabled(self._mode!=STEPSEQ_MODE_SCALE_EDIT)	
 			self._note_selector._set_note_editor_notes()
+			
 			self.on_clip_slot_changed()
 			
 			#track controller
@@ -728,13 +737,6 @@ class StepSequencerComponent(CompoundComponent):
 			self._note_selector.update()
 			
 			#note editor
-			
-			self._note_editor.set_multinote(self._mode==STEPSEQ_MODE_MULTINOTE, self._number_of_lines_per_note)
-			if self._mode==STEPSEQ_MODE_COMBINED:
-				self._note_editor.set_height(self._height-4)
-			else:
-				self._note_editor.set_height(self._height)
-			self._note_editor.set_enabled(self._mode!=STEPSEQ_MODE_SCALE_EDIT)
 			self._note_editor.update()
 			
 			#update my buttons
@@ -926,11 +928,10 @@ class StepSequencerComponent(CompoundComponent):
 				self._mode_backup = self._mode
 				self.set_mode(STEPSEQ_MODE_SCALE_EDIT) 
 			else:
-				self._note_editor._force_update = True
+				#self._note_editor._force_update = True
 				self._note_selector.set_scale(self._scales.notes, self._scales._selected_key)
 				self._note_selector.set_selected_note(self._scales._octave_index * 12 + self._scales._selected_key)
-				self.set_mode(self._mode_backup) 
-				self.update()
+				self.set_mode(self._mode_backup)
 
 
 #SHIFT
@@ -993,9 +994,9 @@ class StepSequencerComponent(CompoundComponent):
 						number_of_lines_per_note = 1
 					self.set_mode(STEPSEQ_MODE_MULTINOTE , number_of_lines_per_note)
 					
-				elif self._mode != STEPSEQ_MODE_MULTINOTE:	
+				elif self._mode != STEPSEQ_MODE_MULTINOTE:
 					self.set_mode(STEPSEQ_MODE_MULTINOTE , self._number_of_lines_per_note)
-					
+	
 				else:
 					self.set_mode(STEPSEQ_MODE_COMBINED, self._number_of_lines_per_note)
 
