@@ -134,12 +134,12 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		if clip!= None:
 			if self._clip != clip:
 				self._clip = clip
+			self._clip.select_all_notes()
+			note_cache = self._clip.get_selected_notes()
+			self._clip.deselect_all_notes()
+			if self._clip_notes != note_cache:
+				self._clip_notes = note_cache
 			if self.is_enabled():
-				self._clip.select_all_notes()
-				note_cache = self._clip.get_selected_notes()
-				self._clip.deselect_all_notes()
-				if self._clip_notes != note_cache:
-					self._clip_notes = note_cache
 				self.update()
 		else:
 			if self._clip != clip:
