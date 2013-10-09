@@ -331,8 +331,8 @@ class MainSelectorComponent(ModeSelectorComponent):
 					self._activate_scene_buttons(True)
 					self._activate_matrix(True)
 					self._activate_navigation_buttons(True)
-					self._stepseq.set_enabled(True)
 					self._config_button.send_value(32)
+					self._stepseq.set_enabled(True)
 				else:
 					self._stepseq.set_enabled(False)
 
