@@ -664,6 +664,9 @@ class StepSequencerComponent(CompoundComponent):
 		self._track_controller = None
 
 		
+	#def on_enabled_changed(self):
+	#	self.update()
+
 	def set_enabled(self, enabled):
 		if enabled:
 			#clear cache
@@ -675,12 +678,14 @@ class StepSequencerComponent(CompoundComponent):
 			if self._mode == -1:
 				self._mode = STEPSEQ_MODE_COMBINED
 				self._detect_scale_mode()
-		self._track_controller.set_enabled(enabled)
-		CompoundComponent.set_enabled(self,enabled)
-		#self.update()
-		#update clip
-		if enabled:
+			self._track_controller.set_enabled(enabled)
+			#update clip
 			self.on_clip_slot_changed()
+			CompoundComponent.set_enabled(self,enabled)
+			
+		else:
+			self._track_controller.set_enabled(enabled)
+			CompoundComponent.set_enabled(self,enabled)
 			
 	def set_mode(self,mode , number_of_lines_per_note = 1):
 		if self._mode != mode or number_of_lines_per_note != self._number_of_lines_per_note:
@@ -708,18 +713,8 @@ class StepSequencerComponent(CompoundComponent):
 
 	def update(self):
 		if self.is_enabled():
-			
-			#note editor
-			self._note_editor.set_multinote(self._mode==STEPSEQ_MODE_MULTINOTE, self._number_of_lines_per_note)
-			if self._mode==STEPSEQ_MODE_COMBINED:
-				self._note_editor.set_height(self._height-4)
-			else:
-				self._note_editor.set_height(self._height)
-			self._note_editor.set_enabled(self._mode!=STEPSEQ_MODE_SCALE_EDIT)	
-			self._note_selector._set_note_editor_notes()
-			
-			self.on_clip_slot_changed()
-			
+			#self._parent._parent.log_message("update !")
+				
 			#track controller
 			self._track_controller.set_enabled(True)
 
@@ -737,6 +732,13 @@ class StepSequencerComponent(CompoundComponent):
 			self._note_selector.update()
 			
 			#note editor
+			self._note_editor.set_multinote(self._mode==STEPSEQ_MODE_MULTINOTE, self._number_of_lines_per_note)
+			if self._mode==STEPSEQ_MODE_COMBINED:
+				self._note_editor.set_height(self._height-4)
+			else:
+				self._note_editor.set_height(self._height)
+			self._note_editor.set_enabled(self._mode!=STEPSEQ_MODE_SCALE_EDIT)	
+			self._note_selector._set_note_editor_notes()
 			self._note_editor.update()
 			
 			#update my buttons
@@ -756,9 +758,7 @@ class StepSequencerComponent(CompoundComponent):
 		self._update_left_button()
 		self._update_right_button()
 		
-	#callbacks
-	def on_enabled_changed(self):
-		self.update()
+#CLIP CALLBACKS
 
 	def on_track_list_changed(self):
 		self.on_selected_track_changed()
@@ -784,23 +784,25 @@ class StepSequencerComponent(CompoundComponent):
 		#the clip was deleted. unlock.
 		if not self._clip_slot.has_clip:
 			self._is_locked = False
+		self.on_clip_slot_changed()
 		self.update()
 		
+
 	def on_clip_slot_changed(self):
 		
 		#update clip slot only if not locked
-		if not self._is_locked:
+		clip_slot = self.song().view.highlighted_clip_slot
+		if not self._is_locked and clip_slot != self._clip_slot or self._clip_slot == None:
 			#self._parent._parent.log_message("update clip_slot")
-			clip_slot = self.song().view.highlighted_clip_slot
-			if clip_slot.has_clip_has_listener(self.on_clip_slot_has_clip_changed):
+			if clip_slot !=None and clip_slot.has_clip_has_listener(self.on_clip_slot_has_clip_changed):
 				clip_slot.remove_has_clip_listener(self.on_clip_slot_has_clip_changed)
-				
 			self._clip_slot = clip_slot
-			if self._clip_slot.has_clip_has_listener(self.on_clip_slot_has_clip_changed):
-				self._clip_slot.remove_has_clip_listener(self.on_clip_slot_has_clip_changed)
-			self._clip_slot.add_has_clip_listener(self.on_clip_slot_has_clip_changed)
+			if self._clip_slot != None:
+				if self._clip_slot.has_clip_has_listener(self.on_clip_slot_has_clip_changed):
+					self._clip_slot.remove_has_clip_listener(self.on_clip_slot_has_clip_changed)
+				self._clip_slot.add_has_clip_listener(self.on_clip_slot_has_clip_changed)
 			
-		if self._clip_slot.has_clip and self._clip_slot.clip != None and self._clip_slot.clip.is_midi_clip:
+		if self._clip_slot != None and self._clip_slot.has_clip and self._clip_slot.clip != None and self._clip_slot.clip.is_midi_clip:
 			if self._clip == None or self._clip != self._clip_slot.clip:
 				#self._parent._parent.log_message("link clip_slot")
 				#unlink
@@ -809,42 +811,41 @@ class StepSequencerComponent(CompoundComponent):
 						self._clip.remove_notes_listener(self._on_notes_changed)
 					if self._clip.playing_status_has_listener(self._on_playing_status_changed):
 						self._clip.remove_playing_status_listener(self._on_playing_status_changed) 
+					if self._clip.playing_position_has_listener(self._on_playing_position_changed):
+						self._clip.remove_playing_position_listener(self._on_playing_position_changed)
 					if self._clip.loop_start_has_listener(self._on_loop_changed):
 						self._clip.remove_loop_start_listener(self._on_loop_changed) 
 					if self._clip.loop_end_has_listener(self._on_loop_changed):
 						self._clip.remove_loop_end_listener(self._on_loop_changed)
-						
-				#relink
-				if self._clip_slot.clip.notes_has_listener(self._on_notes_changed):
-					self._clip_slot.clip.remove_notes_listener(self._on_notes_changed)
-				self._clip_slot.clip.add_notes_listener(self._on_notes_changed)		  
-				
-				if self._clip_slot.clip.playing_status_has_listener(self._on_playing_status_changed):
-					self._clip_slot.clip.remove_playing_status_listener(self._on_playing_status_changed) 
+				#link new clip	
+				self._clip_slot.clip.add_notes_listener(self._on_notes_changed)
 				self._clip_slot.clip.add_playing_status_listener(self._on_playing_status_changed)
-				
-				if self._clip_slot.clip.loop_start_has_listener(self._on_loop_changed):
-					self._clip_slot.clip.remove_loop_start_listener(self._on_loop_changed)
+				self._clip_slot.clip.add_playing_position_listener(self._on_playing_position_changed)
 				self._clip_slot.clip.add_loop_start_listener(self._on_loop_changed)
-				
-				if self._clip_slot.clip.loop_end_has_listener(self._on_loop_changed):
-					self._clip_slot.clip.remove_loop_end_listener(self._on_loop_changed)							   
 				self._clip_slot.clip.add_loop_end_listener(self._on_loop_changed)
 				
 				#publish
 				self._clip = self._clip_slot.clip
+			else:
+				#same clip...
+				pass
+				#self._parent._parent.log_message("same clip. pass.")
+				
 		else:
-			#self._parent._parent.log_message("empty clip_slot. cleanup")
+			#self._parent._parent.log_message("empty clip_slot or no clip_slot. cleanup")
 			#unlink
-			if self._clip != None and self._clip.is_midi_clip:
+			if self._clip != None:
 				if self._clip.notes_has_listener(self._on_notes_changed):
 					self._clip.remove_notes_listener(self._on_notes_changed)
 				if self._clip.playing_status_has_listener(self._on_playing_status_changed):
 					self._clip.remove_playing_status_listener(self._on_playing_status_changed) 
+				if self._clip.playing_position_has_listener(self._on_playing_position_changed):
+					self._clip.remove_playing_position_listener(self._on_playing_position_changed)
 				if self._clip.loop_start_has_listener(self._on_loop_changed):
 					self._clip.remove_loop_start_listener(self._on_loop_changed) 
 				if self._clip.loop_end_has_listener(self._on_loop_changed):
 					self._clip.remove_loop_end_listener(self._on_loop_changed)
+				
 			#publish
 			self._clip = None
 			
@@ -852,7 +853,7 @@ class StepSequencerComponent(CompoundComponent):
 		self._note_editor.set_clip(self._clip)			
 		
 #NOTES CHANGES
-	def _on_notes_changed(self): #notes changed listener
+	def _on_notes_changed(self):
 		if self.is_enabled() and self._clip!= None:
 			self._note_editor.update_notes()
 			self._note_selector.update_notes()
@@ -860,11 +861,9 @@ class StepSequencerComponent(CompoundComponent):
 			
 #PLAY POSITION
 	def _on_playing_status_changed(self): #playing status changed listener
-		if self._clip != None:
-			if self._clip.playing_position_has_listener(self._on_playing_position_changed):
-				self._clip.remove_playing_position_listener(self._on_playing_position_changed)
+		#if self._clip != None:
 			#if self._clip.is_playing:
-			self._clip.add_playing_position_listener(self._on_playing_position_changed)
+		pass
 
 	def _on_playing_position_changed(self): #playing position changed listener
 		if self.is_enabled() and self._clip != None and self._clip.is_playing and self.song().is_playing:
@@ -874,7 +873,7 @@ class StepSequencerComponent(CompoundComponent):
 			self._note_editor.set_playhead(self._playhead)
 			self._note_editor.update()
 
-#drum_group_device
+#DRUM_GROUP_DEVICE
 	def _update_drum_group_device(self):
 		if self.song().view.selected_track != None:
 			track = self.song().view.selected_track
@@ -1151,6 +1150,7 @@ class StepSequencerComponent(CompoundComponent):
 					clip_slot.create_clip(QUANTIZATION_MAP[self._quantization_index]*8)
 				self._detect_scale_mode()
 				clip_slot.fire()
+				self.on_clip_slot_changed()
 				self.update()
 		
 	def log_message(self, msg):
