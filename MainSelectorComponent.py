@@ -287,9 +287,9 @@ class MainSelectorComponent(ModeSelectorComponent):
 				self._activate_matrix(True)
 				self._activate_navigation_buttons(True)
  				self._device_controller._is_active = True
+				self._config_button.send_value(32)
 				self._device_controller.set_enabled(True)
 				self._device_controller.update()
-				self._config_button.send_value(32)
  			else:
 				self._device_controller._is_active = False
 				self._device_controller.set_enabled(False)
