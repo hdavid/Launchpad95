@@ -118,7 +118,7 @@ class DeviceControllerComponent(DeviceComponent):
 	def update(self):
 		if self.is_enabled():
 			if(not self._locked_to_device):
-				if(self._device==None):
+				if(self._device!=None):
 					if ((not self.application().view.is_view_visible('Detail')) or (not self.application().view.is_view_visible('Detail/DeviceChain'))):
  						self.application().view.show_view('Detail')
  						self.application().view.show_view('Detail/DeviceChain')
