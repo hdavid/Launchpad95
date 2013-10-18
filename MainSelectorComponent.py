@@ -300,11 +300,11 @@ class MainSelectorComponent(ModeSelectorComponent):
 	def _setup_user_mode(self, release_matrix=True, release_side_buttons=True, release_nav_buttons = True, drum_rack_mode = True):
 	
 		for scene_index in range(8):
-			if(release_side_buttons):
-				scene_button = self._side_buttons[scene_index]
-				scene_button.set_on_off_values(127, LED_OFF)
-				scene_button.turn_off()
-				scene_button.set_enabled((not release_side_buttons))
+			scene_button = self._side_buttons[scene_index]
+			scene_button.set_on_off_values(127, LED_OFF)
+			scene_button.force_next_send()
+			scene_button.turn_off()
+			scene_button.set_enabled((not release_side_buttons))
 				
 			for track_index in range(8):
 				button = self._matrix.get_button(track_index, scene_index)
@@ -313,10 +313,9 @@ class MainSelectorComponent(ModeSelectorComponent):
 				button.set_enabled((not release_matrix))
 
 		for button in self._nav_buttons:
-			if(release_nav_buttons):
-				button.set_on_off_values(127, LED_OFF)
-				button.turn_off()
-				button.set_enabled((not release_nav_buttons))
+			button.set_on_off_values(127, LED_OFF)
+			button.turn_off()
+			button.set_enabled((not release_nav_buttons))
 
 		if drum_rack_mode:
 			self._config_button.send_value(2)
@@ -363,6 +362,9 @@ class MainSelectorComponent(ModeSelectorComponent):
 				clip_slot.set_stopped_value(AMBER_FULL)
 				clip_slot.set_started_value(GREEN_FULL)
 				clip_slot.set_recording_value(RED_FULL)
+				clip_slot.set_record_button_value(RED_THIRD)
+				clip_slot.set_clip_palette(CLIP_COLOR_TABLE)
+				#clip_slot.set_clip_rgb_table(RGB_COLOR_TABLE)
 				clip_slot.name = str(track_index) + '_Clip_Slot_' + str(scene_index)
 				self._all_buttons.append(self._matrix.get_button(track_index, scene_index))
 
@@ -394,3 +396,65 @@ class MainSelectorComponent(ModeSelectorComponent):
 		for button in self._all_buttons:
 			button.set_channel(new_channel)
 			button.set_force_next_value()
+
+
+CLIP_COLOR_TABLE = {15549221: AMBER_FULL,
+ 12411136: AMBER_FULL,
+ 11569920: AMBER_FULL,
+ 8754719: AMBER_FULL,
+ 5480241: AMBER_FULL,
+ 695438: AMBER_FULL,
+ 31421: AMBER_FULL,
+ 197631: AMBER_FULL,
+ 3101346: AMBER_FULL,
+ 6441901: AMBER_FULL,
+ 8092539: AMBER_FULL,
+ 3947580: AMBER_FULL,
+ 16712965: AMBER_FULL,
+ 12565097: AMBER_FULL,
+ 10927616: AMBER_FULL,
+ 8046132: AMBER_FULL,
+ 4047616: AMBER_FULL,
+ 49071: AMBER_FULL,
+ 1090798: AMBER_FULL,
+ 5538020: AMBER_FULL,
+ 8940772: AMBER_FULL,
+ 10701741: AMBER_FULL,
+ 12008809: AMBER_FULL,
+ 9852725: AMBER_FULL,
+ 16149507: AMBER_FULL,
+ 12581632: AMBER_FULL,
+ 8912743: AMBER_FULL,
+ 1769263: AMBER_FULL,
+ 2490280: AMBER_FULL,
+ 6094824: AMBER_FULL,
+ 1698303: AMBER_FULL,
+ 9160191: AMBER_FULL,
+ 9611263: AMBER_FULL,
+ 12094975: AMBER_FULL,
+ 14183652: AMBER_FULL,
+ 16726484: AMBER_FULL,
+ 16753961: AMBER_FULL,
+ 16773172: AMBER_FULL,
+ 14939139: AMBER_FULL,
+ 14402304: AMBER_FULL,
+ 12492131: AMBER_FULL,
+ 9024637: AMBER_FULL,
+ 8962746: AMBER_FULL,
+ 10204100: AMBER_FULL,
+ 8758722: AMBER_FULL,
+ 13011836: AMBER_FULL,
+ 15810688: AMBER_FULL,
+ 16749734: AMBER_FULL,
+ 16753524: AMBER_FULL,
+ 16772767: AMBER_FULL,
+ 13821080: AMBER_FULL,
+ 12243060: AMBER_FULL,
+ 11119017: AMBER_FULL,
+ 13958625: AMBER_FULL,
+ 13496824: AMBER_FULL,
+ 12173795: AMBER_FULL,
+ 13482980: AMBER_FULL,
+ 13684944: AMBER_FULL,
+ 14673637: AMBER_FULL,
+ 16777215: AMBER_BLINK}
