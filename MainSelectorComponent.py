@@ -27,7 +27,6 @@ class MainSelectorComponent(ModeSelectorComponent):
 		assert isinstance(config_button, ButtonElement)
 		ModeSelectorComponent.__init__(self)
 		self._parent = parent
-		self._compact = False
 		self._session = SpecialSessionComponent(matrix.width(), matrix.height())
 		self._zooming = SessionZoomingComponent(self._session)
 		self._session.name = 'Session_Control'
@@ -126,53 +125,26 @@ class MainSelectorComponent(ModeSelectorComponent):
 
 
 	def channel_for_current_mode(self):
-		if self._compact:
-		
-			if self._mode_index==0:
-				new_channel =  2 #session 
+		if self._mode_index==0:
+			new_channel =  0 #session 
 
-			elif self._mode_index==1:
-				if self._sub_mode_index[self._mode_index]==0:
-					new_channel = 2 #instrument controller 11,12,13,14
-					if self._instrument_controller != None:
-						self._instrument_controller.base_channel = new_channel
-				elif self._sub_mode_index[self._mode_index]==1:
-					new_channel = 2 #device controler
-				else : 
-					new_channel = 0 #plain user mode 1
+		elif self._mode_index==1:
+			if self._sub_mode_index[self._mode_index]==0:
+				new_channel= 11 #instrument controller 11,12,13,14
+			elif self._sub_mode_index[self._mode_index]==1:
+				new_channel = 3 #device controler
+			else : 
+				new_channel = 4 #plain user mode 1
 
-			elif self._mode_index==2:
-				if self._sub_mode_index[self._mode_index]==0:	
-					new_channel = 1 #user 2
-				else:
-					new_channel = 2 + self._sub_mode_index[self._mode_index] #step seq 2,3
+		elif self._mode_index==2:
+			if self._sub_mode_index[self._mode_index]==0:	
+				new_channel = 5 #user 2
+			else:
+				new_channel = 1 + self._sub_mode_index[self._mode_index] #step seq 1,2
 
-			elif self._mode_index==3: #mixer modes
-				new_channel = 2 + self._sub_modes.mode() # 2,3,4,5,6
-				
-		else:
-			
-			if self._mode_index==0:
-				new_channel =  0 #session 
+		elif self._mode_index==3: #mixer modes
+			new_channel = 6 + self._sub_modes.mode() # 6,7,8,9,10
 
-			elif self._mode_index==1:
-				if self._sub_mode_index[self._mode_index]==0:
-					new_channel = 11 #instrument controller 11,12,13,14
-					if self._instrument_controller != None:
-						self._instrument_controller.base_channel = new_channel
-				elif self._sub_mode_index[self._mode_index]==1:
-					new_channel = 3 #device controler
-				else : 
-					new_channel = 4 #plain user mode 1
-
-			elif self._mode_index==2:
-				if self._sub_mode_index[self._mode_index]==0:	
-					new_channel = 5 #user 2
-				else:
-					new_channel = 1 + self._sub_mode_index[self._mode_index] #step seq 1,2
-
-			elif self._mode_index==3: #mixer modes
-				new_channel = 6 + self._sub_modes.mode() # 6,7,8,9,10
 		return new_channel
 
 	def update(self):

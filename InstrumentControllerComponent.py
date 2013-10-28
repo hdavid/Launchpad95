@@ -24,7 +24,6 @@ class InstrumentControllerComponent(CompoundComponent):
 		self._side_buttons=side_buttons
 		self._remaining_buttons = []
 		self._track_controller = None
-		self.base_channel = 11
 		
 		self._drum_group_device  = None
 		self._octave_up_button = None
@@ -188,15 +187,16 @@ class InstrumentControllerComponent(CompoundComponent):
 			pass
 		else:
 			
-			feedback_channels = [self.base_channel,self.base_channel+1,self.base_channel+2]
-			non_feedback_channel = self.base_channel+3
-			self._parent._parent.set_feedback_channels(feedback_channels)
+			BASE_CHANNEL = 11
+			FEEDBACK_CHANNELS = [11,12,13]
+			NON_FEEDBACK_CHANNEL = 14
+			self._parent._parent.set_feedback_channels(FEEDBACK_CHANNELS)
 			self._parent._parent.set_controlled_track(self.song().view.selected_track)
 			
 			# create array to keep last channel used for note.
 			note_channel = range(128)
 			for i in range(128):
-				note_channel[i]=self.base_channel
+				note_channel[i]=BASE_CHANNEL
 				
 			#select drumrack device
 			self._get_drumrack_device()
@@ -209,7 +209,7 @@ class InstrumentControllerComponent(CompoundComponent):
 				
 			for button, (x, y) in self._matrix.iterbuttons():
 				button.use_default_message()
-				button.set_channel(non_feedback_channel)
+				button.set_channel(NON_FEEDBACK_CHANNEL)
 				button.force_next_send()
 					
 			if self._scales.is_drumrack():
@@ -254,7 +254,7 @@ class InstrumentControllerComponent(CompoundComponent):
 							button.set_identifier(note_info.index)
 							note_channel[note_info.index]=note_channel[note_info.index]+1
 						else:
-							button.set_channel(non_feedback_channel)
+							button.set_channel(NON_FEEDBACK_CHANNEL)
 							button.set_on_off_values(LED_OFF, LED_OFF)
 							button.set_light(note_info.color)
 							button.set_enabled(True)
@@ -265,7 +265,7 @@ class InstrumentControllerComponent(CompoundComponent):
 			for button in self._side_buttons:
 					button.use_default_message()
 					#button.turn_off()
-					button.set_channel(non_feedback_channel)
+					button.set_channel(NON_FEEDBACK_CHANNEL)
 					button.set_enabled(True)
 					#button.set_identifier(120+i)
 					button.force_next_send()
