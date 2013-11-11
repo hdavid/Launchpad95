@@ -433,6 +433,10 @@ class LoopSelectorComponent(ControlSurfaceComponent):
 	@property
 	def _is_shifted(self):
 		return self._parent._is_shifted
+		
+	@property
+	def _is_velocity_shifted(self):
+		return self._parent._note_editor._is_velocity_shifted
 	
 	@property
 	def _quantization(self):
@@ -507,8 +511,17 @@ class LoopSelectorComponent(ControlSurfaceComponent):
 						end = self._loop_point2
 					end=end+1
 					self._block = start
-					if self._is_shifted or setloop:
-						self.set_clip_loop(start * self._blocksize * self._quantization, end * self._blocksize * self._quantization)
+					if setloop:
+						if self._is_shifted:
+							if self._is_velocity_shifted:
+								self._mute_notes_in_range(start * self._blocksize * self._quantization, end * self._blocksize * self._quantization)
+							else:
+								self._delete_notes_in_range(start * self._blocksize * self._quantization, end * self._blocksize * self._quantization)
+						else:
+							if self._is_velocity_shifted:					
+								self._extend_clip_content(start * self._blocksize * self._quantization, self._loop_end , end * self._blocksize * self._quantization)
+							self.set_clip_loop(start * self._blocksize * self._quantization, end * self._blocksize * self._quantization)
+
 					self._parent._note_editor.set_page(self._block/4)
 					self._parent._note_editor.update()
 					self._loop_point1=-1
@@ -563,8 +576,58 @@ class LoopSelectorComponent(ControlSurfaceComponent):
 				i=i+1
 
 
-
-
+	def _extend_clip_content(self, loop_start, old_loop_end, new_loop_end):
+		if(self._no_notes_in_range(old_loop_end, new_loop_end, True)):
+			clip_looping_length = 0
+			if(old_loop_end>1):
+				power = 1
+				while(power*2 < old_loop_end ):
+					power*=2
+				clip_looping_length = (power)
+			clone_length = new_loop_end-old_loop_end
+			if(clip_looping_length>0):
+				clone_start_point = (old_loop_end%clip_looping_length)
+			else:
+				clone_start_point = 0
+			self._copy_notes_in_range(clone_start_point, clone_start_point+ clone_length, old_loop_end)
+			self._parent._note_editor.update()
+	
+	def _no_notes_in_range(self, start, end, or_after):
+		note_cache = list(self._parent._note_editor._clip_notes)
+		for note in note_cache:
+			if note[1]>=start and (note[1]<end or or_after):
+				return(False)
+		return(True)
+		
+	def _delete_notes_in_range(self, start, end):
+		note_cache = list(self._parent._note_editor._clip_notes)
+		new_notes = list()
+		for note in note_cache:
+			if note[1]<start or note[1]>=end:
+				new_notes.append(note)
+		self._parent._clip.select_all_notes()
+		self._parent._clip.replace_selected_notes(tuple(new_notes))
+		self._parent._note_editor.update()
+		
+	def _mute_notes_in_range(self, start, end):
+		note_cache = list(self._parent._note_editor._clip_notes)
+		new_notes = list()
+		for note in note_cache:
+			if note[1]<start or note[1]>=end:
+				new_notes.append(note)
+			else:
+				new_notes.append([note[0], note[1], note[2], note[3], not note[4]])
+		self._parent._clip.select_all_notes()
+		self._parent._clip.replace_selected_notes(tuple(new_notes))
+		self._parent._note_editor.update()
+		
+	def _copy_notes_in_range(self, start, end, new_start):
+		note_cache = list(self._parent._note_editor._clip_notes)
+		for note in note_cache:
+			if note[1]>=start and note[1]<end:
+					note_cache.append([note[0], note[1]+new_start-start, note[2], note[3], note[4]])
+		self._parent._clip.select_all_notes()
+		self._parent._clip.replace_selected_notes(tuple(note_cache))
 
 
 class StepSequencerComponent(CompoundComponent):

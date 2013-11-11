@@ -17,6 +17,11 @@ VELOCITY_COLOR_MAP = [GREEN_THIRD,GREEN_HALF,GREEN_FULL]
 
 LONG_BUTTON_PRESS=0.500
 
+# self._clip_notes = self._clip.get_notes(time_start, self._note_index, time_length, 1)
+# self._sequencer_clip.remove_notes(time, self._note_index, length, 1)
+# note = (pitch, time, self._get_step_length(), velocity, mute)
+# self._sequencer_clip.set_notes((note,))
+
 class NoteEditorComponent(ControlSurfaceComponent):
 
 	def __init__(self, parent, matrix):
