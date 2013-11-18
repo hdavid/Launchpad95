@@ -706,8 +706,14 @@ class StepSequencerComponent(CompoundComponent):
 
 		#lock
 		self._is_locked = False
+		self._lock_to_track = False
+		self._last_lock_button_press = int(round(time.time() * 1000))
+		self._long_press = 500
 		self._lock_button = None
 		self.set_lock_button(side_buttons[4])
+		self._selected_track = None
+		
+		self.on_clip_slot_changed()
 
 	def disconnect(self):
 		self._parent = None
@@ -743,7 +749,7 @@ class StepSequencerComponent(CompoundComponent):
 				self._detect_scale_mode()
 			self._track_controller.set_enabled(enabled)
 			#update clip
-			self.on_clip_slot_changed()
+			#self.on_clip_slot_changed()
 			CompoundComponent.set_enabled(self,enabled)
 			
 		else:
@@ -834,10 +840,10 @@ class StepSequencerComponent(CompoundComponent):
 		self.update()
 	
 	def on_selected_track_changed(self):
-		if not self._is_locked or self._clip == None:
+		if not self._lock_to_track or not self._is_locked or self._clip == None:
 			self._detect_scale_mode()
-		self.on_clip_slot_changed()
-		self.update()
+			self.on_clip_slot_changed()
+			self.update()
 
 	def _on_loop_changed(self): 
 		if self.is_enabled() and self._clip != None:
@@ -852,10 +858,20 @@ class StepSequencerComponent(CompoundComponent):
 		
 
 	def on_clip_slot_changed(self):
+		clip_slot = None
 		
-		#update clip slot only if not locked
-		clip_slot = self.song().view.highlighted_clip_slot
-		if not self._is_locked and clip_slot != self._clip_slot or self._clip_slot == None:
+		#update track if not track locked
+		if not self._lock_to_track or self._selected_track == None:
+			self._selected_track = self.song().view.selected_track
+			
+		#update scene if not locked
+		if self._selected_track != None:
+			idx = list(self.song().scenes).index(self.song().view.selected_scene)
+			if(idx != -1):
+				clip_slot = self._selected_track.clip_slots[idx]
+				
+		#update clip slot
+		if clip_slot != self._clip_slot or self._clip_slot == None:			
 			#self._parent._parent.log_message("update clip_slot")
 			if clip_slot !=None and clip_slot.has_clip_has_listener(self.on_clip_slot_has_clip_changed):
 				clip_slot.remove_has_clip_listener(self.on_clip_slot_has_clip_changed)
@@ -1104,7 +1120,10 @@ class StepSequencerComponent(CompoundComponent):
 		if self.is_enabled():
 			if self._lock_button != None:
 				if self._clip != None:
-					self._lock_button.set_on_off_values(RED_FULL,RED_THIRD)
+					if self._lock_to_track:
+						self._lock_button.set_on_off_values(AMBER_FULL,AMBER_THIRD)
+					else:
+						self._lock_button.set_on_off_values(RED_FULL,RED_THIRD)
 					if self._is_locked:
 						self._lock_button.turn_on()
 					else:
@@ -1128,8 +1147,16 @@ class StepSequencerComponent(CompoundComponent):
 		assert (self._lock_button != None)
 		assert (value in range(128))
 		if self.is_enabled() and self._clip!=None:
-			if ((value is not 0) or (not sender.is_momentary())):
-				self._is_locked = (not self._is_locked) 
+			now = int(round(time.time() * 1000))
+			if ((value != 0) or (not self._lock_button.is_momentary())):
+				self._last_lock_button_press=now
+			else:
+				if now-self._last_lock_button_press > self._long_press:
+					self._lock_to_track = (not self._lock_to_track)
+					if not self._is_locked:
+						self._is_locked = True
+				else:
+					self._is_locked = (not self._is_locked) 
 				self._update_lock_button()
 
 
