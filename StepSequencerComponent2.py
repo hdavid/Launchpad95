@@ -20,7 +20,7 @@ STEPSEQ_MODE_COMBINED=1
 STEPSEQ_MODE_MULTINOTE=2
 STEPSEQ_MODE_SCALE_EDIT=3
 
-LONG_BUTTON_PRESS=0.500
+LONG_BUTTON_PRESS=1.0
 
 class NoteSelectorComponent(ControlSurfaceComponent):
 
@@ -855,18 +855,44 @@ class StepSequencerComponent(CompoundComponent):
 			self._is_locked = False
 		self.on_clip_slot_changed()
 		self.update()
-		
 
-	def on_clip_slot_changed(self):
-		clip_slot = None
+	def on_clip_slot_changed(self, scheduled = False):
+		
+		#get old reference to clipslot
+		clip_slot = self._clip_slot
 		
 		#update track if not track locked
-		if not self._lock_to_track or self._selected_track == None:
+		if not self._is_locked or self._selected_track == None:
 			self._selected_track = self.song().view.selected_track
-			
-		#update scene if not locked
+		
+		#update scene
 		if self._selected_track != None:
-			idx = list(self.song().scenes).index(self.song().view.selected_scene)
+			idx = -1
+			if self._lock_to_track and self._is_locked:
+				#track locked mode
+				
+				#schedule a refresh as scene fire happens after scene selection 
+				#so that we can catch the clip scheduled for playing
+				if not scheduled:
+					self._parent._parent.schedule_message(5, self.on_clip_slot_changed, (True))	
+				
+				#locate with clip pending fire				
+				for i in range(len(self.song().scenes)):
+					if self._selected_track.clip_slots[i].has_clip and self._selected_track.clip_slots[i].clip.is_triggered:
+						idx = i
+				#no tirggered clip, locate with playing clip
+				if idx == -1:		
+					for i in range(len(self.song().scenes)):
+						if self._selected_track.clip_slots[i].has_clip and self._selected_track.clip_slots[i].clip.is_playing:
+							idx = i
+				#fallback: use scene selection
+				if idx == -1:
+					idx = list(self.song().scenes).index(self.song().view.selected_scene)
+					
+			#unlocked mode
+			if not self._is_locked:
+				idx = list(self.song().scenes).index(self.song().view.selected_scene)
+				
 			if(idx != -1):
 				clip_slot = self._selected_track.clip_slots[idx]
 				
