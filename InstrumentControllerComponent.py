@@ -52,17 +52,37 @@ class InstrumentControllerComponent(CompoundComponent):
 		self.set_matrix(matrix)
 		self._scales.set_parent(self)
 		self._scales.set_matrix(matrix)
+		
+		self._on_session_record_changed.subject = self.song()
 
 	def set_enabled(self, enabled):
 		CompoundComponent.set_enabled(self,enabled)
-		self._track_controller.set_enabled(enabled)
+		if self._track_controller!=None:
+			self._track_controller.set_enabled(enabled)
+		
 		if not enabled:
+			self._parent._parent.release_controlled_track()
 			self._parent._parent.set_feedback_channels([])
-			
+		else:
+			feedback_channels = [self.base_channel,self.base_channel+1,self.base_channel+2]
+			non_feedback_channel = self.base_channel+3
+			self._set_feedback_velocity()
+			self._parent._parent.set_controlled_track(self.song().view.selected_track)
+			self._parent._parent.set_feedback_channels(feedback_channels)
+		
 		if self._track_controller!=None:
 			self._track_controller._do_auto_arm(enabled)
 			self._track_controller.set_enabled(enabled)
-		#self.update()
+		
+	def _set_feedback_velocity(self):
+		if self.song().session_record:
+			self._parent._parent._c_instance.set_feedback_velocity(RED_FULL)
+		else:
+			self._parent._parent._c_instance.set_feedback_velocity(AMBER_FULL)
+	
+	@subject_slot('session_record')
+	def _on_session_record_changed(self):
+		self._set_feedback_velocity()
 
 	def set_scales_toggle_button(self, button):
 		assert isinstance(button, (ButtonElement,type(None)))
@@ -183,15 +203,11 @@ class InstrumentControllerComponent(CompoundComponent):
 	def _update_matrix(self):
 		
 		if not self.is_enabled() or not self._matrix or self._scales.is_enabled():
-			#self._parent._parent.set_controlled_track(None)
+			self._parent._parent.release_controlled_track()
 			#self._parent._parent.set_feedback_channels([])
-			pass
 		else:
-			
 			feedback_channels = [self.base_channel,self.base_channel+1,self.base_channel+2]
 			non_feedback_channel = self.base_channel+3
-			self._parent._parent.set_feedback_channels(feedback_channels)
-			self._parent._parent.set_controlled_track(self.song().view.selected_track)
 			
 			# create array to keep last channel used for note.
 			note_channel = range(128)
@@ -221,6 +237,7 @@ class InstrumentControllerComponent(CompoundComponent):
 							note = 12 * self._scales._octave_index + x + 4 * (7-y)
 						else:
 							note = 12 * self._scales._octave_index + 32 + x-4 + 4 * (7-y)
+							
 						if note<128 and note >=0:
 							if self._drum_group_device != None and self._drum_group_device.can_have_drum_pads and self._drum_group_device.has_drum_pads and self._drum_group_device.drum_pads[note].chains:
 								button.set_on_off_values(RED_FULL, GREEN_THIRD)
@@ -299,4 +316,4 @@ class InstrumentControllerComponent(CompoundComponent):
 			else:
 				steps = [interval, 1]
 				origin = [0, origin]
-			return MelodicPattern(steps=steps, scale=notes, origin=origin, base_note=self._scales._octave_index * 12, chromatic_mode=self._scales.is_chromatic())
+			return MelodicPattern(steps=steps, scale=notes, origin=origin, base_note=self._scales._octave_index * 12, base_note_color=self._scales.get_base_note_color(), scale_note_color=self._scales.get_scale_note_color(), chromatic_mode=self._scales.is_chromatic(), chromatic_gtr_mode=self._scales.is_chromatic_gtr(), diatonic_ns_mode=self._scales.is_diatonic_ns())

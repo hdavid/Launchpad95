@@ -97,7 +97,7 @@ class Modus(Scale):
 
 class MelodicPattern(object):
 
-	def __init__(self, steps = [0, 0], scale = range(12), base_note = 0, origin = [0, 0], valid_notes = xrange(128), base_note_color = RED_THIRD, scale_note_color = GREEN_THIRD, foreign_note_color = LED_OFF, invalid_note_color = LED_OFF, chromatic_mode = False, *a, **k):
+	def __init__(self, steps = [0, 0], scale = range(12), base_note = 0, origin = [0, 0], valid_notes = xrange(128), base_note_color = GREEN_HALF, scale_note_color = AMBER_THIRD, foreign_note_color = LED_OFF, invalid_note_color = LED_OFF, chromatic_mode = False, chromatic_gtr_mode = False, diatonic_ns_mode = False, *a, **k):
 		super(MelodicPattern, self).__init__(*a, **k)
 		self.steps = steps
 		self.scale = scale
@@ -109,6 +109,8 @@ class MelodicPattern(object):
 		self.foreign_note_color = foreign_note_color
 		self.invalid_note_color = invalid_note_color
 		self.chromatic_mode = chromatic_mode
+		self.chromatic_gtr_mode = chromatic_gtr_mode
+		self.diatonic_ns_mode = diatonic_ns_mode
 
 	class NoteInfo:
 
@@ -124,9 +126,16 @@ class MelodicPattern(object):
 			return self.scale
 
 	def _octave_and_note(self, x, y):
-		index = self.steps[0] * (self.origin[0] + x) + self.steps[1] * (self.origin[1] + y)
 		scale = self._extended_scale
 		scale_size = len(scale)
+		if self.chromatic_mode:		
+			self.steps[1] = 5
+		else:
+			if self.diatonic_ns_mode:
+				self.steps[1] = scale_size			
+		index = self.steps[0] * (self.origin[0] + x) + self.steps[1] * (self.origin[1] + y)
+		if self.chromatic_gtr_mode and y > 3:
+			index = index - 1
 		octave = index / scale_size
 		note = scale[index % scale_size]
 		return (octave, note)
@@ -156,9 +165,13 @@ class ScalesComponent(ControlSurfaceComponent):
 		self._selected_modus = 0
 		self._selected_key = 0
 		self._is_chromatic = False
+		self._is_chromatic_gtr = False #variable for chromatic guitar mode
 		self._is_diatonic = True
+		self._is_diatonic_ns = False  #variable for diatonic non-staggered mode
 		self._is_drumrack = False
 		self.is_absolute = False
+		self.base_note_color = AMBER_THIRD
+		self.scale_note_color = GREEN_THIRD
 		self._presets = InstrumentPresetsComponent()
 		self._matrix = None
 		self._octave_index = 3
@@ -170,23 +183,53 @@ class ScalesComponent(ControlSurfaceComponent):
 		self._parent = parent
 		
 	def is_diatonic(self):
-		return not self._is_drumrack and self._is_diatonic
-
+		return not self._is_drumrack and (self._is_diatonic or self._is_diatonic_ns)
+	
 	def is_chromatic(self):
-		return not self._is_drumrack and self._is_chromatic
+		return not self._is_drumrack and (self._is_chromatic or self._is_chromatic_gtr)
+	
+	def is_diatonic_ns(self):
+		return self._is_diatonic_ns
+
+	def is_chromatic_gtr(self):
+		return self._is_chromatic_gtr
 
 	def is_drumrack(self):
 		return self._is_drumrack
+	
+	def get_base_note_color(self):
+		return self.base_note_color
+	
+	def get_scale_note_color(self):
+		return self.scale_note_color
 		
 	def set_diatonic(self):
 	 	self._is_drumrack=False
 		self._is_chromatic=False
+		self._is_chromatic_gtr=False
 		self._is_diatonic=True
+		self._is_diatonic_ns=False
+		
+	def set_diatonic_ns(self):
+		self._is_drumrack=False
+		self._is_chromatic=False
+		self._is_chromatic_gtr=False
+		self._is_diatonic=False
+		self._is_diatonic_ns=True
 
 	def set_chromatic(self):
 		self._is_drumrack=False
 		self._is_chromatic=True
+		self._is_chromatic_gtr=False
 		self._is_diatonic=False
+		self._is_diatonic_ns=False
+		
+	def set_chromatic_gtr(self):
+		self._is_drumrack=False
+		self._is_chromatic=False
+		self._is_chromatic_gtr=True
+		self._is_diatonic=False
+		self._is_diatonic_ns=False
 
 	def set_drumrack(self,value):
 		self._is_drumrack=value
@@ -239,6 +282,11 @@ class ScalesComponent(ControlSurfaceComponent):
 						self.set_chromatic()
 					if x==5:
 						self.set_diatonic()
+					if x==4:
+						self.set_chromatic_gtr()
+					if x==3:
+						self.set_diatonic_ns()
+				
 						
 				if y==1 and x<7 and not self.is_drumrack():
 					self.set_key((self._index[x]+1)%12)
@@ -262,7 +310,7 @@ class ScalesComponent(ControlSurfaceComponent):
 				button.force_next_send()
 				
 			#display chromatic / diatonic / drumrack
-			for i in range(5):
+			for i in range(3):
 				self._matrix.get_button(i, 0).set_on_off_values(LED_OFF,LED_OFF)
 				self._matrix.get_button(i, 0).turn_off()
 			
@@ -283,20 +331,43 @@ class ScalesComponent(ControlSurfaceComponent):
 			diatonic_button.set_on_off_values(RED_FULL,RED_THIRD)
 			diatonic_button.force_next_send()
 			
+			chromatic_gtr_button  = self._matrix.get_button(4, 0)
+			chromatic_gtr_button.set_on_off_values(RED_FULL,RED_THIRD)
+			chromatic_gtr_button.force_next_send()
+			
+			diatonic_ns_button  = self._matrix.get_button(3, 0)
+			diatonic_ns_button.set_on_off_values(RED_FULL,RED_THIRD)
+			diatonic_ns_button.force_next_send()
+			
+			
 			#mode buttons
 			if self.is_drumrack():
 				drumrack_button.turn_on()
+				chromatic_gtr_button.turn_off()
+				diatonic_ns_button.turn_off()
 				chromatic_button.turn_off()
 				diatonic_button.turn_off()
 			else:
 				drumrack_button.turn_off()
 				if self.is_chromatic():
-					chromatic_button.turn_on()
+					if self.is_chromatic_gtr():
+						chromatic_button.turn_off()
+						chromatic_gtr_button.turn_on()
+					else:
+						chromatic_button.turn_on()
+						chromatic_gtr_button.turn_off()
 					diatonic_button.turn_off()
+					diatonic_ns_button.turn_off()
 				else:
 					chromatic_button.turn_off()
-					diatonic_button.turn_on()	
-					
+					chromatic_gtr_button.turn_off()
+					if self.is_diatonic_ns():
+						diatonic_button.turn_off()
+						diatonic_ns_button.turn_on()
+					else:
+						diatonic_button.turn_on()
+						diatonic_ns_button.turn_off()
+				
 			#Octave
 			scene_index=3		
 			for track_index in range(8):
@@ -355,4 +426,5 @@ class ScalesComponent(ControlSurfaceComponent):
 						else:
 							button.set_on_off_values(LED_OFF,LED_OFF)
 							button.turn_off()
+						
 

@@ -749,7 +749,7 @@ class StepSequencerComponent(CompoundComponent):
 				self._detect_scale_mode()
 			self._track_controller.set_enabled(enabled)
 			#update clip
-			#self.on_clip_slot_changed()
+			self.on_clip_slot_changed()
 			CompoundComponent.set_enabled(self,enabled)
 			
 		else:
