@@ -893,7 +893,7 @@ class StepSequencerComponent(CompoundComponent):
 			if not self._is_locked:
 				idx = list(self.song().scenes).index(self.song().view.selected_scene)
 				
-			if(idx != -1):
+			if(idx != -1 and idx<len(list(self._selected_track.clip_slots))):
 				clip_slot = self._selected_track.clip_slots[idx]
 				
 		#update clip slot
