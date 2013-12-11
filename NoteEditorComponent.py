@@ -7,20 +7,6 @@ from _Framework.SessionComponent import SessionComponent
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
 import time
 
-#metronome
-DISPLAY_METRONOME = True
-METRONOME_COLOUR = AMBER_FULL
-
-#Velocity colour map. this must remain of lengh 3.
-VELOCITY_MAP = [70,90,110]
-VELOCITY_COLOR_MAP = [GREEN_THIRD,GREEN_HALF,GREEN_FULL]
-
-LONG_BUTTON_PRESS=0.500
-
-# self._clip_notes = self._clip.get_notes(time_start, self._note_index, time_length, 1)
-# self._sequencer_clip.remove_notes(time, self._note_index, length, 1)
-# note = (pitch, time, self._get_step_length(), velocity, mute)
-# self._sequencer_clip.set_notes((note,))
 
 class NoteEditorComponent(ControlSurfaceComponent):
 
@@ -28,7 +14,20 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		ControlSurfaceComponent.__init__(self)
 		self.set_enabled(False)
 		self._parent = parent
+		
+		#metronome
+		self.display_metronome = True
+		self.metronome_color = AMBER_FULL
 
+		#Velocity colour map. this must remain of lengh 3.
+		self.velocity_map = [70,90,110]
+		self.velocity_color_map = [GREEN_THIRD,GREEN_HALF,GREEN_FULL]
+		#other colors
+		self.muted_note_color = RED_THIRD
+		self.playing_note_color = RED_FULL
+
+		self.long_button_press=0.500
+		
 		#buttons
 		self._matrix = None
 		self._mute_shift_button = None
@@ -64,7 +63,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		
 		#velocity
 		self._velocity_index = 2
-		self._velocity = VELOCITY_MAP[self._velocity_index]
+		self._velocity = self.velocity_map[self._velocity_index]
 		self._is_velocity_shifted = False
 		self._velocity_notes_pressed=0
 		self._velocity_last_press=time.time()
@@ -216,9 +215,9 @@ class NoteEditorComponent(ControlSurfaceComponent):
 				play_y_position = int(play_position / self.quantization / self.width)%self.height
 				
 				# add play positition in amber	
-				if(DISPLAY_METRONOME):
+				if(self.display_metronome):
 					if self._clip.is_playing and self.song().is_playing:
-						self._grid_back_buffer[play_x_position][play_y_position] = AMBER_THIRD
+						self._grid_back_buffer[play_x_position][play_y_position] = self.metronome_color
 								
 				if(self._display_page):
 					self._display_selected_page()
@@ -265,22 +264,22 @@ class NoteEditorComponent(ControlSurfaceComponent):
 			
 					if note_grid_x_position>=0:
 						#compute colors
-						highlight_color = RED_FULL
-						for index in range(len(VELOCITY_MAP)):
-							if note_velocity>=VELOCITY_MAP[index]:
-								highlight_color=RED_FULL
-						velocity_color = GREEN_THIRD
-						for index in range(len(VELOCITY_MAP)):
-							if note_velocity>=VELOCITY_MAP[index]:
-								velocity_color=VELOCITY_COLOR_MAP[index]
+						highlight_color = self.playing_note_color
+						for index in range(len(self.velocity_map)):
+							if note_velocity>=self.velocity_map[index]:
+								highlight_color=self.playing_note_color
+						velocity_color = self.velocity_map[0]
+						for index in range(len(self.velocity_map)):
+							if note_velocity>=self.velocity_map[index]:
+								velocity_color=self.velocity_color_map[index]
 						#highligh playing notes in red. even if they are from other pages.
 						if not note_muted and note_page == play_page and play_x_position==note_grid_x_position and (play_y_position==note_grid_y_position and not self.is_multinote or self.is_multinote and note_grid_y_offset==play_row) and self.song().is_playing and self._clip.is_playing:
-							self._grid_back_buffer[note_grid_x_position][note_grid_y_position]=RED_FULL;
+							self._grid_back_buffer[note_grid_x_position][note_grid_y_position]=self.playing_note_color
 						elif note_page == self._page: #if note is in current page, then update grid
 							#do not erase current note highlight
-							if self._grid_back_buffer[note_grid_x_position][note_grid_y_position]!=highlight_color:
+							if self._grid_back_buffer[note_grid_x_position][note_grid_y_position]!=self.playing_note_color:
 								if note_muted:
-									self._grid_back_buffer[note_grid_x_position][note_grid_y_position]=RED_THIRD
+									self._grid_back_buffer[note_grid_x_position][note_grid_y_position]=self.muted_note_color
 								else:
 									self._grid_back_buffer[note_grid_x_position][note_grid_y_position]=velocity_color
 	
@@ -357,10 +356,10 @@ class NoteEditorComponent(ControlSurfaceComponent):
 						if self._is_velocity_shifted:
 							#update velocity of the note
 							new_velocity_index=0
-							for index in range(len(VELOCITY_MAP)):
-								if note[3]>=VELOCITY_MAP[index]:
-									new_velocity_index=(index+1)%len(VELOCITY_MAP)
-							note_cache.append([note[0], note[1], note[2], VELOCITY_MAP[new_velocity_index], note[4]])
+							for index in range(len(self.velocity_map)):
+								if note[3]>=self.velocity_map[index]:
+									new_velocity_index=(index+1)%len(self.velocity_map)
+							note_cache.append([note[0], note[1], note[2], self.velocity_map[new_velocity_index], note[4]])
 						elif not self._is_mute_shifted:
 							note_cache.remove(note)
 						else:
@@ -386,7 +385,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 					self._velocity_button.set_on_off_values(GREEN_FULL,GREEN_THIRD)
 					self._velocity_button.turn_on()
 				else:
-					self._velocity_button.set_on_off_values(VELOCITY_COLOR_MAP[self._velocity_index],LED_OFF)
+					self._velocity_button.set_on_off_values(self.velocity_color_map[self._velocity_index],LED_OFF)
 					self._velocity_button.turn_on()
 			else:
 				self._velocity_button.set_on_off_values(LED_OFF,LED_OFF)
@@ -409,10 +408,10 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		if self.is_enabled():
 			if ((value is 0) or (not sender.is_momentary())):
 				#button released
-				if self._velocity_notes_pressed==0 and time.time()-self._velocity_last_press<LONG_BUTTON_PRESS:
+				if self._velocity_notes_pressed==0 and time.time()-self._velocity_last_press<self.long_button_press:
 					#cycle thru velocities
-					self._velocity_index = (len(VELOCITY_MAP)+self._velocity_index+1)%len(VELOCITY_MAP)
-					self._velocity = VELOCITY_MAP[self._velocity_index]
+					self._velocity_index = (len(self.velocity_map)+self._velocity_index+1)%len(self.velocity_map)
+					self._velocity = self.velocity_map[self._velocity_index]
 				self._is_velocity_shifted = False
 				self._update_velocity_button()
 			if ((value is not 0) or (not sender.is_momentary())):

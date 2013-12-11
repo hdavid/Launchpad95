@@ -25,7 +25,9 @@ class InstrumentControllerComponent(CompoundComponent):
 		self._remaining_buttons = []
 		self._track_controller = None
 		self.base_channel = 11
-		
+		self._normal_feedback_velocity = AMBER_FULL
+		self._recordind_feedback_velocity = RED_FULL
+				
 		self._drum_group_device  = None
 		self._octave_up_button = None
 		self._octave_down_button = None
@@ -76,9 +78,9 @@ class InstrumentControllerComponent(CompoundComponent):
 		
 	def _set_feedback_velocity(self):
 		if self.song().session_record:
-			self._parent._parent._c_instance.set_feedback_velocity(RED_FULL)
+			self._parent._parent._c_instance.set_feedback_velocity(self._recordind_feedback_velocity)
 		else:
-			self._parent._parent._c_instance.set_feedback_velocity(AMBER_FULL)
+			self._parent._parent._c_instance.set_feedback_velocity(self._normal_feedback_velocity)
 	
 	@subject_slot('session_record')
 	def _on_session_record_changed(self):
