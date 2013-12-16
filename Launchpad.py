@@ -146,10 +146,11 @@ class Launchpad(ControlSurface):
 	def build_midi_map(self, midi_map_handle):
 		ControlSurface.build_midi_map(self, midi_map_handle)
 		if self._selector.mode_index == 1:
-			new_channel = self._selector.channel_for_current_mode()
-			#self.log_message(str(new_channel))
-			for note in DRUM_NOTES:
-				self._translate_message(MIDI_NOTE_TYPE, note, 0, note, new_channel)
+			if self._selector._sub_mode_index[self._selector._mode_index] > 0: #disable midi map rebuild for instrument mode to prevent light feedback errors
+				new_channel = self._selector.channel_for_current_mode()
+				#self.log_message(str(new_channel))
+				for note in DRUM_NOTES:
+					self._translate_message(MIDI_NOTE_TYPE, note, 0, note, new_channel)
 
 	def _send_midi(self, midi_bytes, optimized = None):
 		sent_successfully = False
