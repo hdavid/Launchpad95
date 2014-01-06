@@ -840,7 +840,7 @@ class StepSequencerComponent(CompoundComponent):
 		self.update()
 	
 	def on_selected_track_changed(self):
-		if not self._lock_to_track or not self._is_locked or self._clip == None:
+		if not self._is_locked or self._clip == None:
 			self._detect_scale_mode()
 			self.on_clip_slot_changed()
 			self.update()
