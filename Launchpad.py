@@ -16,10 +16,16 @@ class Launchpad(ControlSurface):
 	""" Script for Novation's Launchpad Controller """
 
 	def __init__(self, c_instance):
+		live = Live.Application.get_application()
+		self._live_major_version = live.get_major_version()
+		self._live_minor_version = live.get_minor_version()
+		self._live_bugfix_version = live.get_bugfix_version()
 		ControlSurface.__init__(self, c_instance)
 		with self.component_guard():
 			self._suppress_send_midi = True
 			self._suppress_session_highlight = True
+
+			
 			is_momentary = True
 			self._suggested_input_port = 'Launchpad'
 			self._suggested_output_port = 'Launchpad'
@@ -72,7 +78,7 @@ class Launchpad(ControlSurface):
 			self._suppress_session_highlight = False
 			#self.set_suppress_rebuild_requests(False)
 
-			self.log_message("LaunchPad95 Loaded !")
+			self.log_message("LaunchPad95 Loaded !")	
 	
 	def disconnect(self):
 		self._suppress_send_midi = True

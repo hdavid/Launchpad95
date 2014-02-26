@@ -11,7 +11,8 @@ from DeviceControllerComponent import DeviceControllerComponent
 from SpecialSessionComponent import SpecialSessionComponent
 from InstrumentControllerComponent import InstrumentControllerComponent
 from SubSelectorComponent import *
-from StepSequencerComponent2 import StepSequencerComponent
+from StepSequencerComponent import StepSequencerComponent
+from StepSequencerComponent2 import StepSequencerComponent2
 from _Framework.MomentaryModeObserver import MomentaryModeObserver
 
 class MainSelectorComponent(ModeSelectorComponent):
@@ -45,6 +46,8 @@ class MainSelectorComponent(ModeSelectorComponent):
 		self._sub_modes.name = 'Mixer_Modes'
 		self._sub_modes.set_update_callback(self._update_control_channels)
 		self._stepseq = StepSequencerComponent(self._matrix, self._side_buttons, self._nav_buttons, self)
+		self._stepseq2 = StepSequencerComponent2(self._matrix, self._side_buttons, self._nav_buttons, self)
+		
 		self._instrument_controller = InstrumentControllerComponent( self._matrix, self._side_buttons, self._nav_buttons,self)
 		self._device_controller = DeviceControllerComponent(self._matrix, self._side_buttons, self._nav_buttons, self)
 		self._init_session()
@@ -85,7 +88,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 				self.update()
 			elif self._mode_index==2:
 				#user mode 2  and step sequencer
-				self._sub_mode_index[self._mode_index] = (self._sub_mode_index[self._mode_index]+1)%2
+				self._sub_mode_index[self._mode_index] = (self._sub_mode_index[self._mode_index]+1)%3
 				self.update()
 			elif self._mode_index==3:
 				self.update()
@@ -133,7 +136,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 
 			elif self._mode_index==1:
 				if self._sub_mode_index[self._mode_index]==0:
-					new_channel = 2 #instrument controller 11,12,13,14
+					new_channel = 2 #instrument controller 11,12,13,14,15
 					if self._instrument_controller != None:
 						self._instrument_controller.base_channel = new_channel
 				elif self._sub_mode_index[self._mode_index]==1:
@@ -157,7 +160,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 
 			elif self._mode_index==1:
 				if self._sub_mode_index[self._mode_index]==0:
-					new_channel = 11 #instrument controller 11,12,13,14
+					new_channel = 11 #instrument controller 11,12,13,14,15
 					if self._instrument_controller != None:
 						self._instrument_controller.base_channel = new_channel
 				elif self._sub_mode_index[self._mode_index]==1:
@@ -193,6 +196,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 				self._setup_mixer(not as_active)
 				self._setup_device_controller(not as_active)
 				self._setup_step_sequencer(not as_active)
+				self._setup_step_sequencer2(not as_active)
 				self._setup_instrument_controller(not as_active)
 				self._setup_session(as_active, as_enabled)
 				self._update_control_channels()
@@ -200,6 +204,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 			elif (self._mode_index == 1):
 				self._setup_session(not as_active, not as_enabled)
 				self._setup_step_sequencer(not as_active)
+				self._setup_step_sequencer2(not as_active)
 				self._setup_mixer(not as_active)
 				#user mode + device controller + instrument controller
 				if (self._sub_mode_index[self._mode_index]==0):
@@ -221,14 +226,22 @@ class MainSelectorComponent(ModeSelectorComponent):
 				self._setup_device_controller(not as_active)
 				self._setup_mixer(not as_active)
 				if (self._sub_mode_index[self._mode_index]==0):
+					self._setup_step_sequencer2(not as_active)
+					self._setup_step_sequencer(as_active)
+				elif (self._sub_mode_index[self._mode_index]==1):
 					self._setup_step_sequencer(not as_active)
-					self._setup_user_mode(False, False, False, False)
+					self._setup_step_sequencer2(as_active)				
 				else:
-					self._setup_step_sequencer(as_active, self._sub_mode_index[self._mode_index])
+					self._setup_step_sequencer(not as_active)
+					self._setup_step_sequencer2(not as_active)
+					self._setup_user_mode(False, False, False, False)
+					
+					
 				self._update_control_channels()
 			elif (self._mode_index == 3):
 				self._setup_device_controller(not as_active)
 				self._setup_step_sequencer(not as_active)
+				self._setup_step_sequencer2(not as_active)
 				self._setup_instrument_controller(not as_active)
 				self._setup_session(not as_active, as_enabled)
 				self._setup_mixer(as_active)
@@ -349,11 +362,9 @@ class MainSelectorComponent(ModeSelectorComponent):
 			self._config_button.send_value(2)
 		self._config_button.send_value(32)
 
-
-
-	def _setup_step_sequencer(self, as_active, mode=0):
+	def _setup_step_sequencer(self, as_active):
 		if(self._stepseq!=None):
-			if(self._stepseq.is_enabled()!=as_active or self._stepseq._mode!=mode):
+			if(self._stepseq.is_enabled()!=as_active):
 				if as_active: 
 					self._activate_scene_buttons(True)
 					self._activate_matrix(True)
@@ -362,6 +373,18 @@ class MainSelectorComponent(ModeSelectorComponent):
 					self._stepseq.set_enabled(True)
 				else:
 					self._stepseq.set_enabled(False)
+
+	def _setup_step_sequencer2(self, as_active):
+		if(self._stepseq2!=None):
+			if(self._stepseq2.is_enabled()!=as_active):
+				if as_active: 
+					self._activate_scene_buttons(True)
+					self._activate_matrix(True)
+					self._activate_navigation_buttons(True)
+					self._config_button.send_value(32)
+					self._stepseq2.set_enabled(True)
+				else:
+					self._stepseq2.set_enabled(False)
 
 
 	def _setup_mixer(self, as_active):
@@ -378,7 +401,12 @@ class MainSelectorComponent(ModeSelectorComponent):
 
 
 	def _init_session(self):
-		self._session.set_stop_track_clip_value(AMBER_BLINK)
+		if self._parent._live_major_version >= 9 and self._parent._live_minor_version >= 1 and self._parent._live_bugfix_version >= 2:
+			self._session.set_stop_clip_value(AMBER_THIRD)
+			self._session.set_stop_clip_triggered_value(AMBER_BLINK)
+		else:
+			self._session.set_stop_track_clip_value(AMBER_BLINK)
+		
 		for scene_index in range(self._matrix.height()):
 			scene = self._session.scene(scene_index)
 			scene.set_triggered_value(GREEN_BLINK)

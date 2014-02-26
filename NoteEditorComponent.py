@@ -15,6 +15,11 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		self.set_enabled(False)
 		self._parent = parent
 		
+		self._clip = None
+		self._note_cache = None
+		self._playhead = None
+			
+		
 		#metronome
 		self.display_metronome = True
 		self.metronome_color = AMBER_FULL
@@ -42,7 +47,6 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		self._grid_back_buffer = [[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]
 
 		#time
-		self._playhead = 0
 		self._page = 0
 		self._display_page = False
 		self._display_page_time = time.time()
@@ -54,8 +58,6 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		self._number_of_lines_per_note = 1
 
 		#clip
-		self._clip = None
-		self._clip_notes = []
 		self._force_update = True
 		
 		#quantization
@@ -94,6 +96,12 @@ class NoteEditorComponent(ControlSurfaceComponent):
 	def set_quantization(self,quantization):
 		self._quantization = quantization
 
+	def set_scale(self,scale):
+		self._scale = scale	
+	
+	def set_diatonic(self,diatonic):
+		self._diatonic = diatonic
+		
 	@property
 	def key_indexes(self):
 		return self._key_indexes
@@ -129,28 +137,20 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		self._playhead = playhead
 
 	def set_page(self, page):
-		self._page = page
+		if self.is_multinote:
+			self._page = page
+		else:
+			self._page = page/4 #number of line per note ?
 	
 	def set_clip(self,clip):
-		"""LiveAPI clip.get_selected_notes returns a tuple of tuples where each inner tuple represents a note.
-		The inner tuple contains pitch, time, duration, velocity, and mute state.
-		e.g.: (46, 0.25, 0.25, 127, False)"""
-		if clip!= None:
-			if self._clip != clip:
-				self._clip = clip
-			self._clip.select_all_notes()
-			note_cache = self._clip.get_selected_notes()
-			self._clip.deselect_all_notes()
-			if self._clip_notes != note_cache:
-				self._clip_notes = note_cache
-			if self.is_enabled():
-				self.update()
-		else:
-			if self._clip != clip:
-				self._clip_notes = []
-				self._clip = None
-				if self.is_enabled():
-					self.update()
+		self._clip = clip
+
+	def set_note_cache(self,note_cache):
+		self._note_cache = note_cache
+
+	def set_playhead(self, playhead):
+		self._playhead = playhead
+		self._update_matrix()
 
 	def update_notes(self):
 		if self._clip != None:
@@ -204,16 +204,23 @@ class NoteEditorComponent(ControlSurfaceComponent):
 					self._grid_back_buffer[x][y] = 0
 			
 			#update back buffer
-			if self._clip != None:
+			if self._clip != None and self._note_cache!=None:
 				
 				#play back position
-				play_position = self._clip.playing_position #position in beats (1/4 notes in 4/4 time)
-				play_page = int(play_position / self.quantization / self.width / self.number_of_lines_per_note)
-				play_row = int(play_position / self.quantization / self.width )%  self.number_of_lines_per_note
+				if self._playhead != None:
+					play_position = self._playhead #position in beats (1/4 notes in 4/4 time)
+					play_page = int(play_position / self.quantization / self.width / self.number_of_lines_per_note)
+					play_row = int(play_position / self.quantization / self.width )%  self.number_of_lines_per_note
 				
-				play_x_position = int(play_position / self.quantization)%self.width
-				play_y_position = int(play_position / self.quantization / self.width)%self.height
-				
+					play_x_position = int(play_position / self.quantization)%self.width
+					play_y_position = int(play_position / self.quantization / self.width)%self.height
+				else:
+					play_position = -1
+					play_page = -1
+					play_row = -1
+					play_x_position = -1
+					play_y_position = -1
+					
 				# add play positition in amber	
 				if(self.display_metronome):
 					if self._clip.is_playing and self.song().is_playing:
@@ -227,9 +234,9 @@ class NoteEditorComponent(ControlSurfaceComponent):
 				if self.is_multinote:
 					self._display_note_markers()
 				
-				#self._parent._parent._parent.log_message(self.number_of_lines_per_note)
+
 				#display clip notes
-				for note in self._clip_notes:
+				for note in self._note_cache:
 					note_position = note[1]
 					note_key = note[0] #key: 0-127 MIDI note #
 					note_velocity = note[3]
@@ -319,10 +326,10 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		assert (y in range(self._matrix.height()))
 		assert isinstance(is_momentary, type(False))
 		
-		if self.is_enabled()  and self._clip == None and y < self.height :
+		if self.is_enabled()  and self._clip == None:
 			self._parent.create_clip()
-				
-		if self.is_enabled()  and self._clip != None and y < self.height :
+		
+		elif self.is_enabled()  and self._clip != None and y < self.height :
 			
 			#self._parent._parent._parent.log_message("got: x:"+ str(x)+" y:"+str(y))
 			#self._parent._parent._parent.log_message("clip:"+ str(self._clip))
@@ -347,10 +354,10 @@ class NoteEditorComponent(ControlSurfaceComponent):
 
 				self._clip.select_all_notes()
 				note_cache = self._clip.get_selected_notes()
-				if self._clip_notes != note_cache:
-					self._clip_notes = note_cache
+				if self._note_cache != note_cache:
+					self._note_cache = note_cache
 				
-				note_cache = list(self._clip_notes)
+				note_cache = list(self._note_cache)
 				for note in note_cache:
 					if pitch == note[0] and time == note[1]:
 						if self._is_velocity_shifted:
@@ -372,8 +379,8 @@ class NoteEditorComponent(ControlSurfaceComponent):
 				self._clip.replace_selected_notes(tuple(note_cache))
 				
 				note_cache = self._clip.get_selected_notes()
-				if self._clip_notes != note_cache:
-					self._clip_notes = note_cache
+				if self._note_cache != note_cache:
+					self._note_cache = note_cache
 				
 
 
@@ -419,6 +426,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 				self._velocity_notes_pressed=0
 				self._is_velocity_shifted = True
 				self._velocity_last_press=time.time()
+			self._parent._note_selector.update()
 				
 
 
@@ -459,11 +467,11 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		if self.is_enabled() and self._clip != None:
 			self._clip.select_all_notes()
 			note_cache = self._clip.get_selected_notes()
-			if self._clip_notes != note_cache:
-				self._clip_notes = note_cache
-			note_cache = list(self._clip_notes)
+			if self._note_cache != note_cache:
+				self._note_cache = note_cache
+			note_cache = list(self._note_cache)
 			notes_changed = 0
-			for note in self._clip_notes:
+			for note in self._note_cache:
 				if note[0] == pitch_to_mute:
 					notes_changed = notes_changed + 1
 					note_to_mute = note

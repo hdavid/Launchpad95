@@ -29,7 +29,7 @@ class TrackControllerComponent(MixerComponent):
 		self._undo_button = None
 		self._arm_button = None
 		self._parent = None
-		self._auto_arm = True
+		self._implicit_arm = True
 		self._notify_parent = True
 		MixerComponent.__init__(self,1)
 		self.set_enabled(False)
@@ -59,6 +59,15 @@ class TrackControllerComponent(MixerComponent):
 
 		MixerComponent.disconnect(self)
 
+	def set_enabled(self, enabled):
+		if self.is_enabled and not enabled:
+			#disable implicit arm while leaving.
+			if(self._parent != None and self._notify_parent):
+				if (self._selected_track.can_be_armed):
+					self._selected_track.implicit_arm = False
+		MixerComponent.set_enabled(self, enabled)
+			
+	
 	def _do_select_scene(self, scene):
 		view = self.song().view
 		if view.selected_scene != self._scene:
@@ -184,7 +193,7 @@ class TrackControllerComponent(MixerComponent):
 			if ((not sender.is_momentary()) or (value is not 0)):
 				if(self.selected_track_idx() < len(self.song().tracks)-1):
 					self.song().view.selected_track=self.song().tracks[self.selected_track_idx() + 1]
-					self._do_auto_arm()
+					self._do_implicit_arm()
 					#self.update()
 					
 	def set_prev_track_button(self, button):
@@ -204,7 +213,7 @@ class TrackControllerComponent(MixerComponent):
 			if self.is_enabled():
 				if(self.selected_track_idx() >0):
 					self.song().view.selected_track=self.song().tracks[self.selected_track_idx() - 1]
-					self._do_auto_arm()
+					self._do_implicit_arm()
 					#self.update()
 					
 	def update_scene_buttons(self):
@@ -254,13 +263,13 @@ class TrackControllerComponent(MixerComponent):
 				self._last_session_record_button_press=now
 			else:
 				if now-self._last_session_record_button_press > self._long_press*4:
-					self._auto_arm = not self._auto_arm
-					self._do_auto_arm()
+					self._implicit_arm = not self._implicit_arm
+					self._do_implicit_arm()
 					self.update()
 				elif now-self._last_session_record_button_press > self._long_press:
 					self.song().metronome = not self.song().metronome
 				else:
-					if self._auto_arm:
+					if self._implicit_arm:
 						self.song().session_record = not self.song().session_record
 					else:
 						if (self._selected_track.can_be_armed):
@@ -352,13 +361,13 @@ class TrackControllerComponent(MixerComponent):
 			if ((value != 0) or (not self._arm_button.is_momentary())):
 				self._last_arm_button_press=now
 			else:
-				if (self._selected_track.can_be_armed):
-					if now-self._last_arm_button_press > self._long_press:
-						self._auto_arm = not self._auto_arm
-						self._do_auto_arm()
-					else:
+				if now-self._last_arm_button_press > self._long_press:
+					self._implicit_arm = not self._implicit_arm
+					self._do_implicit_arm()
+				else:
+					if self._selected_track.can_be_armed:
 						self._selected_track.arm = not self._selected_track.arm
-					self.update()
+				self.update()
 					
 
 	def update(self):
@@ -367,7 +376,7 @@ class TrackControllerComponent(MixerComponent):
 			self.update_scene_buttons()
 			
 			if self._session_record_button != None:
-				if self._auto_arm:
+				if self._implicit_arm:
 					self._session_record_button.set_on_off_values(RED_FULL,RED_THIRD)
 				else:
 					self._session_record_button.set_on_off_values(AMBER_FULL,AMBER_THIRD)
@@ -406,7 +415,7 @@ class TrackControllerComponent(MixerComponent):
 					self._solo_button.turn_off()
 
 			if self._arm_button != None:
-				if self._auto_arm:
+				if self._implicit_arm:
 					self._arm_button.set_on_off_values(GREEN_FULL,GREEN_THIRD)
 				else:
 					self._arm_button.set_on_off_values(RED_FULL,RED_THIRD)
@@ -418,22 +427,22 @@ class TrackControllerComponent(MixerComponent):
 
 		MixerComponent.update(self)
 
-	def can_auto_arm_track(self, track):
+	def can_implicit_arm_track(self, track):
 		return track.can_be_armed and track.has_midi_input
 		
-	def _do_auto_arm(self, arm=True):
+	def _do_implicit_arm(self, arm=True):
 		self._selected_track=self.selected_track()
-		if(self._parent != None and self._notify_parent):
-			self._parent.set_controlled_track(self._selected_track)
+		if(self._parent != None and self._notify_parent and self._is_enabled):
+			if self._implicit_arm:
+				self._parent.set_controlled_track(self._selected_track)
+			else:
+				self._parent.release_controlled_track()
+			
 			for track in self.song().tracks:
-				if self.can_auto_arm_track(track):
-					track.implicit_arm = arm and self._auto_arm and self._selected_track == track and self._is_enabled
-		#if self._auto_arm and self._selected_track.has_midi_input and self._selected_track.can_be_armed:
-		#	for track in self.song().tracks:
-		#		if track.can_be_armed and track.has_midi_input:
-		#			track.arm = False
-		#		self._selected_track.arm = True
-
+				if self.can_implicit_arm_track(track):
+					track.implicit_arm = arm and self._implicit_arm and self._selected_track == track 
+	
+			
 	def selected_track(self):
 		return self.song().view.selected_track
 
@@ -445,7 +454,7 @@ class TrackControllerComponent(MixerComponent):
 	
 	def on_selected_track_changed(self):
 		self._selected_track = self.selected_track()
-		self._do_auto_arm()
+		self._do_implicit_arm()
 		self.update()
 
 	def on_selected_scene_changed(self):

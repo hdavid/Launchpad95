@@ -21,60 +21,40 @@ class InstrumentPresetsComponent():
 		self.octave_index_offset = 0
 		self.is_horizontal = True
 		self.interval = 3
-		self.mode = 'scale_p4_vertical'
 
-	def _set_scale_mode(self, octave_index_offset, is_horizontal, interval, mode):
+	def _set_scale_mode(self, octave_index_offset, orientation, interval):
 		self.octave_index_offset = octave_index_offset
-		self.is_horizontal = is_horizontal
+		self.is_horizontal = (orientation == 'horizontal' or orientation == True)
 		self.interval = interval
-		self.mode = mode
  	
 	def set_orientation(self, orientation):
-		if orientation == 'vertical':
-			if mode==0 or mode=='scale_p4_vertical' or mode==3 or mode=='scale_p4_horizontal': #4th ^
-				self._set_scale_mode(0, True, 3, 'scale_p4_vertical')
-			if mode==1 or mode=='scale_m3_vertical' or mode==4 or mode=='scale_m3_horizontal': #3rd ^
-				self._set_scale_mode(0, True, 2, 'scale_m3_vertical')
-			if mode==2 or mode=='scale_m6_vertical' or mode==5 or mode=='scale_m6_horizontal':#sequent ^
-				self._set_scale_mode(-2, True, None, 'scale_m6_vertical')
-		else:
-			if mode==0 or mode=='scale_p4_vertical' or mode==3 or mode=='scale_p4_horizontal': #4th ^
-				self._set_scale_mode(0, False, 3, 'scale_p4_horizontal')
-			if mode==1 or mode=='scale_m3_vertical' or mode==4 or mode=='scale_m3_horizontal': #3rd ^
-				self._set_scale_mode(0, False, 2, 'scale_m3_horizontal')
-			if mode==2 or mode=='scale_m6_vertical' or mode==5 or mode=='scale_m6_horizontal':#sequent ^
-				self._set_scale_mode(-2, False, None, 'scale_m6_horizontal')
+		self._set_scale_mode(self.octave_index_offset, orientation, self.interval)
 	
-	def set_interval(self, interval):
-		if interval == 4:	
-			if mode==0 or mode=='scale_p4_vertical' or mode==1 or mode=='scale_m3_vertical' or mode==2 or mode=='scale_m6_vertical': 
-				self._set_scale_mode(0, True, 3, 'scale_p4_vertical')
-			if mode==3 or mode=='scale_p4_horizontal' or mode==4 or mode=='scale_m3_horizontal' or mode==3 or mode=='scale_p4_horizontal':
-				self._set_scale_mode(0, False, 3, 'scale_p4_horizontal')
-		if interval == 3:
-			if mode==0 or mode=='scale_p4_vertical' or mode==1 or mode=='scale_m3_vertical' or mode==2 or mode=='scale_m6_vertical': 
-				self._set_scale_mode(0, True, 2, 'scale_m3_vertical')
-			if mode==3 or mode=='scale_p4_horizontal' or mode==4 or mode=='scale_m3_horizontal' or mode==3 or mode=='scale_p4_horizontal':
-				self._set_scale_mode(0, False, 2, 'scale_m3_horizontal')
-		if interval == 6:
-			if mode==0 or mode=='scale_p4_vertical' or mode==1 or mode=='scale_m3_vertical' or mode==2 or mode=='scale_m6_vertical': 
-				self._set_scale_mode(-2, True, None, 'scale_m6_vertical')
-			if mode==3 or mode=='scale_p4_horizontal' or mode==4 or mode=='scale_m3_horizontal' or mode==3 or mode=='scale_p4_horizontal':
-				self._set_scale_mode(-2, False, None, 'scale_m6_horizontal')
+	def toggle_orientation(self):
+		if(self.is_horizontal):
+			self._set_scale_mode(self.octave_index_offset, 'vertical', self.interval)
+		else:
+			self._set_scale_mode(self.octave_index_offset, 'horizontal', self.interval)
 
-	def set_mode(self, mode):
-		if mode==0 or mode=='scale_p4_vertical': #4th ^
-			self._set_scale_mode(0, True, 3, 'scale_p4_vertical')
-		if mode==1 or mode=='scale_m3_vertical': #3rd ^
-			self._set_scale_mode(0, True, 2, 'scale_m3_vertical')
-		if mode==2 or mode=='scale_m6_vertical':#sequent ^
-			self._set_scale_mode(-2, True, None, 'scale_m6_vertical')
-		if mode==3 or mode=='scale_p4_horizontal': #4th >
-			self._set_scale_mode(0, False, 3, 'scale_p4_horizontal')
-		if mode==4 or mode=='scale_m3_horizontal': #3rd >
-			self._set_scale_mode(0, False, 2, 'scale_m3_horizontal')
-		if mode==5 or mode=='scale_m6_horizontal':#sequent >
-			self._set_scale_mode(-2, False, None, 'scale_m6_horizontal')
+	def set_interval(self, interval):
+		#3rd : interval = 2 
+		#4th : interval = 3 
+		#6th : interval = 5 
+		if interval == None:
+			self._set_scale_mode(-2, self.is_horizontal, None)
+		else:
+			self._set_scale_mode(0, self.is_horizontal, interval)
+
+	def cycle_intervals(self):
+		if(self.interval==None):
+			self.set_interval(2)
+		elif(self.interval==2):
+			self.set_interval(3)
+		elif(self.interval==3):
+			self.set_interval(5)
+		elif(self.interval==5):
+			self.set_interval(2)
+
 		
 class Scale(object):
 
@@ -97,7 +77,7 @@ class Modus(Scale):
 
 class MelodicPattern(object):
 
-	def __init__(self, steps = [0, 0], scale = range(12), base_note = 0, origin = [0, 0], valid_notes = xrange(128), base_note_color = GREEN_HALF, scale_note_color = AMBER_THIRD, foreign_note_color = LED_OFF, invalid_note_color = LED_OFF, chromatic_mode = False, chromatic_gtr_mode = False, diatonic_ns_mode = False, *a, **k):
+	def __init__(self, steps = [0, 0], scale = range(12), base_note = 0, origin = [0, 0], valid_notes = xrange(128), base_note_color = GREEN_HALF, scale_note_color = AMBER_THIRD, scale_highlight_color = GREEN_FULL, foreign_note_color = LED_OFF, invalid_note_color = LED_OFF, chromatic_mode = False, chromatic_gtr_mode = False, diatonic_ns_mode = False, *a, **k):
 		super(MelodicPattern, self).__init__(*a, **k)
 		self.steps = steps
 		self.scale = scale
@@ -106,6 +86,7 @@ class MelodicPattern(object):
 		self.valid_notes = valid_notes
 		self.base_note_color = base_note_color
 		self.scale_note_color = scale_note_color
+		self.scale_highlight_color = scale_highlight_color
 		self.foreign_note_color = foreign_note_color
 		self.invalid_note_color = invalid_note_color
 		self.chromatic_mode = chromatic_mode
@@ -143,6 +124,8 @@ class MelodicPattern(object):
 	def _color_for_note(self, note):
 		if note == self.scale[0]:
 			return self.base_note_color
+		elif note == self.scale[2] or note == self.scale[4]:
+				return self.scale_highlight_color
 		elif note in self.scale:
 			return self.scale_note_color
 		else:
@@ -170,8 +153,10 @@ class ScalesComponent(ControlSurfaceComponent):
 		self._is_diatonic_ns = False  #variable for diatonic non-staggered mode
 		self._is_drumrack = False
 		self.is_absolute = False
+		self.is_quick_scale = False
 		self.base_note_color = AMBER_THIRD
 		self.scale_note_color = GREEN_THIRD
+		self.scale_highlight_color = GREEN_HALF
 		self._presets = InstrumentPresetsComponent()
 		self._matrix = None
 		self._octave_index = 3
@@ -203,12 +188,17 @@ class ScalesComponent(ControlSurfaceComponent):
 	def get_scale_note_color(self):
 		return self.scale_note_color
 		
-	def set_diatonic(self):
+	def get_scale_highlight_color(self):
+		return self.scale_highlight_color
+			
+	def set_diatonic(self, interval =-1):
 	 	self._is_drumrack=False
 		self._is_chromatic=False
 		self._is_chromatic_gtr=False
 		self._is_diatonic=True
 		self._is_diatonic_ns=False
+		if interval != -1:
+			self._presets.set_interval(interval)
 		
 	def set_diatonic_ns(self):
 		self._is_drumrack=False
@@ -248,12 +238,13 @@ class ScalesComponent(ControlSurfaceComponent):
 	def set_octave_index(self, n):
 		self._octave_index = n
 
-	def _set_selected_modus(self, n):
+	def set_selected_modus(self, n):
 		if n > -1 and n < len(self._modus_list):
 			self._selected_modus = n
 			#show message not working in live 9
 			if self._parent != None:
 				self._parent._parent._parent.log_message(str(self._modus_names[n]))
+				self._parent._parent._parent.show_message(str(self._modus_names[n]))
 				
 	def _set_preset(self, n):
 		if n > -1 and n < 6:
@@ -280,24 +271,41 @@ class ScalesComponent(ControlSurfaceComponent):
 						self.set_drumrack(True)
 					if x==6:
 						self.set_chromatic()
+						self._presets.set_orientation('horizontal')
 					if x==5:
-						self.set_diatonic()
+						self.set_diatonic(3)
+						self._presets.set_orientation('horizontal')
 					if x==4:
+						self.set_diatonic(2)
+						self._presets.set_orientation('vertical')
+					if x==2:
 						self.set_chromatic_gtr()
+						self._presets.set_orientation('horizontal')
 					if x==3:
 						self.set_diatonic_ns()
-				
-						
+						self._presets.set_orientation('horizontal')
+					if x==1 and not self.is_drumrack():
+						self._presets.toggle_orientation()
+					if x==0 and not self.is_drumrack():
+						if self.is_absolute:
+							self.is_absolute = False
+						else:
+							self.is_absolute = True
+					#if x==1 and not self.is_drumrack() and not self.is_chromatic():
+					#	self._presets.cycle_intervals()
+					
 				if y==1 and x<7 and not self.is_drumrack():
 					self.set_key((self._index[x]+1)%12)
 				if y==2 and x<7 and not self.is_drumrack():
 					self.set_key(self._index[x])
-					
+				if y==1 and x==7 and not self.is_drumrack():
+					self.is_quick_scale = not self.is_quick_scale
+						
 				if y==3:
 					self._octave_index = x
 					
 				if y>3 and not self.is_drumrack():
-					self._set_selected_modus((y-4)*8+x)
+					self.set_selected_modus((y-4)*8+x)
 					
 				self.update()			
 						
@@ -309,15 +317,14 @@ class ScalesComponent(ControlSurfaceComponent):
 				button.set_enabled(True)
 				button.force_next_send()
 				
-			#display chromatic / diatonic / drumrack
-			for i in range(3):
-				self._matrix.get_button(i, 0).set_on_off_values(LED_OFF,LED_OFF)
-				self._matrix.get_button(i, 0).turn_off()
-			
-			self._matrix.get_button(7, 1).set_on_off_values(LED_OFF,LED_OFF)
-			self._matrix.get_button(7, 1).turn_on()	
 			self._matrix.get_button(7, 2).set_on_off_values(LED_OFF,LED_OFF)
 			self._matrix.get_button(7, 2).turn_off()
+			#self._matrix.get_button(1, 0).set_on_off_values(LED_OFF,LED_OFF)
+			#self._matrix.get_button(1, 0).turn_off()
+	
+			absolute_button  = self._matrix.get_button(0, 0)
+			orientation_button =  self._matrix.get_button(1, 0)
+			quick_scale_button =  self._matrix.get_button(7, 1)
 			
 			drumrack_button  = self._matrix.get_button(7, 0)  
 			drumrack_button.set_on_off_values(RED_FULL,RED_THIRD)
@@ -327,11 +334,15 @@ class ScalesComponent(ControlSurfaceComponent):
 			chromatic_button.set_on_off_values(RED_FULL,RED_THIRD)
 			chromatic_button.force_next_send()
 			
-			diatonic_button  = self._matrix.get_button(5, 0)
-			diatonic_button.set_on_off_values(RED_FULL,RED_THIRD)
-			diatonic_button.force_next_send()
+			diatonic_button_4th  = self._matrix.get_button(5, 0)
+			diatonic_button_4th.set_on_off_values(RED_FULL,RED_THIRD)
+			diatonic_button_4th.force_next_send()
 			
-			chromatic_gtr_button  = self._matrix.get_button(4, 0)
+			diatonic_button_3rd  = self._matrix.get_button(4, 0)
+			diatonic_button_3rd.set_on_off_values(RED_FULL,RED_THIRD)
+			diatonic_button_3rd.force_next_send()
+			
+			chromatic_gtr_button  = self._matrix.get_button(2, 0)
 			chromatic_gtr_button.set_on_off_values(RED_FULL,RED_THIRD)
 			chromatic_gtr_button.force_next_send()
 			
@@ -339,15 +350,38 @@ class ScalesComponent(ControlSurfaceComponent):
 			diatonic_ns_button.set_on_off_values(RED_FULL,RED_THIRD)
 			diatonic_ns_button.force_next_send()
 			
-			
 			#mode buttons
 			if self.is_drumrack():
 				drumrack_button.turn_on()
 				chromatic_gtr_button.turn_off()
 				diatonic_ns_button.turn_off()
 				chromatic_button.turn_off()
-				diatonic_button.turn_off()
+				diatonic_button_4th.turn_off()
+				diatonic_button_3rd.turn_off()
+				absolute_button.set_on_off_values(LED_OFF,LED_OFF)
+				absolute_button.turn_off()
+				orientation_button.set_on_off_values(LED_OFF,LED_OFF)
+				orientation_button.turn_off()
+				quick_scale_button.set_on_off_values(LED_OFF,LED_OFF)
+				quick_scale_button.turn_off()
 			else:
+				quick_scale_button.set_on_off_values(GREEN_FULL,GREEN_THIRD)
+				if self.is_quick_scale:
+					quick_scale_button.turn_on()
+				else:
+					quick_scale_button.turn_off()
+				orientation_button.set_on_off_values(AMBER_THIRD,AMBER_FULL)
+				if self._presets.is_horizontal:
+					orientation_button.turn_on()
+				else:
+					orientation_button.turn_off()
+					
+				absolute_button.set_on_off_values(AMBER_THIRD,AMBER_FULL)
+				if self.is_absolute:
+					absolute_button.turn_on()
+				else:
+					absolute_button.turn_off()				
+				
 				drumrack_button.turn_off()
 				if self.is_chromatic():
 					if self.is_chromatic_gtr():
@@ -356,16 +390,23 @@ class ScalesComponent(ControlSurfaceComponent):
 					else:
 						chromatic_button.turn_on()
 						chromatic_gtr_button.turn_off()
-					diatonic_button.turn_off()
+					diatonic_button_4th.turn_off()
+					diatonic_button_3rd.turn_off()
 					diatonic_ns_button.turn_off()
 				else:
 					chromatic_button.turn_off()
 					chromatic_gtr_button.turn_off()
 					if self.is_diatonic_ns():
-						diatonic_button.turn_off()
+						diatonic_button_4th.turn_off()
+						diatonic_button_3rd.turn_off()
 						diatonic_ns_button.turn_on()
 					else:
-						diatonic_button.turn_on()
+						if self._presets.interval == 3:
+							diatonic_button_4th.turn_on()
+							diatonic_button_3rd.turn_off()
+						else:
+							diatonic_button_4th.turn_off()
+							diatonic_button_3rd.turn_on()
 						diatonic_ns_button.turn_off()
 				
 			#Octave
