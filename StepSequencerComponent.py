@@ -227,7 +227,7 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 						self._offset_buttons[i].use_default_message()
 						
 						if self._playhead !=None and self.note_is_playing(self._clip, self._note_cache , note, self._playhead):
-							self._offset_buttons[i].set_on_off_values(GREEN_FULL,RED_FULL)
+							self._offset_buttons[i].set_on_off_values(RED_FULL,RED_FULL)
 			
 					if self.selected_note==note :
 						if self._cache[i]!=self._offset_buttons[i]._on_value:
