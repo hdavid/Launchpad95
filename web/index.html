@@ -7,18 +7,18 @@
 </head>
 <body>
 <style>
-	table{border:2px solid grey; background-color:#444; padding:25px; border-collapse:separate; border-spacing:7px 7px; border-radius:10px; }
-	table { page-break-inside:avoid }
+	table.launchpad{border:2px solid grey; background-color:#444; padding:25px; border-collapse:separate; border-spacing:7px 7px; border-radius:10px; }
+	table.launchpad{page-break-inside:avoid}
 	
-	td{color:#CCC; vertical-align:top; vertical-align:middle; border:0px solid #333; width:60px; height:60px; text-align:center}
-	td{background-color:#888; border-radius:5px; background:radial-gradient(ellipse at center, #888 12%,#777 99%);}
+	table.launchpad tr td{color:#CCC; vertical-align:top; vertical-align:middle; border:0px solid #333; width:60px; height:60px; text-align:center}
+	table.launchpad tr td{background-color:#888; border-radius:5px; background:radial-gradient(ellipse at center, #888 12%,#777 99%);}
 	
-	td.green{color:#666; background: #00aa00; background:radial-gradient(ellipse at center, #77cc33 12%,#669933 99%);}
-	td.red{color:#666; background: #ff4444; background:radial-gradient(ellipse at center, #ff4444 12%,#bb3333 99%);}
-	td.amber{color:#666; background: #ffA544; background:radial-gradient(ellipse at center, #ffA544 12%,#aa7744 99%);}
+	table.launchpad tr td.green{color:#666; background: #00aa00; background:radial-gradient(ellipse at center, #77cc33 12%,#669933 99%);}
+	table.launchpad tr td.red{color:#666; background: #ff4444; background:radial-gradient(ellipse at center, #ff4444 12%,#bb3333 99%);}
+	table.launchpad tr td.amber{color:#666; background: #ffA544; background:radial-gradient(ellipse at center, #ffA544 12%,#aa7744 99%);}
 	
-	td.side{border:1px solid #333; border-radius:60px; }
-	tr.top td{border:1px solid #333; border-radius:60px; }
+	table.launchpad tr td.side{border:1px solid #333; border-radius:60px; }
+	table.launchpad tr tr.top td{border:1px solid #333; border-radius:60px; }
 	
 	div.note{padding:2px; text-align:left; color:#CCC; position:absolute; width:140px; height:45px; font-size:12px; margin-left:65px; margin-top:-14px; border:1px solid #666; background-color:rgba(127,127,127,0.5); border-radius:5px;}
 	div.noteTop{padding:2px; text-align:left; color:#CCC; float:top; position:absolute; width:50px; font-size:12px; margin-left:0px; margin-top:-85px; height:60px; border:1px solid #666; background-color:rgba(127,127,127,0.5); border-radius:5px;}
@@ -112,7 +112,7 @@
 </p>
 	
 	
-<table>
+<table class="launchpad">
 	<tr class="top">
 		<td class="green">prev scene</td>
 		<td class="green">next scene</td>
@@ -463,7 +463,7 @@
 </p>
 
 <br/><br/><br/>
-<table>
+<table class="launchpad">
 	<tr class="top">
 		<td class="green">prev scene</td>
 		<td class="green">next scene</td>
@@ -572,7 +572,7 @@ to activate this mode, press user mode 2 button until it turns green.
 	This mode uses the grid as a 8*8 matrix. one midi note per row. it follows the scale mode selected. Note that the left and right arrows are used to navigate left and right in the clip.
 </p>
 <br/><br/><br/>
-<table>
+<table class="launchpad">
 	<tr class="top">
 		<td class="green"><div class="noteTop">select prev scene</div>prev scene</td>
 		<td class="green"><div class="noteTop">select next scene</div>next scene</td>
@@ -682,8 +682,12 @@ to activate this mode, press user mode 2 button until it turns green.
 <p>
 	The last row of the matrix acts as a page selector and work in the similar fashion to the combined step stequencer loop selector.
 </p>
+<p>
+	double press on the last scene button toggles between monophonic and polyphonic modes.
+</p>
+
 <br/><br/><br/>
-<table>
+<table class="launchpad">
 	<tr class="top">
 		<td class="green"><div class="noteTop">select prev scene</div>prev scene</td>
 		<td class="green"><div class="noteTop">select next scene</div>next scene</td>
@@ -773,9 +777,9 @@ to activate this mode, press user mode 2 button until it turns green.
 		<td class="side red">velocity</td>
 	</tr>
 		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
+		<td class="red">&nbsp;</td>
+		<td class="red">&nbsp;</td>
+		<td class="red">&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
@@ -804,7 +808,7 @@ to activate this mode, press user mode 2 button until it turns green.
 	the table below. hover your mouse above a button to get detailed description.
 </p>
 
-<table>
+<table class="launchpad">
 	<tr class="top">
 		<td class="green">prev device</td>
 		<td class="green">next device</td>

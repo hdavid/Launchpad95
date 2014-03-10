@@ -19,6 +19,9 @@ LONG_BUTTON_PRESS=1.0
 
 # TODO :
 # top scene buttons not updating on load
+# bug scale reset/octave wrong on clip select.
+# extend / clear region
+# set all pattern length, note, velo, octave.
 
 class MelodicNoteEditorComponent(ControlSurfaceComponent):
 
@@ -26,7 +29,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 	
 		ControlSurfaceComponent.__init__(self)
 		self.set_enabled(False)
-		self._is_velocity_shifted = False
+		
 		self._parent = parent
 		
 		self._clip = None
@@ -67,6 +70,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		self._key_indexes=[36,37,38,39,40,41,42,43]
 		self._key_index_is_in_scale  = [True,False,True,True,False,True,False,True]
 		self._key_index_is_root_note  = [True,False,False,False,False,False,False,False]
+		self._is_monophonic = True
 		
 		#quantization
 		self._quantization = 16
@@ -78,6 +82,15 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		self._mode_notes_velocities_button = None
 		self._mode_notes_lengths_button = None
 		self._random_button = None
+		self._is_notes_shifted = False
+		self._is_velocity_shifted = False
+		self._is_octave_shifted = False
+		self._is_length_shifted = False
+		self._last_note_mode_button_press = time.time()
+		self._last_velocity_mode_button_press = time.time()
+		self._last_octave_mode_button_press = time.time()
+		self._last_length_mode_button_press = time.time()
+		
 		self.set_random_button(self._side_buttons[3])
 		self.set_mode_notes_lengths_button(self._side_buttons[4])
 		self.set_mode_notes_octaves_button(self._side_buttons[5])
@@ -183,7 +196,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 					
 					#length
 					for x in range(7):
-						if note_length >= self._length_map[x] *self._quantization / 4:
+						if note_length >= self._length_map[x] * self._quantization / 4:
 							self._notes_lengths[i] = x
 					
 					#note and octave
@@ -194,7 +207,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 								found = True
 								self._notes_octaves[i] = octave
 								self._notes[i*7 + j] = 1
-				else:
+				elif not self._is_monophonic:
 					#note
 					found = False
 					for j in range(max(7,len(self._key_indexes))):
@@ -354,11 +367,14 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 				self._parent.create_clip()
 			else:
 				if ((value != 0) or (not is_momentary)) and y<7:
-					#self._parent.log_message("matrix value bro !")
 					if self._mode == STEPSEQ_MODE_NOTES:
+						#clear note
 						if self._notes[(x+8*self._page)*7 +6-y] == 1:
 							self._notes[(x+8*self._page)*7 + 6-y] = 0
 						else:
+							if self._is_monophonic:
+								for yy in range(7):
+									self._notes[(x+8*self._page)*7 + 6-yy] = 0
 							self._notes[(x+8*self._page)*7 + 6-y] = 1
 					elif self._mode == STEPSEQ_MODE_NOTES_OCTAVES:
 						self._notes_octaves[x+8*self._page] = 6-y
@@ -449,8 +465,13 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		assert (value in range(128))
 		if self.is_enabled()  and self._clip != None:
 			if ((value is 0) and (sender.is_momentary())):
-				self.set_mode(STEPSEQ_MODE_NOTES)
-				self.update()
+				if time.time() - self._last_note_mode_button_press<0.500:
+					self._is_monophonic  = not self._is_monophonic
+					self._update_clip_notes()
+				else:
+					self.set_mode(STEPSEQ_MODE_NOTES)
+					self.update()
+				self._last_note_mode_button_press= time.time()
 	
 	
 	

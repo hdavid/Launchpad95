@@ -551,13 +551,16 @@ class LoopSelectorComponent(ControlSurfaceComponent):
 				else:
 					button.set_on_off_values(LED_OFF,LED_OFF)
 					if (i* self._blocksize * self._quantization < self._loop_end) and (i * self._blocksize * self._quantization >= self._loop_start ):
-						button.set_on_off_values(RED_THIRD,RED_THIRD)
+						button.set_on_off_values(AMBER_THIRD,AMBER_THIRD)
 						
 					if i==self.block:
 						button.set_on_off_values(AMBER_FULL,AMBER_FULL)
 
-					if  self._playhead >= i*self._blocksize * self._quantization and self._playhead < (i+1) * self._blocksize * self._quantization:					
-						button.set_on_off_values(GREEN_FULL,GREEN_FULL)
+					if  self._playhead >= i*self._blocksize * self._quantization and self._playhead < (i+1) * self._blocksize * self._quantization:	
+						if i==self.block:	
+							button.set_on_off_values(GREEN_FULL,GREEN_FULL)
+						else:
+							button.set_on_off_values(GREEN_HALF,GREEN_HALF)
 	
 					if self._cache[i]!=button._on_value:
 						button.turn_on()
@@ -1359,6 +1362,19 @@ class StepSequencerComponent(CompoundComponent):
 				clip_slot.fire()
 				self.on_clip_slot_changed()
 				self.update()
+
+	def duplicate_clip(self):
+		if self._clip_slot and self._clip_slot.has_clip:
+			try:
+				track = self._clip_slot.canonical_parent
+				track.duplicate_clip_slot(list(track.clip_slots).index(self._clip_slot))
+				clip_slot.fire()
+				self.on_clip_slot_changed()
+				self.update()
+			except Live.Base.LimitationError:
+				pass
+			except RuntimeError:
+				pass
 		
 	def log_message(self, msg):
 		self._parent.log_message(msg)
