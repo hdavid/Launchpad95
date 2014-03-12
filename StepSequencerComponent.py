@@ -700,6 +700,7 @@ class StepSequencerComponent(CompoundComponent):
 		self._quantization_index = 2
 		self.set_quantization(QUANTIZATION_MAP[self._quantization_index])
 		self._quantization_button = None
+		self._last_quantize_button_press = time.time()
 		self.set_quantization_button(self._side_buttons[2])
 
 	def _set_loop_selector(self):
@@ -1218,10 +1219,17 @@ class StepSequencerComponent(CompoundComponent):
 		assert (self._quantization_button != None)
 		assert (value in range(128))
 		if self.is_enabled()  and self._clip != None:
+			now =  time.time()
 			if ((value is not 0) or (not sender.is_momentary())):
-				self._quantization_index = (self._quantization_index+1)%len(QUANTIZATION_MAP)					
-				self.set_quantization(QUANTIZATION_MAP[self._quantization_index])
-				self._update_quantization_button()	
+				self._last_quantize_button_press = now	
+			else:
+				if now - self._last_quantize_button_press > 0.5:
+					self.duplicate_clip()
+				else:
+					self._quantization_index = (self._quantization_index+1)%len(QUANTIZATION_MAP)					
+					self.set_quantization(QUANTIZATION_MAP[self._quantization_index])
+					self._update_quantization_button()
+				
 
 	def set_quantization(self, quantization):
 		self._quantization = quantization
@@ -1366,11 +1374,13 @@ class StepSequencerComponent(CompoundComponent):
 	def duplicate_clip(self):
 		if self._clip_slot and self._clip_slot.has_clip:
 			try:
-				track = self._clip_slot.canonical_parent
-				track.duplicate_clip_slot(list(track.clip_slots).index(self._clip_slot))
-				clip_slot.fire()
-				self.on_clip_slot_changed()
-				self.update()
+				if not self._is_locked or self._lock_to_track:
+					track = self._clip_slot.canonical_parent
+					newIdx = track.duplicate_clip_slot(list(track.clip_slots).index(self._clip_slot))
+					self.song().view.selected_scene=self.song().scenes[newIdx]
+					self.on_clip_slot_changed()
+					self._clip_slot.fire()
+					self.update()
 			except Live.Base.LimitationError:
 				pass
 			except RuntimeError:

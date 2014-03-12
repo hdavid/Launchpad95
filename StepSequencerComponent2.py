@@ -411,30 +411,39 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		assert (self._mode_notes_button != None)
 		assert (value in range(128))
 		if self.is_enabled()  and self._clip != None:
-			
-			loop_start = int(self._clip.loop_start / self._quantization)
-			loop_end = int(self._clip.loop_end / self._quantization)
-			
 			self._random_button.set_on_off_values(GREEN_FULL,GREEN_THIRD)
 			if ((value is 0) and (sender.is_momentary())):
 				self._random_button.turn_on()
-				for x in range(loop_start, loop_end):
-					if self._mode == STEPSEQ_MODE_NOTES:
-						val2 = randrange(0,9)
-						for y in range(7):
-							self._notes[x*7 + 6-y] = val2 == y
-					elif self._mode == STEPSEQ_MODE_NOTES_OCTAVES:
-						val = randrange(2,6)
-						self._notes_octaves[x] = val
-					elif self._mode == STEPSEQ_MODE_NOTES_VELOCITIES:
-						val = randrange(0,7)
-						self._notes_velocities[x] = val
-					elif self._mode == STEPSEQ_MODE_NOTES_LENGTHS:
-						val = randrange(0,4)
-						self._notes_lengths[x] = val
-					self._update_clip_notes()
+				self._randomise()
 			else:
 				self._random_button.turn_off()
+				
+	def _randomise(self):
+		start = int(self._clip.loop_start / self._quantization)
+		end = int(self._clip.loop_end / self._quantization)
+		if (self._page+1) * 8 > end or self._page * 8 < start:
+			# current page is outside of running loop.
+			# only update this page.
+			start = self._page * 8 
+			end = (self._page+1) * 8 
+			
+		for x in range(start, end):
+			if self._mode == STEPSEQ_MODE_NOTES:
+				val2 = randrange(0,9)
+				for y in range(7):
+					self._notes[x*7 + 6-y] = val2 == y
+			elif self._mode == STEPSEQ_MODE_NOTES_OCTAVES:
+				val = randrange(2,6)
+				self._notes_octaves[x] = val
+			elif self._mode == STEPSEQ_MODE_NOTES_VELOCITIES:
+				val = randrange(0,7)
+				self._notes_velocities[x] = val
+			elif self._mode == STEPSEQ_MODE_NOTES_LENGTHS:
+				val = randrange(0,4)
+				self._notes_lengths[x] = val
+				
+		self._update_clip_notes()
+		
 		
 # MODE
 	def _update_mode_notes_button(self):
