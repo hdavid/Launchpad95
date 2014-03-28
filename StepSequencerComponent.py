@@ -45,6 +45,7 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 		self._enable_offset_button = True
 		#cache to optimise display for offset buttons minimizing midi traffic
 		self._cache = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
+		self._was_velocity_shifted = False
 		for button in self._offset_buttons :
 			assert isinstance(button, ButtonElement)	
 			button.remove_value_listener(self.note_offset_button_value)
@@ -182,13 +183,16 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 				self._parent._scale_updated()
 			
 
+	
 	def update(self):
 		if self.is_enabled():
 			self._parent._track_controller._do_implicit_arm(self._is_velocity_shifted and not self._parent._is_locked)
 			if self._is_velocity_shifted and not self._parent._is_locked:
 				self._parent._parent._parent.set_feedback_channels([11])
 				self._parent._parent._parent._c_instance.set_feedback_velocity(RED_FULL)
-			elif self.is_drumrack:
+				self._was_velocity_shifted = True
+			elif self.is_drumrack and self._was_velocity_shifted:
+				self._was_velocity_shifted = False
 				self._offset  =  self._drum_group_device.view.selected_drum_pad.note - self._root_note
 				self._parent._scale_updated()
 			self._update_up_button()
@@ -306,6 +310,8 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 	def move(self, steps):
 		if self.can_move(steps):
 			if self.is_diatonic:
+				#self._parent.log_message("can move dia "+ str(steps))
+				
 				#find the next note in scale in that direction
 				oct = 0
 				if steps > 0:
@@ -330,15 +336,19 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 				idx = index_of(self._scale, self._offset+steps)
 				self.set_selected_note(self._root_note + oct * 12 + self._scale[idx])
 			else:
-				self.set_selected_note(self.selected_note + steps)
+				#self._parent.log_message("can move drum/chrom "+ str(steps) + " root:"+str(self._root_note)+" offset:"+str(self._offset))
+				self.set_selected_note(self._root_note + self._offset + steps )
 			
-	def set_selected_note(self, root):
+	def set_selected_note(self, selected_note):
 		if self.is_drumrack:
-			self._root_note = ((root-4)/16)*16+4
-			self._offset = (root+12)%16
+			self._root_note = ((selected_note+12)/16 -1)*16+4
+			self._offset = (selected_note-self._root_note+16)%16
+			#self._parent.log_message("DR selected_note:"+str(selected_note)+" self._root_note: "+ str(self._root_note)+" offset: "+ str(self._offset))
 		else:
-			self._root_note = ((root-self._key)/12)*12+self._key
-			self._offset = (root+12-self._key)%12
+			self._root_note = ((selected_note-self._key)/12)*12+self._key
+			self._offset = (selected_note+12-self._root_note)%12
+			#self._parent.log_message("CHR selected_note:"+str(selected_note)+" self._root_note: "+ str(self._root_note)+" offset: "+ str(self._offset))
+			
 		self.update()
 		self._parent._scale_updated()
 		
@@ -767,12 +777,12 @@ class StepSequencerComponent(CompoundComponent):
 				self._detect_scale_mode()
 				
 			self._track_controller.set_enabled(enabled)
-			
-			#call super.set_enabled()
-			CompoundComponent.set_enabled(self,enabled)
-	
+
+		
 			#update clip notes as they might have changed while we were sleeping
 			self.on_clip_slot_changed()
+			#call super.set_enabled()
+			CompoundComponent.set_enabled(self,enabled)
 			self._on_notes_changed()
 			
 		else:
@@ -809,6 +819,8 @@ class StepSequencerComponent(CompoundComponent):
 			
 #SCALE
 	def _scale_updated(self):
+		#self.log_message("scale updated")
+		#self.log_message(str(self._note_selector.selected_note))
 		keys = [0,0,0,0,0,0,0,0]
 		key_is_root_note = [False,False,False,False,False,False,False,False]
 		key_is_in_scale = [False,False,False,False,False,False,False,False]

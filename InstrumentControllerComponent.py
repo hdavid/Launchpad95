@@ -12,7 +12,7 @@ from ScaleComponent import *
 from consts import *
 
 NOTE_NAMES = ('C', 'D\x1b', 'D', 'E\x1b', 'E', 'F', 'G\x1b', 'G', 'A\x1b', 'A', 'B\x1b', 'B')
-#CIRCLE_OF_FIFTHS = [ 7 * k % 12 for k in range(12) ]
+CIRCLE_OF_FIFTHS = [ 7 * k % 12 for k in range(12) ]
 #KEY_CENTERS = CIRCLE_OF_FIFTHS[0:6] + CIRCLE_OF_FIFTHS[-1:5:-1]
 
 class InstrumentControllerComponent(CompoundComponent):
@@ -55,6 +55,8 @@ class InstrumentControllerComponent(CompoundComponent):
 		self.set_matrix(matrix)
 		self._scales.set_parent(self)
 		self._scales.set_matrix(matrix)
+		self._current_minor_mode = 1
+		self._minor_modes = [1,13,14]
 		
 		
 		self._on_session_record_changed.subject = self.song()
@@ -145,41 +147,66 @@ class InstrumentControllerComponent(CompoundComponent):
 					self._scales._octave_index -= 1
 					self.update()
 
+	def tuple_idx(self,tuple, obj):
+		for i in xrange(0,len(tuple)):
+			if (tuple[i] == obj):
+				return i
+		return(False)
+		
 	def _matrix_value_quickscale(self, value, x, y, is_momentary): #matrix buttons listener for advanced mode
 		if self.is_enabled() and not self._scales.is_enabled() and self._scales.is_quick_scale:
 			if ((value != 0) or (not is_momentary)):
 				if self._quick_scale_root:
-					if x<7:
-						#select major/ minor scale
-						selected_key = self._scales._selected_key			
-						selected_modus = self._scales._selected_modus
-						root = -1
-						if(y==1):
-							root = [0, 2, 4, 5, 7, 9, 11, 12][x]
-							#self._parent.log_message("keyx:"+str(root))
-						if(y==0):
-								root = [0, 2, 4, 5, 7, 9, 11, 12][x]+1
-							#self._parent.log_message("keyx:"+str(root))
-				
-						if root!=-1:
-							if root == selected_key:
-								if selected_modus==0:
-									selected_modus = 1
-								elif selected_modus==1:
-									selected_modus = 0
-								elif selected_modus==11:
-									selected_modus = 12
-								elif selected_modus==12:
-									selected_modus = 11
-							#self._parent.log_message("modus:"+str(selected_modus))
-							#self._parent.log_message("key:"+str(root))
-							self._scales.set_selected_modus(selected_modus)
-							self._scales.set_key(root)
-							self.update()
+					root = -1
+					selected_key = self._scales._selected_key			
+					selected_modus = self._scales._selected_modus
+					if y==1 and x<7 or y==0 and x in[0,1,3,4,5]:
+						if y==1:
+							root = [0, 2, 4, 5, 7, 9, 11,12][x]
+						if y==0 and x<6:
+							root = [0, 2, 4, 5, 7, 9, 11, 12][x]+1
+						if root == selected_key:#alternate minor/major
+							if selected_modus==0:
+								selected_modus = self._current_minor_mode
+							elif selected_modus in [1,13,14]:
+								self._current_minor_mode = selected_modus
+								selected_modus = 0
+							elif selected_modus==11:
+								selected_modus = 12
+							elif selected_modus==12:
+								selected_modus = 11
 					else:
-						if y==0 and x==7:
+						if y==0 and x==7: #change mode
 							self._quick_scale_root = not self._quick_scale_root
 							self.update()
+						if y==1 and x==7 and False:#rotate minor scales
+							if self._scales._selected_modus in self._minor_modes :
+								self._scales.set_selected_modus(self._minor_modes[(self.tuple_idx(self._minor_modes ,self._scales._selected_modus)+1)%3])
+								self.update()
+						if y==1 and x==7:#nav circle of 5th right
+							root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS,selected_key)+1+12)%12]
+						if y==0 and x==6:#nav circle of 5th left
+							root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS,selected_key)-1+12)%12]		
+						if y==0 and x==2: #relative scale
+							if selected_modus==0:
+								selected_modus = self._current_minor_mode
+								root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS,selected_key)+3)%12]
+							elif selected_modus in [1,13,14]:
+								self._current_minor_mode = selected_modus
+								selected_modus = 0
+								root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS,selected_key)-3+12)%12]
+							elif selected_modus==11:
+								selected_modus = 12
+								root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS,selected_key)+3)%12]
+							elif selected_modus==12:
+								selected_modus = 11
+								root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS,selected_key)-3+12)%12]
+						
+					if root != -1:
+						self._scales.set_selected_modus(selected_modus)
+						self._scales.set_key(root)
+						self.update()
+							
 				else:
 					if(y==0):
 						if x<7 and self._quick_scales[x]!=-1:
@@ -329,11 +356,27 @@ class InstrumentControllerComponent(CompoundComponent):
 					selected_key = self._scales._selected_key	
 
 					if self._quick_scale_root:
+						#circle of 5th nav right
 						button  = self._matrix.get_button(7,1)
-						button.set_on_off_values(LED_OFF,LED_OFF)
+						button.set_on_off_values(RED_THIRD,RED_THIRD)
 						button.force_next_send()
-						button.turn_off()
-			
+						button.turn_on()
+						#circle of 5th nav left
+						button  = self._matrix.get_button(6,0)
+						button.set_on_off_values(RED_THIRD,RED_THIRD)
+						button.force_next_send()
+						button.turn_on()
+						#mode button
+						button  = self._matrix.get_button(7,0)
+						button.set_on_off_values(RED_THIRD,RED_THIRD)
+						button.force_next_send()
+						button.turn_on()
+						#relative scale button
+						button  = self._matrix.get_button(2,0)
+						button.set_on_off_values(RED_THIRD,RED_THIRD)
+						button.force_next_send()
+						button.turn_on()
+						
 						if selected_modus==0 or selected_modus==12:
 							off_color = AMBER_THIRD
 							on_color = AMBER_FULL
@@ -345,20 +388,17 @@ class InstrumentControllerComponent(CompoundComponent):
 							on_color = GREEN_FULL
 
 		
-						for x in range(7):
+						for x in [0,1,3,4,5]:
 							button  = self._matrix.get_button(x,0)
 							button.set_enabled(True)
-							if x in [0,1,3,4,5]:
-								button.set_on_off_values(on_color,off_color)
-								button.force_next_send()
-								if [0, 2, 4, 5, 7, 9, 11, 12][x]+1 == selected_key:
-									button.turn_on()
-								else:
-									button.turn_off()
+							button.set_on_off_values(on_color,off_color)
+							button.force_next_send()
+							if [0, 2, 4, 5, 7, 9, 11, 12][x]+1 == selected_key:
+								button.turn_on()
 							else:
-								button.set_on_off_values(LED_OFF,LED_OFF)
-								button.force_next_send()
 								button.turn_off()
+								
+						for x in [0,1,2,3,4,5,6]:	
 							button  = self._matrix.get_button(x,1)
 							button.set_enabled(True)
 							button.set_on_off_values(on_color,off_color)

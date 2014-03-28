@@ -18,7 +18,6 @@ STEPSEQ_MODE_NOTES_LENGTHS=4
 LONG_BUTTON_PRESS=1.0
 
 # TODO :
-# top scene buttons not updating on load
 # bug scale reset/octave wrong on clip select.
 # extend / clear region
 # set all pattern length, note, velo, octave.

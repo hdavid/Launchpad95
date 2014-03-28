@@ -287,11 +287,12 @@ class MainSelectorComponent(ModeSelectorComponent):
 				button.set_on_off_values(127, LED_OFF)
 
 		#matrix
+		self._activate_matrix(True)
 		for scene_index in range(8):
 			scene = self._session.scene(scene_index)
 			if as_active:
-				self._activate_matrix(True)
 				scene_button = self._side_buttons[scene_index]
+				scene_button.set_enabled(as_active)
 				scene_button.set_on_off_values(127, LED_OFF)
 				scene.set_launch_button(scene_button)
 			else:
@@ -300,6 +301,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 				if as_active:
 					button = self._matrix.get_button(track_index, scene_index)
 					button.set_on_off_values(127, LED_OFF)
+					button.set_enabled(as_active)
 					scene.clip_slot(track_index).set_launch_button(button)
 				else:
 					scene.clip_slot(track_index).set_launch_button(None)
