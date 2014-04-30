@@ -1,4 +1,3 @@
-#Embedded file name: /Users/versonator/Hudson/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/InstrumentComponent.py
 from _Framework.CompoundComponent import CompoundComponent
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.ModesComponent import DisplayingModesComponent, ModesComponent
@@ -20,6 +19,7 @@ class InstrumentControllerComponent(CompoundComponent):
 	def __init__(self, matrix, side_buttons, top_buttons, parent):
 		super(InstrumentControllerComponent, self).__init__()
 		self._parent = parent
+		self._osd = None
 		self._matrix = None
 		self._side_buttons=side_buttons
 		self._remaining_buttons = []
@@ -55,8 +55,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		self.set_matrix(matrix)
 		self._scales.set_parent(self)
 		self._scales.set_matrix(matrix)
-		self._current_minor_mode = 1
-		self._minor_modes = [1,13,14]
+		self._scales.set_osd(self._osd)
 		
 		
 		self._on_session_record_changed.subject = self.song()
@@ -77,6 +76,8 @@ class InstrumentControllerComponent(CompoundComponent):
 		if self._track_controller!=None:
 			self._track_controller._do_implicit_arm(enabled)
 			self._track_controller.set_enabled(enabled)
+		if enabled:
+			self._update_OSD()
 		
 	def _set_feedback_velocity(self):
 		if self.song().session_record:
@@ -119,12 +120,15 @@ class InstrumentControllerComponent(CompoundComponent):
 		if self.is_enabled():
 			self._scales_toggle_button.set_on_off_values(AMBER_FULL,AMBER_THIRD)
 			if (value is not 0):
+				self._osd_mode_backup = self._osd.mode
 				self._scales.set_enabled(True)
+				self._osd.mode = self._osd_mode_backup+' - Scale'
 				self._scales_toggle_button.turn_on()
 				self._scales.update()
 			else:
 				self._scales_toggle_button.turn_off()
 				self._scales.set_enabled(False)
+				self._osd.mode = self._osd_mode_backup
 				self.update()	
 	
 	def _can_scroll_octave_up(self):
@@ -167,9 +171,9 @@ class InstrumentControllerComponent(CompoundComponent):
 							root = [0, 2, 4, 5, 7, 9, 11, 12][x]+1
 						if root == selected_key:#alternate minor/major
 							if selected_modus==0:
-								selected_modus = self._current_minor_mode
+								selected_modus = self._scales._current_minor_mode
 							elif selected_modus in [1,13,14]:
-								self._current_minor_mode = selected_modus
+								self._scales._current_minor_mode = selected_modus
 								selected_modus = 0
 							elif selected_modus==11:
 								selected_modus = 12
@@ -180,25 +184,25 @@ class InstrumentControllerComponent(CompoundComponent):
 							self._quick_scale_root = not self._quick_scale_root
 							self.update()
 						if y==1 and x==7 and False:#rotate minor scales
-							if self._scales._selected_modus in self._minor_modes :
-								self._scales.set_selected_modus(self._minor_modes[(self.tuple_idx(self._minor_modes ,self._scales._selected_modus)+1)%3])
+							if self._scales._selected_modus in self._scales._minor_modes :
+								self._scales.set_selected_modus(self._scales._minor_modes[(self.tuple_idx(self._scales._minor_modes ,self._scales._selected_modus)+1)%3])
 								self.update()
 						if y==1 and x==7:#nav circle of 5th right
 							root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS,selected_key)+1+12)%12]
 						if y==0 and x==6:#nav circle of 5th left
 							root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS,selected_key)-1+12)%12]		
 						if y==0 and x==2: #relative scale
-							if selected_modus==0:
-								selected_modus = self._current_minor_mode
+							if selected_modus == 0:
+								selected_modus = self._scales._current_minor_mode
 								root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS,selected_key)+3)%12]
 							elif selected_modus in [1,13,14]:
-								self._current_minor_mode = selected_modus
+								self._scales._current_minor_mode = selected_modus
 								selected_modus = 0
 								root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS,selected_key)-3+12)%12]
-							elif selected_modus==11:
+							elif selected_modus == 11:
 								selected_modus = 12
 								root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS,selected_key)+3)%12]
-							elif selected_modus==12:
+							elif selected_modus == 12:
 								selected_modus = 11
 								root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS,selected_key)-3+12)%12]
 						
@@ -226,7 +230,7 @@ class InstrumentControllerComponent(CompoundComponent):
 				self._track_controller.set_enabled(True)
 
 			self._update_matrix()
-			
+						
 			for button in self._remaining_buttons:
 				button.set_on_off_values(LED_OFF,LED_OFF)
 				button.turn_off()
@@ -248,7 +252,43 @@ class InstrumentControllerComponent(CompoundComponent):
 					self._octave_down_button.turn_on()
 				else:
 					self._octave_down_button.turn_off()
+					
+			self._update_OSD()
 		
+	def set_osd(self, osd):
+		self._osd = osd
+		
+	def _update_OSD(self):
+		if self._osd!= None:
+			if self._scales.is_quick_scale:
+				self._osd.mode = "Instrument (quick scale)"
+			else:
+				self._osd.mode = "Instrument"
+			self._osd.attributes[0]=MUSICAL_MODES[self._scales._selected_modus*2]
+			self._osd.attribute_names[0]="Scale"
+			self._osd.attributes[1]=KEY_NAMES[self._scales._selected_key%12]
+			self._osd.attribute_names[1]="Root Note"
+			self._osd.attributes[2]= self._scales._octave_index
+			self._osd.attribute_names[2]="Octave"
+			self._osd.attributes[3]=" "
+			self._osd.attribute_names[3]=" "
+			self._osd.attributes[4]=" "
+			self._osd.attribute_names[4]=" "
+			self._osd.attributes[5]=" "
+			self._osd.attribute_names[5]=" "
+			self._osd.attributes[6]=" "
+			self._osd.attribute_names[6]=" "
+			self._osd.attributes[7]=" "
+			self._osd.attribute_names[7]=" "
+			
+			if self.song().view.selected_track != None:
+				self._osd.info[0] = "track : "+self.song().view.selected_track.name
+			else:
+				self._osd.info[0] = " "
+
+			self._osd.info[1]=" "
+			self._osd.update()
+				
 	def set_matrix(self, matrix):
 		self._matrix = matrix
 		if matrix:

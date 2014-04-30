@@ -14,11 +14,14 @@ from SubSelectorComponent import *
 from StepSequencerComponent import StepSequencerComponent
 from StepSequencerComponent2 import StepSequencerComponent2
 from _Framework.MomentaryModeObserver import MomentaryModeObserver
-
+	
 class MainSelectorComponent(ModeSelectorComponent):
-	""" Class that reassigns the button on the launchpad to different functions """
 
-	def __init__(self, matrix, top_buttons, side_buttons, config_button, parent):
+	""" Class that reassigns the button on the launchpad to different functions """
+	def log(self, message):
+		self._parent.log_message((' '+message+' ').center(50,'='))
+		
+	def __init__(self, matrix, top_buttons, side_buttons, config_button, osd, parent):
 		assert isinstance(matrix, ButtonMatrixElement)
 		assert ((matrix.width() == 8) and (matrix.height() == 8))
 		assert isinstance(top_buttons, tuple)
@@ -27,9 +30,17 @@ class MainSelectorComponent(ModeSelectorComponent):
 		assert (len(side_buttons) == 8)
 		assert isinstance(config_button, ButtonElement)
 		ModeSelectorComponent.__init__(self)
+		self._osd = osd
 		self._parent = parent
-		self._compact = False
-		self._session = SpecialSessionComponent(matrix.width(), matrix.height())
+		self._mode_index=0
+		self._previous_mode_index=-1
+		self._main_mode_index=0
+		self._sub_mode_index=[0,0,0,0]
+		for index in range(4):
+			self._sub_mode_index[index]=0
+		self.set_mode_buttons(top_buttons[4:])
+		self._session = SpecialSessionComponent(matrix.width(), matrix.height(),self)
+		self._session.set_osd(self._osd)
 		self._zooming = SessionZoomingComponent(self._session)
 		self._session.name = 'Session_Control'
 		self._zooming.name = 'Session_Overview'
@@ -44,21 +55,22 @@ class MainSelectorComponent(ModeSelectorComponent):
 
 		self._sub_modes = SubSelectorComponent(matrix, side_buttons, self._session)
 		self._sub_modes.name = 'Mixer_Modes'
+		self._sub_modes._mixer.set_osd(self._osd)
 		self._sub_modes.set_update_callback(self._update_control_channels)
 		self._stepseq = StepSequencerComponent(self._matrix, self._side_buttons, self._nav_buttons, self)
+		self._stepseq.set_osd(self._osd)
 		self._stepseq2 = StepSequencerComponent2(self._matrix, self._side_buttons, self._nav_buttons, self)
+		self._stepseq2.set_osd(self._osd)
 		
 		self._instrument_controller = InstrumentControllerComponent( self._matrix, self._side_buttons, self._nav_buttons,self)
+		self._instrument_controller.set_osd(self._osd)
+		
 		self._device_controller = DeviceControllerComponent(self._matrix, self._side_buttons, self._nav_buttons, self)
+		self._device_controller.set_osd(self._osd)
+		
 		self._init_session()
 		self._all_buttons = tuple(self._all_buttons)
-		self._mode_index=0
-		self._previous_mode_index=-1
-		self._main_mode_index=0
-		self._sub_mode_index=[0,0,0,0]
-		for index in range(4):
-			self._sub_mode_index[index]=0
-		self.set_mode_buttons(top_buttons[4:])
+
 
 	def disconnect(self):
 		for button in self._modes_buttons:
@@ -75,7 +87,8 @@ class MainSelectorComponent(ModeSelectorComponent):
 		self._nav_buttons = None
 		self._config_button = None
 		ModeSelectorComponent.disconnect(self)
-
+		
+		
 	def session_component(self):
 		return self._session
 
@@ -105,7 +118,6 @@ class MainSelectorComponent(ModeSelectorComponent):
 	def set_mode(self, mode):
 		self._clean_heap()
 		self._modes_heap = [(mode, None, None)]
-		self._compute_mode_index()
 		#if ((self.__main_mode_index != mode) or (mode == 3) or True):
 		#self._main_mode_index = mode
 			#self._update_mode()
@@ -165,35 +177,6 @@ class MainSelectorComponent(ModeSelectorComponent):
 		
 		return new_channel
 
-	def _compute_mode_index(self):
-		if self._main_mode_index == 0:
-			#session
-			self._mode_index = 0
-		elif self._main_mode_index == 1:
-			if self._sub_mode_index[self._main_mode_index]==0:
-				#instrument controller
-				self._mode_index = 4
-			elif self._sub_mode_index[self._main_mode_index]==1:
-				#device controller
-				self._mode_index = 5
-			else:
-				#plain user mode 1
-				self._mode_index = 1
-		elif self._main_mode_index == 2:
-			if self._sub_mode_index[self._main_mode_index]==0:
-				#stepseq
-				self._mode_index = 6
-			elif self._sub_mode_index[self._main_mode_index]==1:
-				#melodic step seq
-				self._mode_index = 7			
-			else:
-				#plain user mode 2
-				self._mode_index = 2
-			
-		elif self._main_mode_index == 3:
-			self._mode_index = 3
-		else:
-			assert False
 			
 	def update(self):
 		assert (self._modes_buttons != None)
@@ -217,6 +200,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 				self._setup_instrument_controller(not as_active)
 				self._setup_session(as_active, as_enabled)
 				self._update_control_channels()
+				self._mode_index = 0
 				
 			elif self._main_mode_index == 1:
 				self._setup_session(not as_active, not as_enabled)
@@ -228,17 +212,23 @@ class MainSelectorComponent(ModeSelectorComponent):
 					self._setup_device_controller(not as_active)
 					self._update_control_channels()
 					self._setup_instrument_controller(as_active)
+					self._mode_index = 4
 				elif self._sub_mode_index[self._main_mode_index]==1:
 					#device controller
 					self._setup_instrument_controller(not as_active)
 					self._setup_device_controller(as_active)
 					self._update_control_channels()
+					self._mode_index = 5
 				else:
 					#plain user mode 1
 					self._setup_device_controller(not as_active)
 					self._setup_instrument_controller(not as_active)
 					self._setup_user_mode(True, True, False, True)
 					self._update_control_channels()
+					self._mode_index = 1
+					self._osd.clear()
+					self._osd.mode = "User 1"
+					self._osd.update()
 			
 			elif self._main_mode_index == 2:
 				self._setup_session(not as_active, not as_enabled)
@@ -249,18 +239,26 @@ class MainSelectorComponent(ModeSelectorComponent):
 					#stepseq
 					self._setup_step_sequencer2(not as_active)
 					self._setup_step_sequencer(as_active)
+					self._mode_index = 6
 				elif self._sub_mode_index[self._main_mode_index]==1:
 					#melodic step seq
 					self._setup_step_sequencer(not as_active)
-					self._setup_step_sequencer2(as_active)				
+					self._setup_step_sequencer2(as_active)	
+					self._mode_index = 7
 				else:
 					#plain user mode 2
 					self._setup_step_sequencer(not as_active)
 					self._setup_step_sequencer2(not as_active)
 					self._setup_user_mode(False, False, False, False)
+					self._mode_index = 2
+					self._osd.clear()
+					self._osd.mode = "User 2"
+					self._osd.update()
+					
 				self._update_control_channels()
 				
 			elif self._main_mode_index == 3:
+				#mixer
 				self._setup_device_controller(not as_active)
 				self._setup_step_sequencer(not as_active)
 				self._setup_step_sequencer2(not as_active)
@@ -268,9 +266,9 @@ class MainSelectorComponent(ModeSelectorComponent):
 				self._setup_session(not as_active, as_enabled)
 				self._setup_mixer(as_active)
 				self._update_control_channels()
+				self._mode_index = 3
 			else:
 				assert False
-			self._compute_mode_index()
 			self._previous_mode_index=self._main_mode_index
 			
 			self._session.set_allow_update(True)

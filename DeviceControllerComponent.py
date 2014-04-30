@@ -30,6 +30,7 @@ class DeviceControllerComponent(DeviceComponent):
 		self._device= None
 		self._is_active = False
 		self._force=True
+		self._osd = None
 		
 		DeviceComponent.__init__(self)
 
@@ -44,6 +45,7 @@ class DeviceControllerComponent(DeviceComponent):
 			self._sliders.append(slider)
 		self._sliders=tuple(self._sliders)
 		self.set_parameter_controls(self._sliders)
+		self._selected_track = None
 		
 		#device selection buttons
 		self.set_prev_device_button(top_buttons[0])
@@ -94,18 +96,57 @@ class DeviceControllerComponent(DeviceComponent):
 			slider.set_disabled(not active)
 		#ping parent
 		DeviceComponent.set_enabled(self,active)
-		
+	
+	def set_osd(self, osd):
+		self._osd = osd
+	
+	def _update_OSD(self):
+		if self._osd != None:
+			self._osd.mode = "Device Controller"
+			i = 0
+			for slider in self._parameter_controls: 
+				if slider._parameter_to_map_to != None:
+					self._osd.attribute_names[i]=str(slider._parameter_to_map_to.name)
+					try:
+						self._osd.attributes[i]=str(slider._parameter_to_map_to)
+					except:
+						self._osd.attributes[i]=str(slider._parameter_to_map_to.value)
+				else:
+					self._osd.attribute_names[i]=" "
+					self._osd.attributes[i]=" "
+				i += 1
+			
+			if self._selected_track != None:
+				if self._locked_to_device:
+					self._osd.info[0]="track : "+self._selected_track.name 
+				else:
+					self._osd.info[0]="track : "+self._selected_track.name
+			else:
+				self._osd.info[0]=" "
+			if self._device !=None:
+				name = self._device.name
+				if name == "":
+					name = "(unamed device)"
+				if self._locked_to_device:
+					self._osd.info[1]="device : " + name + " (locked)" 
+				else:
+					self._osd.info[1]="device : " + name
+			else:
+				self._osd.info[1]="no device selected"
+			self._osd.update()
+				
 #DEVICE SELECTION
 	def _on_device_changed(self):
- 		if self._locked_to_device != True:		
+ 		if not self._locked_to_device:
+			self._selected_track = self.song().view.selected_track		
 			self.set_device(self.song().appointed_device)
 			if self.is_enabled():
 				self.update()
 	
 	def on_selected_track_changed(self):
- 		if self._locked_to_device != True:
- 			track = self.song().view.selected_track
-  			self.set_device(track.view.selected_device)
+ 		if not self._locked_to_device:
+ 			self._selected_track = self.song().view.selected_track
+  			self.set_device(self._selected_track.view.selected_device)
 			if self.is_enabled():
 				self.update()
 					
@@ -117,6 +158,7 @@ class DeviceControllerComponent(DeviceComponent):
 #UPDATE		
 	def update(self):
 		if self.is_enabled():
+			
 			if(not self._locked_to_device):
 				if(self._device!=None):
 					if ((not self.application().view.is_view_visible('Detail')) or (not self.application().view.is_view_visible('Detail/DeviceChain'))):
@@ -151,6 +193,7 @@ class DeviceControllerComponent(DeviceComponent):
 			self.update_on_off_button()
 			self.update_precision_button()
 			self.update_remaining_buttons()
+			self._update_OSD()
 			self._force=False
 			
 
@@ -184,15 +227,17 @@ class DeviceControllerComponent(DeviceComponent):
 				self._lock_button.turn_off()
 	
 	def _lock_callback_function(self):
-		#lock to a one device
-		self.set_lock_to_device(not self._locked_to_device, self._device)
-		#display a message about the lock status
-		if(self._locked_to_device and  self._device != None):
-			self._parent._parent.show_message("Launchpad locked to " + str(self._device.name)+" !")
-		self.update_track_buttons()
-		self.update_device_buttons()
-		if(self._locked_to_device):
-			self.on_selected_track_changed()
+		if self.is_enabled():
+			#lock to a one device
+			self.set_lock_to_device(not self._locked_to_device, self._device)
+			#display a message about the lock status
+			if(self._locked_to_device and  self._device != None):
+				self._parent._parent.show_message("Launchpad locked to " + str(self._device.name)+" !")
+			self.update_track_buttons()
+			self.update_device_buttons()
+			self._update_OSD()
+			if(self._locked_to_device):
+				self.on_selected_track_changed()
 		
 	
 		

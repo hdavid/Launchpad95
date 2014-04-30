@@ -6,6 +6,7 @@ from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
 from ConfigurableButtonElement import ConfigurableButtonElement
 from MainSelectorComponent import MainSelectorComponent
+from M4LInterface import M4LInterface
 SIDE_NOTES = (8, 24, 40, 56, 72, 88, 104, 120)
 DRUM_NOTES = (41, 42, 43, 44, 45, 46, 47, 57, 58, 59, 60, 61, 62, 63, 73, 74, 75, 76, 77, 78, 79, 89, 90, 91, 92, 93, 94, 95, 105, 106, 107)
 DO_COMBINE = Live.Application.combine_apcs() #requires 8.2 & higher
@@ -67,7 +68,9 @@ class Launchpad(ControlSurface):
 			side_buttons[5].name = 'Trk_On_Button'
 			side_buttons[6].name = 'Solo_Button'
 			side_buttons[7].name = 'Arm_Button'
-			self._selector = MainSelectorComponent(matrix, tuple(top_buttons), tuple(side_buttons), self._config_button, self)
+			self._osd = M4LInterface()
+			self._osd.name = "OSD"
+			self._selector = MainSelectorComponent(matrix, tuple(top_buttons), tuple(side_buttons), self._config_button, self._osd, self)
 			self._selector.name = 'Main_Modes'
 			self._do_combine()
 			for control in self.controls:

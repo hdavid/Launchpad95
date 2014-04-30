@@ -1,4 +1,3 @@
-#Embedded file name: /Users/versonator/Hudson/live/Projects/AppLive/Resources/MIDI Remote Scripts/Push/InstrumentComponent.py
 from _Framework.CompoundComponent import CompoundComponent
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.ModesComponent import DisplayingModesComponent, ModesComponent
@@ -11,7 +10,7 @@ from TrackControllerComponent import TrackControllerComponent
 from consts import *
 
 NOTE_NAMES = ('C', 'D\x1b', 'D', 'E\x1b', 'E', 'F', 'G\x1b', 'G', 'A\x1b', 'A', 'B\x1b', 'B')
-#CIRCLE_OF_FIFTHS = [ 7 * k % 12 for k in range(12) ]
+CIRCLE_OF_FIFTHS = [ 7 * k % 12 for k in range(12) ]
 #KEY_CENTERS = CIRCLE_OF_FIFTHS[0:6] + CIRCLE_OF_FIFTHS[-1:5:-1]
 
 
@@ -163,6 +162,8 @@ class ScalesComponent(ControlSurfaceComponent):
 		#C  D  E  F  G  A  B
 		self._index = [0, 2, 4, 5, 7, 9, 11]
 		self._parent = None
+		self._current_minor_mode = 1
+		self._minor_modes = [1,13,14]
 		
 	def set_parent(self, parent):
 		self._parent = parent
@@ -265,53 +266,120 @@ class ScalesComponent(ControlSurfaceComponent):
 	def _matrix_value(self, value, x, y, is_momentary): #matrix buttons listener
 		if self.is_enabled():
 			if ((value != 0) or (not is_momentary)):
-				
+				#modes
 				if y==0:
-					if x==7:
-						self.set_drumrack(True)
-					if x==6:
-						self.set_chromatic()
-						self._presets.set_orientation('horizontal')
-					if x==5:
-						self.set_diatonic(3)
-						self._presets.set_orientation('horizontal')
-					if x==4:
-						self.set_diatonic(2)
-						self._presets.set_orientation('vertical')
+					if not self.is_drumrack():
+						if x==0:
+							self.is_absolute = not self.is_absolute
+						if x==1:
+							self._presets.toggle_orientation()
 					if x==2:
 						self.set_chromatic_gtr()
 						self._presets.set_orientation('horizontal')
 					if x==3:
 						self.set_diatonic_ns()
 						self._presets.set_orientation('horizontal')
-					if x==1 and not self.is_drumrack():
-						self._presets.toggle_orientation()
-					if x==0 and not self.is_drumrack():
-						if self.is_absolute:
-							self.is_absolute = False
-						else:
-							self.is_absolute = True
-					#if x==1 and not self.is_drumrack() and not self.is_chromatic():
-					#	self._presets.cycle_intervals()
+					if x==4:
+						self.set_diatonic(2)
+						self._presets.set_orientation('vertical')
+					if x==6:
+						self.set_chromatic()
+						self._presets.set_orientation('horizontal')
+					if x==5:
+						self.set_diatonic(3)
+						self._presets.set_orientation('horizontal')
+					if x==7:
+						self.set_drumrack(True)
+	
+			
+				#root note
+				if not self.is_drumrack():
+					root = -1
+					selected_key = self._selected_key			
+					selected_modus = self._selected_modus
+					if y==1 and x in[0,1,3,4,5] or y==2 and x<7:
+						root = [0, 2, 4, 5, 7, 9, 11, 12][x]
+						if y==1:
+							root = root + 1
 					
-				if y==1 and x<7 and not self.is_drumrack():
-					self.set_key((self._index[x]+1)%12)
-				if y==2 and x<7 and not self.is_drumrack():
-					self.set_key(self._index[x])
+					#if root == selected_key:#alternate minor/major
+					#	if selected_modus==0:
+					#		selected_modus = self._current_minor_mode
+					#	elif selected_modus in [1,13,14]:
+					#		self._current_minor_mode = selected_modus
+					#		selected_modus = 0
+					#	elif selected_modus==11:
+					#		selected_modus = 12
+					#	elif selected_modus==12:
+					#		selected_modus = 11
+					
+					if y==2 and x==7:#nav circle of 5th right
+						root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS,selected_key)+1+12)%12]
+					if y==1 and x==6:#nav circle of 5th left
+						root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS,selected_key)-1+12)%12]
+					if y==1 and x==2: #relative scale
+						if self._selected_modus==0:
+							selected_modus = self._current_minor_mode
+							root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS,selected_key)+3)%12]
+						elif self._selected_modus in [1,13,14]:
+							self._current_minor_mode = selected_modus
+							selected_modus = 0
+							root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS,selected_key)-3+12)%12]
+						elif self._selected_modus==11:
+							selected_modus = 12
+							root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS,selected_key)+3)%12]
+						elif self._selected_modus==12:
+							selected_modus = 11
+							root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS,selected_key)-3+12)%12]
+					if root != -1:
+						self.set_selected_modus(selected_modus)
+						self.set_key(root)
+					
+
 				if y==1 and x==7 and not self.is_drumrack():
 					self.is_quick_scale = not self.is_quick_scale
-						
+				#octave		
 				if y==3:
 					self._octave_index = x
-					
+				#modus
 				if y>3 and not self.is_drumrack():
 					self.set_selected_modus((y-4)*8+x)
 					
 				self.update()			
-						
+	
+	def tuple_idx(self,tuple, obj):
+		for i in xrange(0,len(tuple)):
+			if (tuple[i] == obj):
+				return i
+		return(False)
+
+	def set_osd(self, osd):
+		self._osd = osd
+		
+	def _update_OSD(self):
+		if self._osd != None:
+			self._osd.attributes[0]=""
+			self._osd.attribute_names[0]=""
+			self._osd.attributes[1]=MUSICAL_MODES[self._selected_modus*2]
+			self._osd.attribute_names[1]="Scale"
+			self._osd.attributes[2]=KEY_NAMES[self._selected_key%12]
+			self._osd.attribute_names[2]="Root Note"
+			self._osd.attributes[3]= self._octave_index
+			self._osd.attribute_names[3]="Octave"
+			self._osd.attributes[4]=" "
+			self._osd.attribute_names[4]=" "
+			self._osd.attributes[5]=" "
+			self._osd.attribute_names[5]=" "
+			self._osd.attributes[6]=" "
+			self._osd.attribute_names[6]=" "
+			self._osd.attributes[7]=" "
+			self._osd.attribute_names[7]=" "
+			self._osd.update()
+		
+							
 	def update(self):
 		if self.is_enabled():
-			
+			self._update_OSD()
 			for button, (x, y) in self._matrix.iterbuttons():
 				button.use_default_message()
 				button.set_enabled(True)
@@ -319,8 +387,6 @@ class ScalesComponent(ControlSurfaceComponent):
 				
 			self._matrix.get_button(7, 2).set_on_off_values(LED_OFF,LED_OFF)
 			self._matrix.get_button(7, 2).turn_off()
-			#self._matrix.get_button(1, 0).set_on_off_values(LED_OFF,LED_OFF)
-			#self._matrix.get_button(1, 0).turn_off()
 	
 			absolute_button  = self._matrix.get_button(0, 0)
 			orientation_button =  self._matrix.get_button(1, 0)
@@ -349,6 +415,22 @@ class ScalesComponent(ControlSurfaceComponent):
 			diatonic_ns_button  = self._matrix.get_button(3, 0)
 			diatonic_ns_button.set_on_off_values(RED_FULL,RED_THIRD)
 			diatonic_ns_button.force_next_send()
+
+			#circle of 5th nav right
+			button  = self._matrix.get_button(7,2)
+			button.set_on_off_values(RED_THIRD,RED_THIRD)
+			button.force_next_send()
+			button.turn_on()
+			#circle of 5th nav left
+			button  = self._matrix.get_button(6,1)
+			button.set_on_off_values(RED_THIRD,RED_THIRD)
+			button.force_next_send()
+			button.turn_on()
+			#relative scale button
+			button  = self._matrix.get_button(2,1)
+			button.set_on_off_values(RED_THIRD,RED_THIRD)
+			button.force_next_send()
+			button.turn_on()
 			
 			#mode buttons
 			if self.is_drumrack():
@@ -434,12 +516,10 @@ class ScalesComponent(ControlSurfaceComponent):
 			else:
 				#root note button
 				scene_index=1
-				for track_index in range(7):
+				for track_index in [0,1,3,4,5]:
 					button  = self._matrix.get_button(track_index, scene_index)
 					if track_index in [0,1,3,4,5]:
 						button.set_on_off_values(AMBER_FULL,AMBER_THIRD)
-					else:
-						button.set_on_off_values(LED_OFF,LED_OFF)
 					if self._selected_key%12==(self._index[track_index]+1)%12:
 						button.turn_on()
 					else:

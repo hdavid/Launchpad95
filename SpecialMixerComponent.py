@@ -7,6 +7,7 @@ class SpecialMixerComponent(MixerComponent):
 	""" Class encompassing several defaultable channel strips to form a mixer """
 
 	def __init__(self, num_tracks, num_returns = 0, with_eqs = False, with_filters = False):
+		self._osd = None
 		MixerComponent.__init__(self, num_tracks, num_returns, with_eqs, with_filters)
 		self._unarm_all_button = None
 		self._unsolo_all_button = None
@@ -47,9 +48,50 @@ class SpecialMixerComponent(MixerComponent):
 			self._unmute_all_button.add_value_listener(self._unmute_all_value)
 			self._unmute_all_button.turn_off()
 
+	def _reassign_tracks(self):
+		MixerComponent._reassign_tracks(self)
+		if self._is_enabled:
+			self._update_OSD()
+		
 	def _create_strip(self):
 		return DefChannelStripComponent()
+		
+	def set_osd(self, osd):
+		self._osd = osd
+	
+	def update(self):
+		MixerComponent.update(self)
+		if self._is_enabled:
+			self._update_OSD()
+		
+	def set_enabled(self,enabled):
+			MixerComponent.set_enabled(self,enabled)
+			if enabled:
+				self._update_OSD()
+			
+	def _update_OSD(self):
+		if self._osd != None:
+			self._osd.mode="Mixer"
+			for i in range(8):
+				self._osd.attribute_names[i]=" "
+				self._osd.attributes[i]=" "
+				
+			tracks = self.tracks_to_use()
+			idx = 0	
+			for i in range(len(tracks)):
+				if idx<8 and len(tracks)>i+self._track_offset:
+					track = tracks[i+self._track_offset]
+					if track != None:
+						self._osd.attribute_names[idx]=str(track.name)
+					else:
+						self._osd.attribute_names[idx]=" "
+					self._osd.attributes[idx]=" "
+				idx += 1
 
+			self._osd.info[0]=" "
+			self._osd.info[1]=" "
+			self._osd.update()
+			
 	def _unarm_all_value(self, value):
 		assert self.is_enabled()
 		assert (self._unarm_all_button != None)

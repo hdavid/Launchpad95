@@ -14,6 +14,7 @@ import time
 
 #quantization button colours. this must remain of length 4.
 QUANTIZATION_MAP = [1,0.5,0.25,0.125]#1/4 1/8 1/16 1/32
+QUANTIZATION_NAMES = ["1/4", "1/8", "1/16", "1/32"]
 QUANTIZATION_COLOR_MAP = [LED_OFF,AMBER_THIRD,AMBER_HALF,AMBER_FULL]
 
 STEPSEQ_MODE_NORMAL=1
@@ -630,8 +631,11 @@ class LoopSelectorComponent(ControlSurfaceComponent):
 class StepSequencerComponent(CompoundComponent):
 
 	def __init__(self, matrix, side_buttons, top_buttons, parent):
+		self._osd = None
 		super(StepSequencerComponent, self).__init__()
 		self._parent = parent
+	
+		self._name = "drum step sequencer"
 		#clip
 		self._clip = None
 		self._clip_slot = None
@@ -747,13 +751,79 @@ class StepSequencerComponent(CompoundComponent):
 		
 	def _set_scale_selector(self):
 		self._scale_selector = self.register_component(ScalesComponent())
+		self._scale_selector.set_osd(self._osd)
 		self._scale_selector.set_enabled(False)
 		self._scale_selector.set_matrix(self._matrix)
 		self._scale_selector.set_chromatic()
 		self._scale_selector_button = None
 		self.set_scale_selector_button(self._side_buttons[0])
 		
-	
+	def set_osd(self, osd):
+		self._osd = osd
+		self._scale_selector.set_osd(osd)
+
+	def _update_OSD(self):
+		if self._osd != None:
+			if self._mode == STEPSEQ_MODE_MULTINOTE:
+				self._osd.set_mode('Drum Step Sequencer (multinote)')
+			else:
+				self._osd.set_mode('Drum Step Sequencer')
+			
+			if self._clip !=None:
+				self._osd.attributes[0]=MUSICAL_MODES[self._scale_selector._selected_modus*2]
+				self._osd.attribute_names[0]="Scale"
+				self._osd.attributes[1]=KEY_NAMES[self._scale_selector._selected_key%12]
+				self._osd.attribute_names[1]="Root Note"
+				self._osd.attributes[2]= self._scale_selector._octave_index
+				self._osd.attribute_names[2]="Octave"
+				self._osd.attributes[3]=QUANTIZATION_NAMES[self._quantization_index]
+				self._osd.attribute_names[3]="Quantisation"
+				self._osd.attributes[4]=" "
+				self._osd.attribute_names[4]=" "
+				self._osd.attributes[5]=" "
+				self._osd.attribute_names[5]=" "
+				self._osd.attributes[6]=" "
+				self._osd.attribute_names[6]=" "
+				self._osd.attributes[7]=" "
+				self._osd.attribute_names[7]=" "
+			else:
+				self._osd.attributes[0]=" "
+				self._osd.attribute_names[0]=" "
+				self._osd.attributes[1]=" "
+				self._osd.attribute_names[1]=" "
+				self._osd.attributes[2]= " "
+				self._osd.attribute_names[2]=" "
+				self._osd.attributes[3]=" "
+				self._osd.attribute_names[3]=" "
+				self._osd.attributes[4]=" "
+				self._osd.attribute_names[4]=" "
+				self._osd.attributes[5]=" "
+				self._osd.attribute_names[5]=" "
+				self._osd.attributes[6]=" "
+				self._osd.attribute_names[6]=" "
+				self._osd.attributes[7]=" "
+				self._osd.attribute_names[7]=" "
+				
+			if self._selected_track != None:
+				if self._lock_to_track and self._is_locked:
+					self._osd.info[0]="track : "+self._selected_track.name+ " (locked)" 
+				else:
+					self._osd.info[0]="track : "+self._selected_track.name
+			else:
+				self._osd.info[0]=" "
+			if self._clip !=None:
+				name = self._clip.name
+				if name == "":
+					name = "(unamed clip)"
+				if not self._lock_to_track and self._is_locked:
+					self._osd.info[1]="clip : "+name+ " (locked)" 
+				else:
+					self._osd.info[1]="clip : "+name
+			else:
+				self._osd.info[1]="no clip selected"
+			self._osd.update()
+
+
 	@property
 	def _is_velocity_shifted(self):
 		return self._note_editor._is_velocity_shifted
@@ -766,24 +836,24 @@ class StepSequencerComponent(CompoundComponent):
 			#clear note editor cache
 			self._note_editor._force_update=True
 		
+			#todo: find a better way to init?
+			if self._mode == -1:
+				self._mode = STEPSEQ_MODE_NORMAL
+				self._detect_scale_mode()
+		
 			#sync to selected pad
 			self._update_drum_group_device()
 			if(self._drum_group_device):
 				self._note_selector.set_selected_note(index_of(self._drum_group_device.drum_pads,self._drum_group_device.view.selected_drum_pad))
 			
-			#todo: find a better way to init?
-			if self._mode == -1:
-				self._mode = STEPSEQ_MODE_NORMAL
-				self._detect_scale_mode()
-				
 			self._track_controller.set_enabled(enabled)
-
 		
 			#update clip notes as they might have changed while we were sleeping
 			self.on_clip_slot_changed()
 			#call super.set_enabled()
 			CompoundComponent.set_enabled(self,enabled)
 			self._on_notes_changed()
+			self._update_OSD()
 			
 		else:
 			self._track_controller.set_enabled(enabled)
@@ -861,6 +931,7 @@ class StepSequencerComponent(CompoundComponent):
 			self._update_note_selector()
 			self._update_buttons()
 			self._update_note_editor()
+			self._update_OSD()
 			#show clip !
 			if not self._is_locked and self._clip !=None:
 					if ((not self.application().view.is_view_visible('Detail')) or (not self.application().view.is_view_visible('Detail/Clip'))):
@@ -1108,6 +1179,7 @@ class StepSequencerComponent(CompoundComponent):
 					self._scale_selector_button.set_on_off_values(LED_OFF,LED_OFF)
 				if self._mode==STEPSEQ_MODE_SCALE_EDIT:
 					self._scale_selector_button.turn_on()
+					self._osd.set_mode('Scale')
 				else:
 					self._scale_selector_button.turn_off()
 
@@ -1170,8 +1242,10 @@ class StepSequencerComponent(CompoundComponent):
 					self._mode_button.set_on_off_values(AMBER_FULL,AMBER_THIRD)
 					if self._mode == STEPSEQ_MODE_MULTINOTE:
 						self._mode_button.turn_on()
+						self._osd.update()
 					else:
 						self._mode_button.turn_off()
+						self._osd.update()
 				else:
 					self._mode_button.set_on_off_values(LED_OFF,LED_OFF)
 					self._mode_button.turn_off()
@@ -1253,6 +1327,7 @@ class StepSequencerComponent(CompoundComponent):
 			self._note_selector.update()
 		if self._note_editor != None:
 			self._note_editor.update()
+		self._update_OSD()
 
 # LOCK Button
 	def _update_lock_button(self):
@@ -1296,7 +1371,8 @@ class StepSequencerComponent(CompoundComponent):
 						self._is_locked = True
 				else:
 					self._is_locked = (not self._is_locked) 
-				self._update_lock_button()
+					self._update_lock_button()
+					self._update_OSD()
 
 
 # RIGHT Button

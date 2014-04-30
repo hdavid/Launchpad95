@@ -17,7 +17,7 @@ AMBER_FULL = ((RED_FULL + GREEN_FULL) - 4)
 AMBER_HALF = ((RED_HALF + GREEN_HALF) - 4)
 AMBER_THIRD = ((RED_THIRD + GREEN_THIRD) - 4)
 AMBER_BLINK = ((AMBER_FULL - 4) + 8)
-
+KEY_NAMES = ["C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab","A","A#/Bb","B"]
 
 MUSICAL_MODES = [
 
