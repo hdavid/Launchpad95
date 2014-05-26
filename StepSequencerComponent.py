@@ -833,6 +833,8 @@ class StepSequencerComponent(CompoundComponent):
 #enabled
 	def set_enabled(self, enabled):
 		if enabled:
+			if self._mode == STEPSEQ_MODE_SCALE_EDIT:
+				self.set_mode(self._mode_backup)
 			#clear note editor cache
 			self._note_editor._force_update=True
 		
@@ -1369,6 +1371,7 @@ class StepSequencerComponent(CompoundComponent):
 					self._lock_to_track = (not self._lock_to_track)
 					if not self._is_locked:
 						self._is_locked = True
+					self._update_lock_button()
 				else:
 					self._is_locked = (not self._is_locked) 
 					self._update_lock_button()
@@ -1466,8 +1469,9 @@ class StepSequencerComponent(CompoundComponent):
 					track = self._clip_slot.canonical_parent
 					newIdx = track.duplicate_clip_slot(list(track.clip_slots).index(self._clip_slot))
 					self.song().view.selected_scene=self.song().scenes[newIdx]
+					if track.clip_slots[newIdx] != None:
+						track.clip_slots[newIdx].fire()
 					self.on_clip_slot_changed()
-					self._clip_slot.fire()
 					self.update()
 			except Live.Base.LimitationError:
 				pass
