@@ -396,38 +396,46 @@ class InstrumentControllerComponent(CompoundComponent):
 					selected_key = self._scales._selected_key	
 
 					if self._quick_scale_root:
+						if selected_modus==0 or selected_modus==12:
+							off_color = AMBER_THIRD
+							on_color = AMBER_FULL
+							fifth_button_color = RED_THIRD
+							mode_button_color = RED_THIRD
+							relative_scale_button_color = RED_THIRD
+						elif selected_modus==1 or selected_modus==11:
+							off_color = RED_THIRD
+							on_color = RED_FULL
+							fifth_button_color = GREEN_THIRD
+							mode_button_color = GREEN_THIRD
+							relative_scale_button_color = GREEN_THIRD
+						else:
+							off_color = GREEN_THIRD
+							on_color = GREEN_FULL
+							fifth_button_color = RED_THIRD
+							mode_button_color = RED_THIRD
+							relative_scale_button_color = RED_THIRD
+							
 						#circle of 5th nav right
 						button  = self._matrix.get_button(7,1)
-						button.set_on_off_values(RED_THIRD,RED_THIRD)
+						button.set_on_off_values(fifth_button_color,fifth_button_color)
 						button.force_next_send()
 						button.turn_on()
 						#circle of 5th nav left
 						button  = self._matrix.get_button(6,0)
-						button.set_on_off_values(RED_THIRD,RED_THIRD)
+						button.set_on_off_values(fifth_button_color,fifth_button_color)
 						button.force_next_send()
 						button.turn_on()
 						#mode button
 						button  = self._matrix.get_button(7,0)
-						button.set_on_off_values(RED_THIRD,RED_THIRD)
+						button.set_on_off_values(mode_button_color,mode_button_color)
 						button.force_next_send()
 						button.turn_on()
 						#relative scale button
 						button  = self._matrix.get_button(2,0)
-						button.set_on_off_values(RED_THIRD,RED_THIRD)
+						button.set_on_off_values(relative_scale_button_color,relative_scale_button_color)
 						button.force_next_send()
 						button.turn_on()
 						
-						if selected_modus==0 or selected_modus==12:
-							off_color = AMBER_THIRD
-							on_color = AMBER_FULL
-						elif selected_modus==1 or selected_modus==11:
-							off_color = RED_THIRD
-							on_color = RED_FULL
-						else:
-							off_color = GREEN_THIRD
-							on_color = GREEN_FULL
-
-		
 						for x in [0,1,3,4,5]:
 							button  = self._matrix.get_button(x,0)
 							button.set_enabled(True)
