@@ -312,6 +312,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 	def _matrix_value(self, value, x, y, is_momentary): #matrix buttons listener
 		if self.is_enabled() and y<=self.height:
 			if ((value != 0) or (not is_momentary)):
+				self._parent._was_velocity_shifted = False
 				self._matrix_value_message([value,x,y,is_momentary])
 				
 	def _matrix_value_message(self, values): #value, x, y, is_momentary): #matrix buttons listener
