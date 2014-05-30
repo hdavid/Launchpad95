@@ -223,7 +223,7 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 					
 					if self._is_velocity_shifted and not self._parent._is_locked:
 						self._offset_buttons[i].force_next_send()
-						self._offset_buttons[i].turn_off()
+						#self._offset_buttons[i].turn_off()
 						self._offset_buttons[i].set_enabled(False)
 						self._offset_buttons[i].set_channel(11)
 						self._offset_buttons[i].set_identifier(note)
