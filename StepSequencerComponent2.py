@@ -46,7 +46,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 
 		# buttons
 		self._matrix = None
- 
+
 		# matrix
 		self.set_button_matrix(matrix)
 		self._grid_buffer = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]]
