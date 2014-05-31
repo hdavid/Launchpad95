@@ -685,10 +685,10 @@ class StepSequencerComponent2(StepSequencerComponent):
 		self._note_selector = self.register_component(NoteSelectorComponent(self, []))
 
 	def _set_loop_selector(self):
-		self._loop_selector = self.register_component(LoopSelectorComponent(self,
-																			[self._matrix.get_button(0, 7), self._matrix.get_button(1, 7), self._matrix.get_button(2, 7), self._matrix.get_button(3, 7),
-																			 self._matrix.get_button(4, 7), self._matrix.get_button(5, 7), self._matrix.get_button(6, 7), self._matrix.get_button(7, 7)
-																			 ]))
+		self._loop_selector = self.register_component(LoopSelectorComponent(self, [
+			self._matrix.get_button(0, 7), self._matrix.get_button(1, 7), self._matrix.get_button(2, 7), self._matrix.get_button(3, 7),
+			self._matrix.get_button(4, 7), self._matrix.get_button(5, 7), self._matrix.get_button(6, 7), self._matrix.get_button(7, 7)
+		]))
 		self.set_left_button(self._top_buttons[2])
 		self.set_right_button(self._top_buttons[3])
 

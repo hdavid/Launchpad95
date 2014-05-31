@@ -711,12 +711,11 @@ class StepSequencerComponent(CompoundComponent):
 		self.set_quantization_button(self._side_buttons[2])
 
 	def _set_loop_selector(self):
-		self._loop_selector = self.register_component(LoopSelectorComponent(self,
-																			[self._matrix.get_button(4, 4), self._matrix.get_button(5, 4), self._matrix.get_button(6, 4), self._matrix.get_button(7, 4),
-																			 self._matrix.get_button(4, 5), self._matrix.get_button(5, 5), self._matrix.get_button(6, 5), self._matrix.get_button(7, 5),
-																				self._matrix.get_button(4, 6), self._matrix.get_button(5, 6), self._matrix.get_button(6, 6), self._matrix.get_button(7, 6),
-																				self._matrix.get_button(4, 7), self._matrix.get_button(5, 7), self._matrix.get_button(6, 7), self._matrix.get_button(7, 7)])
-													  )
+		self._loop_selector = self.register_component(LoopSelectorComponent(self, [
+			self._matrix.get_button(4, 4), self._matrix.get_button(5, 4), self._matrix.get_button(6, 4), self._matrix.get_button(7, 4),
+			self._matrix.get_button(4, 5), self._matrix.get_button(5, 5), self._matrix.get_button(6, 5), self._matrix.get_button(7, 5),
+			self._matrix.get_button(4, 6), self._matrix.get_button(5, 6), self._matrix.get_button(6, 6), self._matrix.get_button(7, 6),
+			self._matrix.get_button(4, 7), self._matrix.get_button(5, 7), self._matrix.get_button(6, 7), self._matrix.get_button(7, 7)]))
 
 	def _set_note_editor(self):
 		self._note_editor = self.register_component(NoteEditorComponent(self, self._matrix))
@@ -724,12 +723,11 @@ class StepSequencerComponent(CompoundComponent):
 		self._note_editor.set_mute_shift_button(self._side_buttons[7])
 
 	def _set_note_selector(self):
-		self._note_selector = self.register_component(NoteSelectorComponent(self,
-																			[self._matrix.get_button(0, 7), self._matrix.get_button(1, 7), self._matrix.get_button(2, 7), self._matrix.get_button(3, 7),
-																			 self._matrix.get_button(0, 6), self._matrix.get_button(1, 6), self._matrix.get_button(2, 6), self._matrix.get_button(3, 6),
-																				self._matrix.get_button(0, 5), self._matrix.get_button(1, 5), self._matrix.get_button(2, 5), self._matrix.get_button(3, 5),
-																				self._matrix.get_button(0, 4), self._matrix.get_button(1, 4), self._matrix.get_button(2, 4), self._matrix.get_button(3, 4)])
-													  )
+		self._note_selector = self.register_component(NoteSelectorComponent(self, [
+			self._matrix.get_button(0, 7), self._matrix.get_button(1, 7), self._matrix.get_button(2, 7), self._matrix.get_button(3, 7),
+			self._matrix.get_button(0, 6), self._matrix.get_button(1, 6), self._matrix.get_button(2, 6), self._matrix.get_button(3, 6),
+			self._matrix.get_button(0, 5), self._matrix.get_button(1, 5), self._matrix.get_button(2, 5), self._matrix.get_button(3, 5),
+			self._matrix.get_button(0, 4), self._matrix.get_button(1, 4), self._matrix.get_button(2, 4), self._matrix.get_button(3, 4)]))
 		self._note_selector.set_up_button(self._side_buttons[4])
 		self._note_selector.set_down_button(self._side_buttons[5])
 
