@@ -8,7 +8,7 @@ from _Framework.SessionComponent import SessionComponent
 from _Framework.SessionZoomingComponent import SessionZoomingComponent
 from SpecialMixerComponent import SpecialMixerComponent
 from ConfigurableButtonElement import ConfigurableButtonElement
-from PreciseButtonSliderElement import *
+from PreciseButtonSliderElement import *  # noqa
 LED_OFF = 4
 RED_FULL = 7
 RED_HALF = 6

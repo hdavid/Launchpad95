@@ -1,5 +1,5 @@
 import Live
-from consts import *
+from consts import *  # noqa
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.ButtonElement import ButtonElement
 from _Framework.EncoderElement import EncoderElement

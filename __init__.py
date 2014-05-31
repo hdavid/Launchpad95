@@ -6,7 +6,7 @@ def create_instance(c_instance):
 	return Launchpad(c_instance)
 
 
-from _Framework.Capabilities import *
+from _Framework.Capabilities import *  # noqa
 
 
 def get_capabilities():

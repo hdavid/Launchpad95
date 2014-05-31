@@ -7,8 +7,8 @@ from _Framework.SubjectSlot import subject_slot, subject_slot_group
 from _Framework.ScrollComponent import ScrollComponent, Scrollable
 from _Framework.ButtonElement import ButtonElement
 from TrackControllerComponent import TrackControllerComponent
-from ScaleComponent import *
-from consts import *
+from ScaleComponent import *  # noqa
+from consts import *  # noqa
 
 NOTE_NAMES = ('C', 'D\x1b', 'D', 'E\x1b', 'E', 'F', 'G\x1b', 'G', 'A\x1b', 'A', 'B\x1b', 'B')
 CIRCLE_OF_FIFTHS = [7 * k % 12 for k in range(12)]

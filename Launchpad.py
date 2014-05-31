@@ -1,7 +1,7 @@
 from __future__ import with_statement
 import Live
 from _Framework.ControlSurface import ControlSurface
-from _Framework.InputControlElement import *
+from _Framework.InputControlElement import *  # noqa
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
 from ConfigurableButtonElement import ConfigurableButtonElement

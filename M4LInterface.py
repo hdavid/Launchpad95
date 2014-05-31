@@ -1,5 +1,5 @@
 # import Tkinter
-# from tkinter import *
+# from tkinter import *  # noqa
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 
 

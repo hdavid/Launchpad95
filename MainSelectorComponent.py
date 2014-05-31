@@ -10,7 +10,7 @@ from ConfigurableButtonElement import ConfigurableButtonElement
 from DeviceControllerComponent import DeviceControllerComponent
 from SpecialSessionComponent import SpecialSessionComponent
 from InstrumentControllerComponent import InstrumentControllerComponent
-from SubSelectorComponent import *
+from SubSelectorComponent import *  # noqa
 from StepSequencerComponent import StepSequencerComponent
 from StepSequencerComponent2 import StepSequencerComponent2
 from _Framework.MomentaryModeObserver import MomentaryModeObserver

@@ -1,11 +1,11 @@
 import Live
-from consts import *
+from consts import *  # noqa
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.CompoundComponent import CompoundComponent
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
-from StepSequencerComponent import *
-from ScaleComponent import *
+from StepSequencerComponent import *  # noqa
+from ScaleComponent import *  # noqa
 from TrackControllerComponent import TrackControllerComponent
 from random import randrange
 import time

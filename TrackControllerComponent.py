@@ -1,6 +1,6 @@
 # emacs-mode: -*- python-*-
 import Live
-from consts import *
+from consts import *  # noqa
 from _Framework.MixerComponent import MixerComponent
 from DefChannelStripComponent import DefChannelStripComponent
 from _Framework.ButtonElement import ButtonElement
