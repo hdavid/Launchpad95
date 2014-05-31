@@ -173,10 +173,6 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 	def set_key_index_is_root_note(self, key_index_is_root_note):
 		self._key_index_is_root_note = key_index_is_root_note
 
-	def set_playhead(self, playhead):
-		self._playhead = playhead
-		self._update_matrix()
-
 	def set_page(self, page):
 		self._page = page
 

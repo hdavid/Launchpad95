@@ -132,9 +132,6 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		else:
 			return self.height
 
-	def set_playhead(self, playhead):
-		self._playhead = playhead
-
 	def set_page(self, page):
 		if self.is_multinote:
 			self._page = page

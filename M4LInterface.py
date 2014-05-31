@@ -39,15 +39,6 @@ class M4LInterface(ControlSurfaceComponent):
 	def update_has_listener(self):
 		return self._update_listener is not None
 
-	def set_update_listener(self, listener):
-		self._update_listener = listener
-
-	def remove_update_listener(self, listener):
-		self._update_listener = None
-
-	def update_has_listener(self):
-		return self._update_listener is not None
-
 	@property
 	def updateML(self):
 		return True
