@@ -11,7 +11,7 @@ from consts import *
 
 NOTE_NAMES = ('C', 'D\x1b', 'D', 'E\x1b', 'E', 'F', 'G\x1b', 'G', 'A\x1b', 'A', 'B\x1b', 'B')
 CIRCLE_OF_FIFTHS = [7 * k % 12 for k in range(12)]
-#KEY_CENTERS = CIRCLE_OF_FIFTHS[0:6] + CIRCLE_OF_FIFTHS[-1:5:-1]
+# KEY_CENTERS = CIRCLE_OF_FIFTHS[0:6] + CIRCLE_OF_FIFTHS[-1:5:-1]
 
 
 class InstrumentPresetsComponent():
@@ -303,15 +303,15 @@ class ScalesComponent(ControlSurfaceComponent):
 							root = root + 1
 
 					# if root == selected_key:#alternate minor/major
-					#	if selected_modus==0:
-					#		selected_modus = self._current_minor_mode
-					#	elif selected_modus in [1,13,14]:
-					#		self._current_minor_mode = selected_modus
-					#		selected_modus = 0
-					#	elif selected_modus==11:
-					#		selected_modus = 12
-					#	elif selected_modus==12:
-					#		selected_modus = 11
+					# 	if selected_modus==0:
+					# 		selected_modus = self._current_minor_mode
+					# 	elif selected_modus in [1,13,14]:
+					# 		self._current_minor_mode = selected_modus
+					# 		selected_modus = 0
+					# 	elif selected_modus==11:
+					# 		selected_modus = 12
+					# 	elif selected_modus==12:
+					# 		selected_modus = 11
 
 					if y == 2 and x == 7:  # nav circle of 5th right
 						root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS, selected_key) + 1 + 12) % 12]

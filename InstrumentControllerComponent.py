@@ -12,7 +12,7 @@ from consts import *
 
 NOTE_NAMES = ('C', 'D\x1b', 'D', 'E\x1b', 'E', 'F', 'G\x1b', 'G', 'A\x1b', 'A', 'B\x1b', 'B')
 CIRCLE_OF_FIFTHS = [7 * k % 12 for k in range(12)]
-#KEY_CENTERS = CIRCLE_OF_FIFTHS[0:6] + CIRCLE_OF_FIFTHS[-1:5:-1]
+# KEY_CENTERS = CIRCLE_OF_FIFTHS[0:6] + CIRCLE_OF_FIFTHS[-1:5:-1]
 
 
 class InstrumentControllerComponent(CompoundComponent):

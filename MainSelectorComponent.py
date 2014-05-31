@@ -119,9 +119,9 @@ class MainSelectorComponent(ModeSelectorComponent):
 		self._clean_heap()
 		self._modes_heap = [(mode, None, None)]
 		# if ((self.__main_mode_index != mode) or (mode == 3) or True):
-		#self._main_mode_index = mode
-		# self._update_mode()
-		#	self.update()
+		# 	self._main_mode_index = mode
+		# 	self._update_mode()
+		# 	self.update()
 
 	def number_of_modes(self):
 		return 1 + 3 + 3 + 1

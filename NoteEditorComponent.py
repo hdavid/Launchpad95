@@ -251,7 +251,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 							note_grid_y_base = -1
 
 						note_grid_y_offset = int(note_position / self.quantization / self.width) % self.number_of_lines_per_note
-						#self._parent._parent._parent.log_message("index:"+str(index_of(self.key_indexes,note_key))+" note_grid_y_base:"+str(note_grid_y_base)+" note_grid_y_offset:"+ str(note_grid_y_offset))
+						# self._parent._parent._parent.log_message("index:"+str(index_of(self.key_indexes,note_key))+" note_grid_y_base:"+str(note_grid_y_base)+" note_grid_y_offset:"+ str(note_grid_y_offset))
 					else:
 						if index_of(self.key_indexes, note_key) == 0:
 							note_grid_y_base = 0
@@ -327,9 +327,9 @@ class NoteEditorComponent(ControlSurfaceComponent):
 
 		elif self.is_enabled() and self._clip != None and y < self.height:
 
-			#self._parent._parent._parent.log_message("got: x:"+ str(x)+" y:"+str(y))
-			#self._parent._parent._parent.log_message("clip:"+ str(self._clip))
-			#self._parent._parent._parent.log_message("h:"+ str(self.height))
+			# self._parent._parent._parent.log_message("got: x:"+ str(x)+" y:"+str(y))
+			# self._parent._parent._parent.log_message("clip:"+ str(self._clip))
+			# self._parent._parent._parent.log_message("h:"+ str(self.height))
 
 			if value != 0 or not is_momentary:
 				if(self._is_velocity_shifted):

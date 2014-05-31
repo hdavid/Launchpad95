@@ -209,7 +209,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 						if note_length * 4 >= self._length_map[x] * self._quantization:
 							self._notes_lengths[i] = x
 
-					#note and octave
+					# note and octave
 					found = False
 					for j in range(max(7, len(self._key_indexes))):
 						for octave in range(7):
@@ -612,14 +612,14 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		assert (value in range(128))
 		if self.is_enabled() and self._clip != None:
 			if ((value is 0) and (sender.is_momentary())):
-				#self._is_velocity_shifted = False
+				# self._is_velocity_shifted = False
 				self._is_shifted = False
 				self._is_notes_velocities_shifted = False
 				self.set_mode(STEPSEQ_MODE_NOTES_VELOCITIES)
 				self.update()
 				self._parent._update_OSD()
 			else:
-				#self._is_velocity_shifted = True
+				# self._is_velocity_shifted = True
 				self._is_shifted = True
 				self._is_notes_velocities_shifted = True
 

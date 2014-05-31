@@ -308,7 +308,7 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 	def move(self, steps):
 		if self.can_move(steps):
 			if self.is_diatonic:
-				#self._parent.log_message("can move dia "+ str(steps))
+				# self._parent.log_message("can move dia "+ str(steps))
 
 				# find the next note in scale in that direction
 				oct = 0
@@ -334,18 +334,18 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 				idx = index_of(self._scale, self._offset + steps)
 				self.set_selected_note(self._root_note + oct * 12 + self._scale[idx])
 			else:
-				#self._parent.log_message("can move drum/chrom "+ str(steps) + " root:"+str(self._root_note)+" offset:"+str(self._offset))
+				# self._parent.log_message("can move drum/chrom "+ str(steps) + " root:"+str(self._root_note)+" offset:"+str(self._offset))
 				self.set_selected_note(self._root_note + self._offset + steps)
 
 	def set_selected_note(self, selected_note):
 		if self.is_drumrack:
 			self._root_note = ((selected_note + 12) / 16 - 1) * 16 + 4
 			self._offset = (selected_note - self._root_note + 16) % 16
-			#self._parent.log_message("DR selected_note:"+str(selected_note)+" self._root_note: "+ str(self._root_note)+" offset: "+ str(self._offset))
+			# self._parent.log_message("DR selected_note:"+str(selected_note)+" self._root_note: "+ str(self._root_note)+" offset: "+ str(self._offset))
 		else:
 			self._root_note = ((selected_note - self._key) / 12) * 12 + self._key
 			self._offset = (selected_note + 12 - self._root_note) % 12
-			#self._parent.log_message("CHR selected_note:"+str(selected_note)+" self._root_note: "+ str(self._root_note)+" offset: "+ str(self._offset))
+			# self._parent.log_message("CHR selected_note:"+str(selected_note)+" self._root_note: "+ str(self._root_note)+" offset: "+ str(self._offset))
 
 		self.update()
 		self._parent._scale_updated()
@@ -858,7 +858,7 @@ class StepSequencerComponent(CompoundComponent):
 			self._note_editor.set_multinote(mode == STEPSEQ_MODE_MULTINOTE, number_of_lines_per_note)
 			if mode == STEPSEQ_MODE_NORMAL:
 				if self._mode != mode:
-					#self._loop_selector._block = self._loop_selector._block * self._number_of_lines_per_note
+					# self._loop_selector._block = self._loop_selector._block * self._number_of_lines_per_note
 					self._note_editor.set_page(self._loop_selector._block)
 				self.set_left_button(None)
 				self.set_right_button(None)
@@ -866,7 +866,7 @@ class StepSequencerComponent(CompoundComponent):
 				self._track_controller.set_next_track_button(self._top_buttons[3])
 			else:
 				if self._mode != mode:
-					#self._loop_selector._block = self._loop_selector._block / self._number_of_lines_per_note
+					# self._loop_selector._block = self._loop_selector._block / self._number_of_lines_per_note
 					self._note_editor.set_page(self._loop_selector._block)
 				self._track_controller.set_prev_track_button(None)
 				self._track_controller.set_next_track_button(None)
@@ -882,7 +882,7 @@ class StepSequencerComponent(CompoundComponent):
 
 # SCALE
 	def _scale_updated(self):
-		#self.log_message("scale updated")
+		# self.log_message("scale updated")
 		# self.log_message(str(self._note_selector.selected_note))
 		keys = [0, 0, 0, 0, 0, 0, 0, 0]
 		key_is_root_note = [False, False, False, False, False, False, False, False]
@@ -1037,7 +1037,7 @@ class StepSequencerComponent(CompoundComponent):
 
 		# update clip slot
 		if clip_slot != self._clip_slot or self._clip_slot == None:
-			#self._parent._parent.log_message("update clip_slot")
+			# self._parent._parent.log_message("update clip_slot")
 			if clip_slot != None and clip_slot.has_clip_has_listener(self.on_clip_slot_has_clip_changed):
 				clip_slot.remove_has_clip_listener(self.on_clip_slot_has_clip_changed)
 			self._clip_slot = clip_slot
@@ -1048,7 +1048,7 @@ class StepSequencerComponent(CompoundComponent):
 
 		if self._clip_slot != None and self._clip_slot.has_clip and self._clip_slot.clip != None and self._clip_slot.clip.is_midi_clip:
 			if self._clip == None or self._clip != self._clip_slot.clip:
-				#self._parent._parent.log_message("link clip_slot")
+				# self._parent._parent.log_message("link clip_slot")
 				# unlink
 				if self._clip != None and self._clip.is_midi_clip:
 					if self._clip.notes_has_listener(self._on_notes_changed):
@@ -1075,10 +1075,10 @@ class StepSequencerComponent(CompoundComponent):
 			else:
 				# same clip...
 				pass
-				#self._parent._parent.log_message("same clip. pass.")
+				# self._parent._parent.log_message("same clip. pass.")
 
 		else:
-			#self._parent._parent.log_message("empty clip_slot or no clip_slot. cleanup")
+			# self._parent._parent.log_message("empty clip_slot or no clip_slot. cleanup")
 			# unlink
 			if self._clip != None:
 				if self._clip.notes_has_listener(self._on_notes_changed):
