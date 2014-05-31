@@ -6,7 +6,9 @@ SLIDER_MODE_VOLUME = 1
 SLIDER_MODE_PAN = 2
 SLIDER_MODE_PARAMETER = 3
 
+
 class PreciseButtonSliderElement(ButtonSliderElement):
+
 	""" Class representing a set of buttons used as a slider """
 
 	def __init__(self, buttons):
@@ -14,20 +16,19 @@ class PreciseButtonSliderElement(ButtonSliderElement):
 		num_buttons = len(buttons)
 		self._disabled = False
 		self._mode = SLIDER_MODE_VOLUME
-		self._value_map = tuple([ float(index / num_buttons) for index in range(num_buttons) ])
+		self._value_map = tuple([float(index / num_buttons) for index in range(num_buttons)])
 		self._parent = None
 		self._precision_mode = False
 
-	def set_parent(self,parent):
-		self._parent=parent
+	def set_parent(self, parent):
+		self._parent = parent
 
 	def set_disabled(self, disabled):
 		assert isinstance(disabled, type(False))
 		self._disabled = disabled
 
-	def set_precision_mode(self,precision_mode):
-		self._precision_mode=precision_mode
-
+	def set_precision_mode(self, precision_mode):
+		self._precision_mode = precision_mode
 
 	def set_mode(self, mode):
 		assert mode in (SLIDER_MODE_SINGLE, SLIDER_MODE_VOLUME, SLIDER_MODE_PAN, SLIDER_MODE_PARAMETER)
@@ -36,7 +37,7 @@ class PreciseButtonSliderElement(ButtonSliderElement):
 
 	def set_value_map(self, map):
 		assert isinstance(map, (tuple, type(None)))
-		assert len(map) == len(self._buttons) 
+		assert len(map) == len(self._buttons)
 		self._value_map = map
 
 	def send_value(self, value):
@@ -85,24 +86,21 @@ class PreciseButtonSliderElement(ButtonSliderElement):
 					index_to_light = index
 					break
 
-		self._send_mask(tuple([ index <= index_to_light for index in range(len(self._buttons)) ]))
-
+		self._send_mask(tuple([index <= index_to_light for index in range(len(self._buttons))]))
 
 	def _send_value_parameter(self, value):
 		index_to_light = -1
-		normalised_value = (float(value)*float((len(self._value_map)-1)) / 127.0)
-		if (value >0):	
+		normalised_value = (float(value) * float((len(self._value_map) - 1)) / 127.0)
+		if (value > 0):
 			for index in range(len(self._value_map)):
 				if (normalised_value <= index):
 					index_to_light = index
 					break
-		self._send_mask(tuple([ (index <= index_to_light) for index in range(len(self._buttons)) ]))
-
-
+		self._send_mask(tuple([(index <= index_to_light) for index in range(len(self._buttons))]))
 
 	def _send_value_pan(self, value):
 		num_buttons = len(self._buttons)
-		button_bits = [ False for index in range(num_buttons) ]
+		button_bits = [False for index in range(num_buttons)]
 		normalised_value = float(2 * value / 127.0) - 1.0
 		if value in (63, 64):
 			normalised_value = 0.0
@@ -140,22 +138,22 @@ class PreciseButtonSliderElement(ButtonSliderElement):
 		self._last_sent_value = -1
 		if (self._parameter_to_map_to != None and (not self._disabled) and ((value != 0) or (not sender.is_momentary()))):
 			index_of_sender = list(self._buttons).index(sender)
-			## handle precision mode
+			# handle precision mode
 			if(not self._precision_mode):
 				if ((self._parameter_to_map_to != None) and self._parameter_to_map_to.is_enabled):
 					self._parameter_to_map_to.value = self._value_map[index_of_sender]
 			else:
-				inc = float(self._parameter_to_map_to.max-self._parameter_to_map_to.min)/64 
-				if index_of_sender>=4:
-					inc = inc*(index_of_sender-3)
-					if self._parameter_to_map_to.value+inc <= self._parameter_to_map_to.max:
-						self._parameter_to_map_to.value = self._parameter_to_map_to.value+inc
+				inc = float(self._parameter_to_map_to.max - self._parameter_to_map_to.min) / 64
+				if index_of_sender >= 4:
+					inc = inc * (index_of_sender - 3)
+					if self._parameter_to_map_to.value + inc <= self._parameter_to_map_to.max:
+						self._parameter_to_map_to.value = self._parameter_to_map_to.value + inc
 					else:
 						self._parameter_to_map_to.value = self._parameter_to_map_to.max
 				else:
-					inc = inc*(4-index_of_sender)
-					if self._parameter_to_map_to.value-inc >= self._parameter_to_map_to.min:
-						self._parameter_to_map_to.value = self._parameter_to_map_to.value-inc
+					inc = inc * (4 - index_of_sender)
+					if self._parameter_to_map_to.value - inc >= self._parameter_to_map_to.min:
+						self._parameter_to_map_to.value = self._parameter_to_map_to.value - inc
 					else:
 						self._parameter_to_map_to.value = self._parameter_to_map_to.min
 			self.notify_value(value)
@@ -167,9 +165,9 @@ class PreciseButtonSliderElement(ButtonSliderElement):
 		param_value = self._parameter_to_map_to.value
 		param_min = self._parameter_to_map_to.min
 		param_mid = param_range / 2 + param_min
-		if(self._mode==SLIDER_MODE_PARAMETER):	
-			self._value_map=tuple([ float((self._parameter_to_map_to.max-self._parameter_to_map_to.min) * index/(len(self._buttons)-1)+self._parameter_to_map_to.min) for index in range(len(self._buttons)) ])
-		
+		if(self._mode == SLIDER_MODE_PARAMETER):
+			self._value_map = tuple([float((self._parameter_to_map_to.max - self._parameter_to_map_to.min) * index / (len(self._buttons) - 1) + self._parameter_to_map_to.min) for index in range(len(self._buttons))])
+
 		midi_value = 0
 		if self._mode == SLIDER_MODE_PAN:
 			if param_value == param_mid:

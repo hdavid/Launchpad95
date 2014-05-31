@@ -9,11 +9,13 @@ from MainSelectorComponent import MainSelectorComponent
 from M4LInterface import M4LInterface
 SIDE_NOTES = (8, 24, 40, 56, 72, 88, 104, 120)
 DRUM_NOTES = (41, 42, 43, 44, 45, 46, 47, 57, 58, 59, 60, 61, 62, 63, 73, 74, 75, 76, 77, 78, 79, 89, 90, 91, 92, 93, 94, 95, 105, 106, 107)
-DO_COMBINE = Live.Application.combine_apcs() #requires 8.2 & higher
+DO_COMBINE = Live.Application.combine_apcs()  # requires 8.2 & higher
 LINK_SESSION = False
 LINK_STEPSEQ = False
 
+
 class Launchpad(ControlSurface):
+
 	""" Script for Novation's Launchpad Controller """
 
 	def __init__(self, c_instance):
@@ -26,7 +28,6 @@ class Launchpad(ControlSurface):
 			self._suppress_send_midi = True
 			self._suppress_session_highlight = True
 
-			
 			is_momentary = True
 			self._suggested_input_port = 'Launchpad'
 			self._suggested_output_port = 'Launchpad'
@@ -50,8 +51,8 @@ class Launchpad(ControlSurface):
 
 			self._config_button = ButtonElement(is_momentary, MIDI_CC_TYPE, 0, 0, optimized_send_midi=False)
 			self._config_button.add_value_listener(self._config_value)
-			top_buttons = [ ConfigurableButtonElement(is_momentary, MIDI_CC_TYPE, 0, 104 + index) for index in range(8) ]
-			side_buttons = [ ConfigurableButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, SIDE_NOTES[index]) for index in range(8) ]
+			top_buttons = [ConfigurableButtonElement(is_momentary, MIDI_CC_TYPE, 0, 104 + index) for index in range(8)]
+			side_buttons = [ConfigurableButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, SIDE_NOTES[index]) for index in range(8)]
 			top_buttons[0].name = 'Bank_Select_Up_Button'
 			top_buttons[1].name = 'Bank_Select_Down_Button'
 			top_buttons[2].name = 'Bank_Select_Left_Button'
@@ -79,10 +80,10 @@ class Launchpad(ControlSurface):
 
 			self.set_highlighting_session_component(self._selector.session_component())
 			self._suppress_session_highlight = False
-			#self.set_suppress_rebuild_requests(False)
+			# self.set_suppress_rebuild_requests(False)
 
-			self.log_message("LaunchPad95 Loaded !")	
-	
+			self.log_message("LaunchPad95 Loaded !")
+
 	def disconnect(self):
 		self._suppress_send_midi = True
 		for control in self.controls:
@@ -122,13 +123,12 @@ class Launchpad(ControlSurface):
 			self._selector._stepseq.link_with_step_offset(track_offset)
 		if(LINK_SESSION):
 			self._selector._session.link_with_track_offset(track_offset)
-		
 
 	def _do_combine(self):
 		if (DO_COMBINE and (self not in Launchpad._active_instances)):
 			Launchpad._active_instances.append(self)
 			Launchpad._combine_active_instances()
-	
+
 	def _do_uncombine(self):
 		if self in Launchpad._active_instances:
 			Launchpad._active_instances.remove(self)
@@ -137,7 +137,6 @@ class Launchpad(ControlSurface):
 			if(LINK_STEPSEQ):
 				self._selector._stepseq.unlink()
 			Launchpad._combine_active_instances()
-
 
 	def refresh_state(self):
 		ControlSurface.refresh_state(self)
@@ -155,13 +154,13 @@ class Launchpad(ControlSurface):
 	def build_midi_map(self, midi_map_handle):
 		ControlSurface.build_midi_map(self, midi_map_handle)
 		if self._selector.mode_index == 1:
-			if self._selector._sub_mode_index[self._selector._mode_index] > 0: #disable midi map rebuild for instrument mode to prevent light feedback errors
+			if self._selector._sub_mode_index[self._selector._mode_index] > 0:  # disable midi map rebuild for instrument mode to prevent light feedback errors
 				new_channel = self._selector.channel_for_current_mode()
-				#self.log_message(str(new_channel))
+				# self.log_message(str(new_channel))
 				for note in DRUM_NOTES:
 					self._translate_message(MIDI_NOTE_TYPE, note, 0, note, new_channel)
 
-	def _send_midi(self, midi_bytes, optimized = None):
+	def _send_midi(self, midi_bytes, optimized=None):
 		sent_successfully = False
 		if not self._suppress_send_midi:
 			sent_successfully = ControlSurface._send_midi(self, midi_bytes, optimized=optimized)

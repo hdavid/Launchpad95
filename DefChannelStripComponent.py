@@ -3,7 +3,9 @@ from _Framework.ChannelStripComponent import ChannelStripComponent
 from ConfigurableButtonElement import ConfigurableButtonElement
 from itertools import chain
 
+
 class DefChannelStripComponent(ChannelStripComponent):
+
 	""" Subclass of channel strip component offering defaultbuttons for the timeables """
 
 	def __init__(self):
@@ -258,4 +260,3 @@ class DefChannelStripComponent(ChannelStripComponent):
 				self._default_send2_button.turn_on()
 			else:
 				self._default_send2_button.turn_off()
-

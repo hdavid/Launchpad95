@@ -26,7 +26,9 @@ PAN_VALUE_MAP = (-1.0, -0.634921, -0.31746, 0.0, 0.0, 0.31746, 0.634921, 1.0)
 VOL_VALUE_MAP = (0.0, 0.142882, 0.302414, 0.4, 0.55, 0.7, 0.85, 1.0)
 SEND_VALUE_MAP = (0.0, 0.103536, 0.164219, 0.238439, 0.343664, 0.55, 0.774942, 1.0)
 
+
 class SubSelectorComponent(ModeSelectorComponent):
+
 	""" Class that handles different mixer modes """
 
 	def __init__(self, matrix, side_buttons, session):
@@ -45,7 +47,7 @@ class SubSelectorComponent(ModeSelectorComponent):
 		self._mixer.selected_strip().name = 'Selected_Channel_strip'
 		for column in range(matrix.width()):
 			self._mixer.channel_strip(column).name = 'Channel_Strip_' + str(column)
-			self._sliders.append(PreciseButtonSliderElement(tuple([ matrix.get_button(column, 7 - row) for row in range(8) ])))
+			self._sliders.append(PreciseButtonSliderElement(tuple([matrix.get_button(column, 7 - row) for row in range(8)])))
 			self._sliders[-1].name = 'Button_Slider_' + str(column)
 
 		self._side_buttons = side_buttons[4:]

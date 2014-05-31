@@ -1,7 +1,9 @@
 import Live
 from _Framework.ButtonElement import *
 
+
 class ConfigurableButtonElement(ButtonElement):
+
 	""" Special button class that can be configured with custom on- and off-values """
 
 	def __init__(self, is_momentary, msg_type, channel, identifier):
@@ -35,7 +37,7 @@ class ConfigurableButtonElement(ButtonElement):
 	def reset(self):
 		self.send_value(4)
 
-	def add_value_listener(self, callback, identify_sender = False):
+	def add_value_listener(self, callback, identify_sender=False):
 		if not self._is_notifying:
 			ButtonElement.add_value_listener(self, callback, identify_sender)
 		else:
@@ -50,7 +52,7 @@ class ConfigurableButtonElement(ButtonElement):
 
 		self._pending_listeners = []
 
-	def send_value(self, value, force = False):
+	def send_value(self, value, force=False):
 		ButtonElement.send_value(self, value, force or self._force_next_value)
 		self._force_next_value = False
 
