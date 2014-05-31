@@ -1,19 +1,19 @@
 from _Framework.ModeSelectorComponent import ModeSelectorComponent
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
-from _Framework.ButtonSliderElement import ButtonSliderElement
-from _Framework.ClipSlotComponent import ClipSlotComponent
-from _Framework.ChannelStripComponent import ChannelStripComponent
-from _Framework.SceneComponent import SceneComponent
+# from _Framework.ButtonSliderElement import ButtonSliderElement
+# from _Framework.ClipSlotComponent import ClipSlotComponent
+# from _Framework.ChannelStripComponent import ChannelStripComponent
+# from _Framework.SceneComponent import SceneComponent
 from _Framework.SessionZoomingComponent import SessionZoomingComponent
-from ConfigurableButtonElement import ConfigurableButtonElement
+# from ConfigurableButtonElement import ConfigurableButtonElement
 from DeviceControllerComponent import DeviceControllerComponent
 from SpecialSessionComponent import SpecialSessionComponent
 from InstrumentControllerComponent import InstrumentControllerComponent
 from SubSelectorComponent import *  # noqa
 from StepSequencerComponent import StepSequencerComponent
 from StepSequencerComponent2 import StepSequencerComponent2
-from _Framework.MomentaryModeObserver import MomentaryModeObserver
+# from _Framework.MomentaryModeObserver import MomentaryModeObserver
 
 
 class MainSelectorComponent(ModeSelectorComponent):
