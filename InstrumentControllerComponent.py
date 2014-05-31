@@ -65,7 +65,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		if self._track_controller != None:
 			self._track_controller.set_enabled(enabled)
 		feedback_channels = [self.base_channel, self.base_channel + 1, self.base_channel + 2, self.base_channel + 3]
-		non_feedback_channel = self.base_channel + 4
+		# non_feedback_channel = self.base_channel + 4
 		self._set_feedback_velocity()
 		self._parent._parent.set_feedback_channels(feedback_channels)
 		if not enabled:
@@ -330,7 +330,7 @@ class InstrumentControllerComponent(CompoundComponent):
 			self._parent._parent.release_controlled_track()
 			# self._parent._parent.set_feedback_channels([])
 		else:
-			feedback_channels = [self.base_channel, self.base_channel + 1, self.base_channel + 2, self.base_channel + 3]
+			# feedback_channels = [self.base_channel, self.base_channel + 1, self.base_channel + 2, self.base_channel + 3]
 			non_feedback_channel = self.base_channel + 4
 
 			# create array to keep last channel used for note.

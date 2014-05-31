@@ -260,7 +260,7 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 				note_key = note[0]
 				note_position = note[1]
 				note_length = note[2]
-				note_velocity = note[3]
+				# note_velocity = note[3]
 				note_muted = note[4]
 				if midi_note == note_key and note_position <= playhead and note_position + note_length >= playhead and not note_muted:
 					return True

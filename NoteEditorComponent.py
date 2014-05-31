@@ -264,10 +264,10 @@ class NoteEditorComponent(ControlSurfaceComponent):
 
 					if note_grid_x_position >= 0:
 						# compute colors
-						highlight_color = self.playing_note_color
-						for index in range(len(self.velocity_map)):
-							if note_velocity >= self.velocity_map[index]:
-								highlight_color = self.playing_note_color
+						# highlight_color = self.playing_note_color
+						# for index in range(len(self.velocity_map)):
+							# if note_velocity >= self.velocity_map[index]:
+								# highlight_color = self.playing_note_color
 						velocity_color = self.velocity_map[0]
 						for index in range(len(self.velocity_map)):
 							if note_velocity >= self.velocity_map[index]:
