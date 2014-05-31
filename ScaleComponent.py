@@ -144,8 +144,8 @@ class ScalesComponent(ControlSurfaceComponent):
 
 	def __init__(self, *a, **k):
 		super(ScalesComponent, self).__init__(*a, **k)
-		self._modus_list = [Modus(MUSICAL_MODES[k], MUSICAL_MODES[k + 1]) for k in xrange(0, len(MUSICAL_MODES), 2)]
-		self._modus_names = [MUSICAL_MODES[k] for k in xrange(0, len(MUSICAL_MODES), 2)]
+		self._modus_list = [Modus(MUSICAL_MODES[v], MUSICAL_MODES[v + 1]) for v in xrange(0, len(MUSICAL_MODES), 2)]
+		self._modus_names = [MUSICAL_MODES[v] for v in xrange(0, len(MUSICAL_MODES), 2)]
 		self._selected_modus = 0
 		self._selected_key = 0
 		self._is_chromatic = False
