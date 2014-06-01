@@ -1,18 +1,19 @@
 from _Framework.CompoundComponent import CompoundComponent
-from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
-from _Framework.ModesComponent import DisplayingModesComponent, ModesComponent
-from _Framework.DisplayDataSource import DisplayDataSource
-from _Framework.Util import recursive_map, forward_property
-from _Framework.SubjectSlot import subject_slot, subject_slot_group
-from _Framework.ScrollComponent import ScrollComponent, Scrollable
+# from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
+# from _Framework.ModesComponent import DisplayingModesComponent, ModesComponent
+# from _Framework.DisplayDataSource import DisplayDataSource
+# from _Framework.Util import recursive_map, forward_property
+# from _Framework.SubjectSlot import subject_slot_group
+from _Framework.SubjectSlot import subject_slot
+# from _Framework.ScrollComponent import ScrollComponent, Scrollable
 from _Framework.ButtonElement import ButtonElement
 from TrackControllerComponent import TrackControllerComponent
-from ScaleComponent import *
-from consts import *
+from ScaleComponent import *  # noqa
+from consts import *  # noqa
 
 NOTE_NAMES = ('C', 'D\x1b', 'D', 'E\x1b', 'E', 'F', 'G\x1b', 'G', 'A\x1b', 'A', 'B\x1b', 'B')
 CIRCLE_OF_FIFTHS = [7 * k % 12 for k in range(12)]
-#KEY_CENTERS = CIRCLE_OF_FIFTHS[0:6] + CIRCLE_OF_FIFTHS[-1:5:-1]
+# KEY_CENTERS = CIRCLE_OF_FIFTHS[0:6] + CIRCLE_OF_FIFTHS[-1:5:-1]
 
 
 class InstrumentControllerComponent(CompoundComponent):
@@ -65,7 +66,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		if self._track_controller != None:
 			self._track_controller.set_enabled(enabled)
 		feedback_channels = [self.base_channel, self.base_channel + 1, self.base_channel + 2, self.base_channel + 3]
-		non_feedback_channel = self.base_channel + 4
+		# non_feedback_channel = self.base_channel + 4
 		self._set_feedback_velocity()
 		self._parent._parent.set_feedback_channels(feedback_channels)
 		if not enabled:
@@ -330,7 +331,7 @@ class InstrumentControllerComponent(CompoundComponent):
 			self._parent._parent.release_controlled_track()
 			# self._parent._parent.set_feedback_channels([])
 		else:
-			feedback_channels = [self.base_channel, self.base_channel + 1, self.base_channel + 2, self.base_channel + 3]
+			# feedback_channels = [self.base_channel, self.base_channel + 1, self.base_channel + 2, self.base_channel + 3]
 			non_feedback_channel = self.base_channel + 4
 
 			# create array to keep last channel used for note.

@@ -1,4 +1,4 @@
-
+# flake8: noqa
 # LaunchPad Colours
 
 LED_OFF = 4

@@ -1,5 +1,5 @@
-#import Tkinter
-#from tkinter import *
+# import Tkinter
+# from tkinter import *  # noqa
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 
 
@@ -12,7 +12,7 @@ class M4LInterface(ControlSurfaceComponent):
 		self._updateML_listener = None
 		self.mode = ' '
 		self.clear()
-		#self._ui = Tkinter.Tk()
+		# self._ui = Tkinter.Tk()
 		# self._ui.geometry('100*500+500+500')
 		# set up your interface, then run it with:
 		# self._ui.mainloop()
@@ -29,15 +29,6 @@ class M4LInterface(ControlSurfaceComponent):
 		self.info = [' ', ' ']
 		self.attributes = [' ' for _ in range(8)]
 		self.attribute_names = [' ' for _ in range(8)]
-
-	def set_update_listener(self, listener):
-		self._update_listener = listener
-
-	def remove_update_listener(self, listener):
-		self._update_listener = None
-
-	def update_has_listener(self):
-		return self._update_listener is not None
 
 	def set_update_listener(self, listener):
 		self._update_listener = listener

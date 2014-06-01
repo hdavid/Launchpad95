@@ -1,19 +1,19 @@
 from _Framework.ModeSelectorComponent import ModeSelectorComponent
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
-from _Framework.ButtonSliderElement import ButtonSliderElement
-from _Framework.ClipSlotComponent import ClipSlotComponent
-from _Framework.ChannelStripComponent import ChannelStripComponent
-from _Framework.SceneComponent import SceneComponent
+# from _Framework.ButtonSliderElement import ButtonSliderElement
+# from _Framework.ClipSlotComponent import ClipSlotComponent
+# from _Framework.ChannelStripComponent import ChannelStripComponent
+# from _Framework.SceneComponent import SceneComponent
 from _Framework.SessionZoomingComponent import SessionZoomingComponent
-from ConfigurableButtonElement import ConfigurableButtonElement
+# from ConfigurableButtonElement import ConfigurableButtonElement
 from DeviceControllerComponent import DeviceControllerComponent
 from SpecialSessionComponent import SpecialSessionComponent
 from InstrumentControllerComponent import InstrumentControllerComponent
-from SubSelectorComponent import *
+from SubSelectorComponent import *  # noqa
 from StepSequencerComponent import StepSequencerComponent
 from StepSequencerComponent2 import StepSequencerComponent2
-from _Framework.MomentaryModeObserver import MomentaryModeObserver
+# from _Framework.MomentaryModeObserver import MomentaryModeObserver
 
 
 class MainSelectorComponent(ModeSelectorComponent):
@@ -119,9 +119,9 @@ class MainSelectorComponent(ModeSelectorComponent):
 		self._clean_heap()
 		self._modes_heap = [(mode, None, None)]
 		# if ((self.__main_mode_index != mode) or (mode == 3) or True):
-		#self._main_mode_index = mode
-		# self._update_mode()
-		#	self.update()
+		# 	self._main_mode_index = mode
+		# 	self._update_mode()
+		# 	self.update()
 
 	def number_of_modes(self):
 		return 1 + 3 + 3 + 1
@@ -464,63 +464,64 @@ class MainSelectorComponent(ModeSelectorComponent):
 			button.set_force_next_value()
 
 
-CLIP_COLOR_TABLE = {15549221: AMBER_FULL,
-					12411136: AMBER_FULL,
-					11569920: AMBER_FULL,
-					8754719: AMBER_FULL,
-					5480241: AMBER_FULL,
-					695438: AMBER_FULL,
-					31421: AMBER_FULL,
-					197631: AMBER_FULL,
-					3101346: AMBER_FULL,
-					6441901: AMBER_FULL,
-					8092539: AMBER_FULL,
-					3947580: AMBER_FULL,
-					16712965: AMBER_FULL,
-					12565097: AMBER_FULL,
-					10927616: AMBER_FULL,
-					8046132: AMBER_FULL,
-					4047616: AMBER_FULL,
-					49071: AMBER_FULL,
-					1090798: AMBER_FULL,
-					5538020: AMBER_FULL,
-					8940772: AMBER_FULL,
-					10701741: AMBER_FULL,
-					12008809: AMBER_FULL,
-					9852725: AMBER_FULL,
-					16149507: AMBER_FULL,
-					12581632: AMBER_FULL,
-					8912743: AMBER_FULL,
-					1769263: AMBER_FULL,
-					2490280: AMBER_FULL,
-					6094824: AMBER_FULL,
-					1698303: AMBER_FULL,
-					9160191: AMBER_FULL,
-					9611263: AMBER_FULL,
-					12094975: AMBER_FULL,
-					14183652: AMBER_FULL,
-					16726484: AMBER_FULL,
-					16753961: AMBER_FULL,
-					16773172: AMBER_FULL,
-					14939139: AMBER_FULL,
-					14402304: AMBER_FULL,
-					12492131: AMBER_FULL,
-					9024637: AMBER_FULL,
-					8962746: AMBER_FULL,
-					10204100: AMBER_FULL,
-					8758722: AMBER_FULL,
-					13011836: AMBER_FULL,
-					15810688: AMBER_FULL,
-					16749734: AMBER_FULL,
-					16753524: AMBER_FULL,
-					16772767: AMBER_FULL,
-					13821080: AMBER_FULL,
-					12243060: AMBER_FULL,
-					11119017: AMBER_FULL,
-					13958625: AMBER_FULL,
-					13496824: AMBER_FULL,
-					12173795: AMBER_FULL,
-					13482980: AMBER_FULL,
-					13684944: AMBER_FULL,
-					14673637: AMBER_FULL,
-					16777215: AMBER_BLINK}
+CLIP_COLOR_TABLE = {
+	15549221: AMBER_FULL,
+	12411136: AMBER_FULL,
+	11569920: AMBER_FULL,
+	8754719: AMBER_FULL,
+	5480241: AMBER_FULL,
+	695438: AMBER_FULL,
+	31421: AMBER_FULL,
+	197631: AMBER_FULL,
+	3101346: AMBER_FULL,
+	6441901: AMBER_FULL,
+	8092539: AMBER_FULL,
+	3947580: AMBER_FULL,
+	16712965: AMBER_FULL,
+	12565097: AMBER_FULL,
+	10927616: AMBER_FULL,
+	8046132: AMBER_FULL,
+	4047616: AMBER_FULL,
+	49071: AMBER_FULL,
+	1090798: AMBER_FULL,
+	5538020: AMBER_FULL,
+	8940772: AMBER_FULL,
+	10701741: AMBER_FULL,
+	12008809: AMBER_FULL,
+	9852725: AMBER_FULL,
+	16149507: AMBER_FULL,
+	12581632: AMBER_FULL,
+	8912743: AMBER_FULL,
+	1769263: AMBER_FULL,
+	2490280: AMBER_FULL,
+	6094824: AMBER_FULL,
+	1698303: AMBER_FULL,
+	9160191: AMBER_FULL,
+	9611263: AMBER_FULL,
+	12094975: AMBER_FULL,
+	14183652: AMBER_FULL,
+	16726484: AMBER_FULL,
+	16753961: AMBER_FULL,
+	16773172: AMBER_FULL,
+	14939139: AMBER_FULL,
+	14402304: AMBER_FULL,
+	12492131: AMBER_FULL,
+	9024637: AMBER_FULL,
+	8962746: AMBER_FULL,
+	10204100: AMBER_FULL,
+	8758722: AMBER_FULL,
+	13011836: AMBER_FULL,
+	15810688: AMBER_FULL,
+	16749734: AMBER_FULL,
+	16753524: AMBER_FULL,
+	16772767: AMBER_FULL,
+	13821080: AMBER_FULL,
+	12243060: AMBER_FULL,
+	11119017: AMBER_FULL,
+	13958625: AMBER_FULL,
+	13496824: AMBER_FULL,
+	12173795: AMBER_FULL,
+	13482980: AMBER_FULL,
+	13684944: AMBER_FULL,
+	14673637: AMBER_FULL,
+	16777215: AMBER_BLINK}

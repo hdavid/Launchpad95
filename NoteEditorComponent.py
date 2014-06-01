@@ -1,9 +1,9 @@
-import Live
-from consts import *
+# import Live
+from consts import *  # noqa
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.ButtonElement import ButtonElement
-from _Framework.EncoderElement import EncoderElement
-from _Framework.SessionComponent import SessionComponent
+# from _Framework.EncoderElement import EncoderElement
+# from _Framework.SessionComponent import SessionComponent
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
 import time
 
@@ -132,9 +132,6 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		else:
 			return self.height
 
-	def set_playhead(self, playhead):
-		self._playhead = playhead
-
 	def set_page(self, page):
 		if self.is_multinote:
 			self._page = page
@@ -251,7 +248,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 							note_grid_y_base = -1
 
 						note_grid_y_offset = int(note_position / self.quantization / self.width) % self.number_of_lines_per_note
-						#self._parent._parent._parent.log_message("index:"+str(index_of(self.key_indexes,note_key))+" note_grid_y_base:"+str(note_grid_y_base)+" note_grid_y_offset:"+ str(note_grid_y_offset))
+						# self._parent._parent._parent.log_message("index:"+str(index_of(self.key_indexes,note_key))+" note_grid_y_base:"+str(note_grid_y_base)+" note_grid_y_offset:"+ str(note_grid_y_offset))
 					else:
 						if index_of(self.key_indexes, note_key) == 0:
 							note_grid_y_base = 0
@@ -267,10 +264,10 @@ class NoteEditorComponent(ControlSurfaceComponent):
 
 					if note_grid_x_position >= 0:
 						# compute colors
-						highlight_color = self.playing_note_color
-						for index in range(len(self.velocity_map)):
-							if note_velocity >= self.velocity_map[index]:
-								highlight_color = self.playing_note_color
+						# highlight_color = self.playing_note_color
+						# for index in range(len(self.velocity_map)):
+							# if note_velocity >= self.velocity_map[index]:
+								# highlight_color = self.playing_note_color
 						velocity_color = self.velocity_map[0]
 						for index in range(len(self.velocity_map)):
 							if note_velocity >= self.velocity_map[index]:
@@ -327,9 +324,9 @@ class NoteEditorComponent(ControlSurfaceComponent):
 
 		elif self.is_enabled() and self._clip != None and y < self.height:
 
-			#self._parent._parent._parent.log_message("got: x:"+ str(x)+" y:"+str(y))
-			#self._parent._parent._parent.log_message("clip:"+ str(self._clip))
-			#self._parent._parent._parent.log_message("h:"+ str(self.height))
+			# self._parent._parent._parent.log_message("got: x:"+ str(x)+" y:"+str(y))
+			# self._parent._parent._parent.log_message("clip:"+ str(self._clip))
+			# self._parent._parent._parent.log_message("h:"+ str(self.height))
 
 			if value != 0 or not is_momentary:
 				if(self._is_velocity_shifted):

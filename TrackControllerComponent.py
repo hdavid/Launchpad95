@@ -1,10 +1,10 @@
 # emacs-mode: -*- python-*-
-import Live
-from consts import *
+# import Live
+from consts import *  # noqa
 from _Framework.MixerComponent import MixerComponent
-from DefChannelStripComponent import DefChannelStripComponent
+# from DefChannelStripComponent import DefChannelStripComponent
 from _Framework.ButtonElement import ButtonElement
-from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
+# from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 import time
 
 

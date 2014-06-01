@@ -1,17 +1,17 @@
-from _Framework.CompoundComponent import CompoundComponent
+# from _Framework.CompoundComponent import CompoundComponent
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
-from _Framework.ModesComponent import DisplayingModesComponent, ModesComponent
-from _Framework.DisplayDataSource import DisplayDataSource
-from _Framework.Util import recursive_map, forward_property
-from _Framework.SubjectSlot import subject_slot, subject_slot_group
-from _Framework.ScrollComponent import ScrollComponent, Scrollable
-from _Framework.ButtonElement import ButtonElement
-from TrackControllerComponent import TrackControllerComponent
-from consts import *
+# from _Framework.ModesComponent import DisplayingModesComponent, ModesComponent
+# from _Framework.DisplayDataSource import DisplayDataSource
+# from _Framework.Util import recursive_map, forward_property
+# from _Framework.SubjectSlot import subject_slot, subject_slot_group
+# from _Framework.ScrollComponent import ScrollComponent, Scrollable
+# from _Framework.ButtonElement import ButtonElement
+# from TrackControllerComponent import TrackControllerComponent
+from consts import *  # noqa
 
 NOTE_NAMES = ('C', 'D\x1b', 'D', 'E\x1b', 'E', 'F', 'G\x1b', 'G', 'A\x1b', 'A', 'B\x1b', 'B')
 CIRCLE_OF_FIFTHS = [7 * k % 12 for k in range(12)]
-#KEY_CENTERS = CIRCLE_OF_FIFTHS[0:6] + CIRCLE_OF_FIFTHS[-1:5:-1]
+# KEY_CENTERS = CIRCLE_OF_FIFTHS[0:6] + CIRCLE_OF_FIFTHS[-1:5:-1]
 
 
 class InstrumentPresetsComponent():
@@ -144,8 +144,8 @@ class ScalesComponent(ControlSurfaceComponent):
 
 	def __init__(self, *a, **k):
 		super(ScalesComponent, self).__init__(*a, **k)
-		self._modus_list = [Modus(MUSICAL_MODES[k], MUSICAL_MODES[k + 1]) for k in xrange(0, len(MUSICAL_MODES), 2)]
-		self._modus_names = [MUSICAL_MODES[k] for k in xrange(0, len(MUSICAL_MODES), 2)]
+		self._modus_list = [Modus(MUSICAL_MODES[v], MUSICAL_MODES[v + 1]) for v in xrange(0, len(MUSICAL_MODES), 2)]
+		self._modus_names = [MUSICAL_MODES[v] for v in xrange(0, len(MUSICAL_MODES), 2)]
 		self._selected_modus = 0
 		self._selected_key = 0
 		self._is_chromatic = False
@@ -303,15 +303,15 @@ class ScalesComponent(ControlSurfaceComponent):
 							root = root + 1
 
 					# if root == selected_key:#alternate minor/major
-					#	if selected_modus==0:
-					#		selected_modus = self._current_minor_mode
-					#	elif selected_modus in [1,13,14]:
-					#		self._current_minor_mode = selected_modus
-					#		selected_modus = 0
-					#	elif selected_modus==11:
-					#		selected_modus = 12
-					#	elif selected_modus==12:
-					#		selected_modus = 11
+					# 	if selected_modus==0:
+					# 		selected_modus = self._current_minor_mode
+					# 	elif selected_modus in [1,13,14]:
+					# 		self._current_minor_mode = selected_modus
+					# 		selected_modus = 0
+					# 	elif selected_modus==11:
+					# 		selected_modus = 12
+					# 	elif selected_modus==12:
+					# 		selected_modus = 11
 
 					if y == 2 and x == 7:  # nav circle of 5th right
 						root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS, selected_key) + 1 + 12) % 12]

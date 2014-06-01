@@ -1,11 +1,11 @@
-import Live
-from consts import *
+# import Live
+from consts import *  # noqa
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
-from _Framework.CompoundComponent import CompoundComponent
+# from _Framework.CompoundComponent import CompoundComponent
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
-from StepSequencerComponent import *
-from ScaleComponent import *
+from StepSequencerComponent import *  # noqa
+from ScaleComponent import *  # noqa
 from TrackControllerComponent import TrackControllerComponent
 from random import randrange
 import time
@@ -46,7 +46,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 
 		# buttons
 		self._matrix = None
- 
+
 		# matrix
 		self.set_button_matrix(matrix)
 		self._grid_buffer = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]]
@@ -173,10 +173,6 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 	def set_key_index_is_root_note(self, key_index_is_root_note):
 		self._key_index_is_root_note = key_index_is_root_note
 
-	def set_playhead(self, playhead):
-		self._playhead = playhead
-		self._update_matrix()
-
 	def set_page(self, page):
 		self._page = page
 
@@ -209,7 +205,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 						if note_length * 4 >= self._length_map[x] * self._quantization:
 							self._notes_lengths[i] = x
 
-					#note and octave
+					# note and octave
 					found = False
 					for j in range(max(7, len(self._key_indexes))):
 						for octave in range(7):
@@ -612,14 +608,14 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		assert (value in range(128))
 		if self.is_enabled() and self._clip != None:
 			if ((value is 0) and (sender.is_momentary())):
-				#self._is_velocity_shifted = False
+				# self._is_velocity_shifted = False
 				self._is_shifted = False
 				self._is_notes_velocities_shifted = False
 				self.set_mode(STEPSEQ_MODE_NOTES_VELOCITIES)
 				self.update()
 				self._parent._update_OSD()
 			else:
-				#self._is_velocity_shifted = True
+				# self._is_velocity_shifted = True
 				self._is_shifted = True
 				self._is_notes_velocities_shifted = True
 
@@ -685,10 +681,10 @@ class StepSequencerComponent2(StepSequencerComponent):
 		self._note_selector = self.register_component(NoteSelectorComponent(self, []))
 
 	def _set_loop_selector(self):
-		self._loop_selector = self.register_component(LoopSelectorComponent(self,
-																			[self._matrix.get_button(0, 7), self._matrix.get_button(1, 7), self._matrix.get_button(2, 7), self._matrix.get_button(3, 7),
-																			 self._matrix.get_button(4, 7), self._matrix.get_button(5, 7), self._matrix.get_button(6, 7), self._matrix.get_button(7, 7)
-																			 ]))
+		self._loop_selector = self.register_component(LoopSelectorComponent(self, [
+			self._matrix.get_button(0, 7), self._matrix.get_button(1, 7), self._matrix.get_button(2, 7), self._matrix.get_button(3, 7),
+			self._matrix.get_button(4, 7), self._matrix.get_button(5, 7), self._matrix.get_button(6, 7), self._matrix.get_button(7, 7)
+		]))
 		self.set_left_button(self._top_buttons[2])
 		self.set_right_button(self._top_buttons[3])
 
