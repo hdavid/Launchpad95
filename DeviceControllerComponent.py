@@ -1,16 +1,11 @@
-# emacs-mode: -*- python-*-
-# import Live
 from consts import *  # noqa
-# from _Framework.MixerComponent import MixerComponent
 from _Framework.DeviceComponent import DeviceComponent
 from _Framework.ButtonElement import ButtonElement
-# from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from PreciseButtonSliderElement import PreciseButtonSliderElement
 
 # todo :
 # - XXX fix precise mode increments
 # - if no device selected => turn matrix led off.
-
 
 class DeviceControllerComponent(DeviceComponent):
 	__module__ = __name__

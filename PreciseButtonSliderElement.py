@@ -1,6 +1,5 @@
 from _Framework.ButtonSliderElement import ButtonSliderElement
 from _Framework.InputControlElement import *  # noqa
-# from ConfigurableButtonElement import ConfigurableButtonElement
 SLIDER_MODE_SINGLE = 0
 SLIDER_MODE_VOLUME = 1
 SLIDER_MODE_PAN = 2

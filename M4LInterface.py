@@ -1,5 +1,3 @@
-# import Tkinter
-# from tkinter import *  # noqa
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 
 
@@ -12,11 +10,6 @@ class M4LInterface(ControlSurfaceComponent):
 		self._updateML_listener = None
 		self.mode = ' '
 		self.clear()
-		# self._ui = Tkinter.Tk()
-		# self._ui.geometry('100*500+500+500')
-		# set up your interface, then run it with:
-		# self._ui.mainloop()
-		# self._ui.title('Launchpad95')
 
 	def disconnect(self):
 		self._updateM4L_listener = None

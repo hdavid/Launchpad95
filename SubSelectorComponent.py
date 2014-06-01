@@ -1,27 +1,10 @@
 from _Framework.ModeSelectorComponent import ModeSelectorComponent
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
-# from _Framework.ClipSlotComponent import ClipSlotComponent
-# from _Framework.ChannelStripComponent import ChannelStripComponent
-# from _Framework.SceneComponent import SceneComponent
 from _Framework.SessionComponent import SessionComponent
-# from _Framework.SessionZoomingComponent import SessionZoomingComponent
 from SpecialMixerComponent import SpecialMixerComponent
-# from ConfigurableButtonElement import ConfigurableButtonElement
 from PreciseButtonSliderElement import *  # noqa
-LED_OFF = 4
-RED_FULL = 7
-RED_HALF = 6
-RED_THIRD = 5
-RED_BLINK = 11
-GREEN_FULL = 52
-GREEN_HALF = 36
-GREEN_THIRD = 20
-GREEN_BLINK = 56
-AMBER_FULL = RED_FULL + GREEN_FULL - 4
-AMBER_HALF = RED_HALF + GREEN_HALF - 4
-AMBER_THIRD = RED_THIRD + GREEN_THIRD - 4
-AMBER_BLINK = AMBER_FULL - 4 + 8
+from consts import *  # noqa
 PAN_VALUE_MAP = (-1.0, -0.634921, -0.31746, 0.0, 0.0, 0.31746, 0.634921, 1.0)
 VOL_VALUE_MAP = (0.0, 0.142882, 0.302414, 0.4, 0.55, 0.7, 0.85, 1.0)
 SEND_VALUE_MAP = (0.0, 0.103536, 0.164219, 0.238439, 0.343664, 0.55, 0.774942, 1.0)

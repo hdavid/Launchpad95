@@ -3,10 +3,6 @@ from consts import *  # noqa
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.CompoundComponent import CompoundComponent
 from _Framework.ButtonElement import ButtonElement
-# from _Framework.EncoderElement import EncoderElement
-# from _Framework.SessionComponent import SessionComponent
-# from _Framework.ButtonMatrixElement import ButtonMatrixElement
-# from _Framework.SubjectSlot import subject_slot, subject_slot_group
 from NoteEditorComponent import NoteEditorComponent
 from ScaleComponent import *  # noqa
 from TrackControllerComponent import TrackControllerComponent

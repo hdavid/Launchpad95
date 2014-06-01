@@ -1,20 +1,9 @@
 from _Framework.CompoundComponent import CompoundComponent
-# from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
-# from _Framework.ModesComponent import DisplayingModesComponent, ModesComponent
-# from _Framework.DisplayDataSource import DisplayDataSource
-# from _Framework.Util import recursive_map, forward_property
-# from _Framework.SubjectSlot import subject_slot_group
 from _Framework.SubjectSlot import subject_slot
-# from _Framework.ScrollComponent import ScrollComponent, Scrollable
 from _Framework.ButtonElement import ButtonElement
 from TrackControllerComponent import TrackControllerComponent
 from ScaleComponent import *  # noqa
 from consts import *  # noqa
-
-NOTE_NAMES = ('C', 'D\x1b', 'D', 'E\x1b', 'E', 'F', 'G\x1b', 'G', 'A\x1b', 'A', 'B\x1b', 'B')
-CIRCLE_OF_FIFTHS = [7 * k % 12 for k in range(12)]
-# KEY_CENTERS = CIRCLE_OF_FIFTHS[0:6] + CIRCLE_OF_FIFTHS[-1:5:-1]
-
 
 class InstrumentControllerComponent(CompoundComponent):
 

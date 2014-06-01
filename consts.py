@@ -1,6 +1,6 @@
 # flake8: noqa
-# LaunchPad Colours
 
+# LaunchPad Colours
 LED_OFF = 4
 
 RED_FULL = 7
@@ -17,7 +17,11 @@ AMBER_FULL = ((RED_FULL + GREEN_FULL) - 4)
 AMBER_HALF = ((RED_HALF + GREEN_HALF) - 4)
 AMBER_THIRD = ((RED_THIRD + GREEN_THIRD) - 4)
 AMBER_BLINK = ((AMBER_FULL - 4) + 8)
-KEY_NAMES = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"]
+
+# Scales
+KEY_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+CIRCLE_OF_FIFTHS = [7 * k % 12 for k in range(12)]
+# KEY_CENTERS = CIRCLE_OF_FIFTHS[0:6] + CIRCLE_OF_FIFTHS[-1:5:-1]
 
 MUSICAL_MODES = [
 
