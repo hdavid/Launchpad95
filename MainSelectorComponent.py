@@ -1,7 +1,7 @@
 from _Framework.ModeSelectorComponent import ModeSelectorComponent
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
-from _Framework.SessionZoomingComponent import SessionZoomingComponent
+from _Framework.SessionZoomingComponent import * # noqa
 from DeviceControllerComponent import DeviceControllerComponent
 from SpecialSessionComponent import SpecialSessionComponent
 from InstrumentControllerComponent import InstrumentControllerComponent
@@ -36,7 +36,11 @@ class MainSelectorComponent(ModeSelectorComponent):
 		self.set_mode_buttons(top_buttons[4:])
 		self._session = SpecialSessionComponent(matrix.width(), matrix.height(), self)
 		self._session.set_osd(self._osd)
-		self._zooming = SessionZoomingComponent(self._session)
+		
+		if self._parent._live_major_version>=9 and self._parent._live_minor_version>=1 and self._parent._live_bugfix_version>=3:
+				self._zooming = DeprecatedSessionZoomingComponent(self._session)
+		else:
+			self._zooming = SessionZoomingComponent(self._session)
 		self._session.name = 'Session_Control'
 		self._zooming.name = 'Session_Overview'
 		self._matrix = matrix
