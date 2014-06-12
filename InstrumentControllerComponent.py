@@ -1,8 +1,11 @@
+import Live
 from _Framework.CompoundComponent import CompoundComponent
 from _Framework.SubjectSlot import subject_slot
 from _Framework.ButtonElement import ButtonElement
+from _Framework.Util import find_if
 from TrackControllerComponent import TrackControllerComponent
 from ScaleComponent import *  # noqa
+from StepSequencerComponent import StepSequencerComponent
 from consts import *  # noqa
 
 class InstrumentControllerComponent(CompoundComponent):
@@ -304,7 +307,8 @@ class InstrumentControllerComponent(CompoundComponent):
 		if self.song().view.selected_track != None:
 			track = self.song().view.selected_track
 			if(track.devices != None and len(track.devices) > 0):
-				device = track.devices[0]
+				#device = track.devices[0]
+				device = self.find_drum_group_device(track)
 				if(device.can_have_drum_pads and device.has_drum_pads):
 					self._drum_group_device = device
 				else:
@@ -313,7 +317,17 @@ class InstrumentControllerComponent(CompoundComponent):
 				self._drum_group_device = None
 		else:
 			self._drum_group_device = None
-
+	
+	def find_drum_group_device(self, track):
+		device = find_if(lambda d: d.type == Live.Device.DeviceType.instrument, track.devices)
+		if device:
+			if device.can_have_drum_pads:
+				return device
+			elif device.can_have_chains:
+				return find_if(bool, imap(find_drum_group_device, device.chains))
+		else:
+			return None
+			
 	def _update_matrix(self):
 
 		if not self.is_enabled() or not self._matrix or self._scales.is_enabled():

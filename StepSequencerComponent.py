@@ -3,6 +3,7 @@ from consts import *  # noqa
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.CompoundComponent import CompoundComponent
 from _Framework.ButtonElement import ButtonElement
+from _Framework.Util import find_if
 from NoteEditorComponent import NoteEditorComponent
 from ScaleComponent import *  # noqa
 from TrackControllerComponent import TrackControllerComponent
@@ -1138,7 +1139,8 @@ class StepSequencerComponent(CompoundComponent):
 		if self.song().view.selected_track != None:
 			track = self.song().view.selected_track
 			if(track.devices != None and len(track.devices) > 0):
-				device = track.devices[0]
+				#device = track.devices[0]
+				device = self.find_drum_group_device(track)
 				if(device.can_have_drum_pads and device.has_drum_pads):
 					self._drum_group_device = device
 				else:
@@ -1152,7 +1154,16 @@ class StepSequencerComponent(CompoundComponent):
 		if not self._is_locked:
 			self._update_drum_group_device()
 			self._scale_selector.set_drumrack(self._drum_group_device != None)
-
+	
+	def find_drum_group_device(self, track):
+		device = find_if(lambda d: d.type == Live.Device.DeviceType.instrument, track.devices)
+		if device:
+			if device.can_have_drum_pads:
+				return device
+			elif device.can_have_chains:
+				return find_if(bool, imap(find_drum_group_device, device.chains))
+		else:
+			return None
 
 # SCALE Selector Button
 	def _update_scale_selector_button(self):
