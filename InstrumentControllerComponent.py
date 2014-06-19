@@ -3,6 +3,7 @@ from _Framework.CompoundComponent import CompoundComponent
 from _Framework.SubjectSlot import subject_slot
 from _Framework.ButtonElement import ButtonElement
 from _Framework.Util import find_if
+from itertools import imap
 from TrackControllerComponent import TrackControllerComponent
 from ScaleComponent import *  # noqa
 from StepSequencerComponent import StepSequencerComponent
@@ -309,7 +310,7 @@ class InstrumentControllerComponent(CompoundComponent):
 			if(track.devices != None and len(track.devices) > 0):
 				#device = track.devices[0]
 				device = self.find_drum_group_device(track)
-				if(device.can_have_drum_pads and device.has_drum_pads):
+				if(device != None and device.can_have_drum_pads and device.has_drum_pads):
 					self._drum_group_device = device
 				else:
 					self._drum_group_device = None
@@ -324,7 +325,7 @@ class InstrumentControllerComponent(CompoundComponent):
 			if device.can_have_drum_pads:
 				return device
 			elif device.can_have_chains:
-				return find_if(bool, imap(find_drum_group_device, device.chains))
+				return find_if(bool, imap(self.find_drum_group_device, device.chains))
 		else:
 			return None
 			
