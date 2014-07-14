@@ -62,8 +62,8 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 		self._update_matrix()
 
 	@property
-	def _is_shifted(self):
-		return self._parent._is_shifted
+	def _is_mute_shifted(self):
+		return self._parent._is_mute_shifted
 
 	@property
 	def _is_velocity_shifted(self):
@@ -94,7 +94,7 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 					self._down_button.turn_off()
 				else:
 					self._down_button.set_on_off_values(GREEN_FULL, GREEN_THIRD)
-					if not self._is_shifted and not self._enable_offset_button or self._is_shifted and self._enable_offset_button:
+					if not self._is_mute_shifted and not self._enable_offset_button or self._is_mute_shifted and self._enable_offset_button:
 						if self.can_scroll_down():
 							self._down_button.turn_on()
 						else:
@@ -121,7 +121,7 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 		assert (value in range(128))
 		if self.is_enabled() and self._clip != None:
 			if ((value is not 0) or (not sender.is_momentary())):
-				if not self._is_shifted and not self._enable_offset_button or self._is_shifted and self._enable_offset_button:
+				if not self._is_mute_shifted and not self._enable_offset_button or self._is_mute_shifted and self._enable_offset_button:
 					self.scroll_down()
 				else:
 					self.page_down()
@@ -136,7 +136,7 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 					self._up_button.turn_off()
 				else:
 					self._up_button.set_on_off_values(GREEN_FULL, GREEN_THIRD)
-					if not self._is_shifted and not self._enable_offset_button or self._is_shifted and self._enable_offset_button:
+					if not self._is_mute_shifted and not self._enable_offset_button or self._is_mute_shifted and self._enable_offset_button:
 						if self.can_scroll_up():
 							self._up_button.turn_on()
 						else:
@@ -163,7 +163,7 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 		assert (value in range(128))
 		if self.is_enabled() and self._clip != None:
 			if ((value is not 0) or (not sender.is_momentary())):
-				if not self._is_shifted and not self._enable_offset_button or self._is_shifted and self._enable_offset_button:
+				if not self._is_mute_shifted and not self._enable_offset_button or self._is_mute_shifted and self._enable_offset_button:
 					self.scroll_up()
 				else:
 					self.page_up()
@@ -172,7 +172,7 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 	# Note Offeset Buttons
 	def note_offset_button_value(self, value, sender):
 		if self.is_enabled() and value > 0 and self._enable_offset_button:
-			if self._is_shifted:
+			if self._is_mute_shifted:
 				index = index_of(self._offset_buttons, sender)
 				self._parent._note_editor.mute_lane(self._root_note + index)
 			else:
@@ -432,8 +432,8 @@ class LoopSelectorComponent(ControlSurfaceComponent):
 		self.update()
 
 	@property
-	def _is_shifted(self):
-		return self._parent._is_shifted
+	def _is_mute_shifted(self):
+		return self._parent._is_mute_shifted
 
 	@property
 	def _is_velocity_shifted(self):
@@ -508,7 +508,7 @@ class LoopSelectorComponent(ControlSurfaceComponent):
 					end = end + 1
 					self._block = start
 					if setloop:
-						if self._is_shifted:
+						if self._is_mute_shifted:
 							if self._is_velocity_shifted:
 								self._mute_notes_in_range(start * self._blocksize * self._quantization, end * self._blocksize * self._quantization)
 							else:
@@ -656,7 +656,7 @@ class StepSequencerComponent(CompoundComponent):
 		self._set_track_controller()
 		self._set_scale_selector()
 		self._set_quantization_function()
-		self._set_shift_function()
+		self._set_mute_shift_function()
 		self._set_lock_function()
 		self._set_mode_function()
 
@@ -690,16 +690,17 @@ class StepSequencerComponent(CompoundComponent):
 	def _set_lock_function(self):
 		self._is_locked = False
 		self._lock_to_track = False
-		self._last_lock_button_press = int(round(time.time() * 1000))
-		self._long_press = 500
+		self._last_lock_button_press = time.time()
+		self._long_press = 0.5
 		self._lock_button = None
 		self.set_lock_button(self._side_buttons[1])
 		self._selected_track = None
 
-	def _set_shift_function(self):
-		self._shift_button = None
-		self.set_shift_button(self._side_buttons[7])
-		self._is_shifted = False
+	def _set_mute_shift_function(self):
+		self._mute_shift_button = None
+		self._last_mute_shift_button_press = time.time()
+		self.set_mute_shift_button(self._side_buttons[7])
+		self._is_mute_shifted = False
 
 	def _set_quantization_function(self):
 		self._quantization_index = 2
@@ -718,7 +719,6 @@ class StepSequencerComponent(CompoundComponent):
 	def _set_note_editor(self):
 		self._note_editor = self.register_component(NoteEditorComponent(self, self._matrix))
 		self._note_editor.set_velocity_button(self._side_buttons[6])
-		self._note_editor.set_mute_shift_button(self._side_buttons[7])
 
 	def _set_note_selector(self):
 		self._note_selector = self.register_component(NoteSelectorComponent(self, [
@@ -957,6 +957,7 @@ class StepSequencerComponent(CompoundComponent):
 		self._update_quantization_button()
 		self._update_lock_button()
 		self._update_mode_button()
+		self._update_mute_shift_button()
 		self._update_scale_selector_button()
 		self._update_left_button()
 		self._update_right_button()
@@ -1208,26 +1209,45 @@ class StepSequencerComponent(CompoundComponent):
 				self.set_mode(self._mode_backup)
 
 
-# SHIFT Button
-	def set_shift_button(self, button):
+# MUTE SHIFT Button
+	def set_mute_shift_button(self, button):
 		assert (isinstance(button, (ButtonElement, type(None))))
-		if (self._shift_button != button):
-			if (self._shift_button != None):
-				self._shift_button.remove_value_listener(self._shift_button_value)
-			self._shift_button = button
-			if (self._shift_button != None):
+		if (self._mute_shift_button != button):
+			if (self._mute_shift_button != None):
+				self._mute_shift_button.remove_value_listener(self._mute_shift_button_value)
+			self._mute_shift_button = button
+			if (self._mute_shift_button != None):
 				assert isinstance(button, ButtonElement)
-				self._shift_button.add_value_listener(self._shift_button_value, identify_sender=True)
+				self._mute_shift_button.add_value_listener(self._mute_shift_button_value, identify_sender=True)
 
-	def _shift_button_value(self, value, sender):
-		assert (self._shift_button != None)
+	
+	def _update_mute_shift_button(self):
+	 		if self.is_enabled() and self._mute_shift_button != None:
+	 			if self._clip != None and self._clip.is_midi_clip:
+	 				self._mute_shift_button.set_on_off_values(RED_FULL, RED_THIRD)
+	 				if self._is_mute_shifted:
+	 					self._mute_shift_button.turn_on()
+	 				else:
+	 					self._mute_shift_button.turn_off()
+	 			else:
+	 				self._mute_shift_button.set_on_off_values(LED_OFF, LED_OFF)
+	 				self._mute_shift_button.turn_off()
+	
+	def _mute_shift_button_value(self, value, sender):
+		assert (self._mute_shift_button != None)
 		assert (value in range(128))
 		if self.is_enabled() and self._clip != None:
+			now = time.time()
 			if ((value is not 0) or (not sender.is_momentary())):
-				self._is_shifted = True
+				self._is_mute_shifted = not self._is_mute_shifted
 			else:
-				self._is_shifted = False
-			self._note_editor._is_shifted = self._is_shifted
+				if now - self._last_mute_shift_button_press> 0.25:
+					self._is_mute_shifted = not self._is_mute_shifted
+				self._last_mute_shift_button_press = now
+				
+			self._note_editor._is_mute_shifted = self._is_mute_shifted
+			self._update_mute_shift_button()
+			
 
 
 # MODE
@@ -1354,7 +1374,7 @@ class StepSequencerComponent(CompoundComponent):
 		assert (self._lock_button != None)
 		assert (value in range(128))
 		if self.is_enabled() and self._clip != None:
-			now = int(round(time.time() * 1000))
+			now = time.time() 
 			if ((value != 0) or (not self._lock_button.is_momentary())):
 				self._last_lock_button_press = now
 			else:

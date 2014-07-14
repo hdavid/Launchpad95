@@ -74,7 +74,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		self._parent = None
 		self._matrix = None
 		self._velocity_button = None
-		self._mute_shift_button = None
+		#self._mute_shift_button = None
 		self._clip = None
 
 	@property
@@ -159,7 +159,6 @@ class NoteEditorComponent(ControlSurfaceComponent):
 			self._force_update = True
 		if self.is_enabled():
 			self._update_velocity_button()
-			self._update_mute_shift_button()
 			self._update_matrix()
 
 	def _display_selected_page(self):
@@ -415,33 +414,33 @@ class NoteEditorComponent(ControlSurfaceComponent):
 			self._parent._note_selector.update()
 
 	# MUTE SHIFT
-	def _update_mute_shift_button(self):
-		if self.is_enabled() and self._mute_shift_button != None:
-			if self._clip != None and self._clip.is_midi_clip:
-				self._mute_shift_button.set_on_off_values(RED_FULL, RED_THIRD)
-				if self._is_mute_shifted:
-					self._mute_shift_button.turn_on()
-				else:
-					self._mute_shift_button.turn_off()
-			else:
-				self._mute_shift_button.set_on_off_values(LED_OFF, LED_OFF)
-				self._mute_shift_button.turn_off()
-
-	def set_mute_shift_button(self, button):
-		assert (isinstance(button, (ButtonElement, type(None))))
-		if (button != self._mute_shift_button):
-			if (self._mute_shift_button != None):
-				self._mute_shift_button.remove_value_listener(self._mute_shift_value)
-			self._mute_shift_button = button
-			if (self._mute_shift_button != None):
-				self._mute_shift_button.add_value_listener(self._mute_shift_value)
-
-	def _mute_shift_value(self, value):
-		assert (self._mute_shift_button != None)
-		assert (value in range(128))
-		if self.is_enabled():
-			self._is_mute_shifted = not self._is_mute_shifted
-			self._update_mute_shift_button()
+	# def _update_mute_shift_button(self):
+	# 		if self.is_enabled() and self._mute_shift_button != None:
+	# 			if self._clip != None and self._clip.is_midi_clip:
+	# 				self._mute_shift_button.set_on_off_values(RED_FULL, RED_THIRD)
+	# 				if self._is_mute_shifted:
+	# 					self._mute_shift_button.turn_on()
+	# 				else:
+	# 					self._mute_shift_button.turn_off()
+	# 			else:
+	# 				self._mute_shift_button.set_on_off_values(LED_OFF, LED_OFF)
+	# 				self._mute_shift_button.turn_off()
+	# 
+	# 	def set_mute_shift_button(self, button):
+	# 		assert (isinstance(button, (ButtonElement, type(None))))
+	# 		if (button != self._mute_shift_button):
+	# 			if (self._mute_shift_button != None):
+	# 				self._mute_shift_button.remove_value_listener(self._mute_shift_value)
+	# 			self._mute_shift_button = button
+	# 			if (self._mute_shift_button != None):
+	# 				self._mute_shift_button.add_value_listener(self._mute_shift_value)
+	# 
+	# 	def _mute_shift_value(self, value):
+	# 		assert (self._mute_shift_button != None)
+	# 		assert (value in range(128))
+	# 		if self.is_enabled() and value==0:
+	# 			self._is_mute_shifted = not self._is_mute_shifted
+	# 			self._update_mute_shift_button()
 
 	def mute_lane(self, pitch_to_mute):
 		if self.is_enabled() and self._clip != None:

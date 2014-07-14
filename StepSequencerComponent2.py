@@ -100,7 +100,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		self._last_notes_pitches_button_press = time.time()
 
 		self._is_velocity_shifted = False
-		self._is_shifted = False
+		self._is_mute_shifted = False
 
 	def disconnect(self):
 		self._parent = None
@@ -523,7 +523,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		if self.is_enabled() and self._clip != None:
 			if ((value is 0) and (sender.is_momentary())):
 				self._is_notes_pitches_shifted = False
-				self._is_shifted = False
+				self._is_mute_shifted = False
 				self._is_velocity_shifted = False
 				self._is_notes_pitches_shifted = False
 				if time.time() - self._last_notes_pitches_button_press < 0.500:
@@ -537,7 +537,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 				self._last_notes_pitches_button_press = time.time()
 			else:
 				self._is_notes_pitches_shifted = True
-				self._is_shifted = True
+				self._is_mute_shifted = True
 				self._is_velocity_shifted = True
 				self._is_notes_pitches_shifted = True
 
@@ -606,17 +606,16 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		assert (value in range(128))
 		if self.is_enabled() and self._clip != None:
 			if ((value is 0) and (sender.is_momentary())):
-				# self._is_velocity_shifted = False
-				self._is_shifted = False
+				self._is_mute_shifted = False
 				self._is_notes_velocities_shifted = False
 				self.set_mode(STEPSEQ_MODE_NOTES_VELOCITIES)
 				self.update()
 				self._parent._update_OSD()
 			else:
-				# self._is_velocity_shifted = True
-				self._is_shifted = True
+				self._is_mute_shifted = True
 				self._is_notes_velocities_shifted = True
-
+			self._parent._is_mute_shifted = self._is_mute_shifted
+			
 # LENGTHS
 	def _update_mode_notes_lengths_button(self):
 		if self.is_enabled():
@@ -675,6 +674,9 @@ class StepSequencerComponent2(StepSequencerComponent):
 	def _set_note_editor(self):
 		self._note_editor = self.register_component(MelodicNoteEditorComponent(self, self._matrix, self._side_buttons))
 
+	def _set_mute_shift_function(self):
+		self._is_mute_shifted = False
+			
 	def _set_note_selector(self):
 		self._note_selector = self.register_component(NoteSelectorComponent(self, []))
 
@@ -686,7 +688,7 @@ class StepSequencerComponent2(StepSequencerComponent):
 		self.set_left_button(self._top_buttons[2])
 		self.set_right_button(self._top_buttons[3])
 
-	def update_buttons(self):
+	def _update_buttons(self):
 		self._update_quantization_button()
 		self._update_lock_button()
 		self._update_scale_selector_button()
