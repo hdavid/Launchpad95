@@ -1328,7 +1328,10 @@ class StepSequencerComponent(CompoundComponent):
 				if now - self._last_quantize_button_press > 0.5:
 					self.duplicate_clip()
 				else:
-					self._quantization_index = (self._quantization_index + 1) % len(QUANTIZATION_MAP)
+					if(self._mode == STEPSEQ_MODE_SCALE_EDIT):
+						self._quantization_index = (self._quantization_index - 1+len(QUANTIZATION_MAP)) % len(QUANTIZATION_MAP)
+					else:
+						self._quantization_index = (self._quantization_index + 1) % len(QUANTIZATION_MAP)
 					self.set_quantization(QUANTIZATION_MAP[self._quantization_index])
 					self._update_quantization_button()
 
