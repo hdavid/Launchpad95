@@ -2,28 +2,30 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>Launchpad95 : Ableton LIVE control surface remote scripts for Novation Launchpad with STEP SEQUENCER and DEVICE CONTROLLER</title>
-	<link rel="stylesheet" type="text/css" media="screen" href="http://motscousus.com/css/site.css" />
+	<title>Launchpad95 : Ableton LIVE control surface remote scripts for Novation Launchpad</title>
+	<link rel="stylesheet" type="text/css" media="screen" href="/css/site.css" />
+	<script type="text/javascript" src="/js/site.js"></script>
 </head>
 <body>
-<style>
-	table.launchpad{border:2px solid grey; background-color:#444; padding:25px; border-collapse:separate; border-spacing:7px 7px; border-radius:10px;page-break-inside:avoid }
-	
-	table.launchpad tr td{color:#CCC; vertical-align:top; vertical-align:middle; border:0px solid #333; width:60px; height:60px; text-align:center}
-	table.launchpad tr td{background-color:#888; border-radius:5px; background:radial-gradient(ellipse at center, #888 12%,#777 99%);}
-	
-	table.launchpad tr td.green{color:#666; background: #00aa00; background:radial-gradient(ellipse at center, #77cc33 12%,#669933 99%);}
-	table.launchpad tr td.red{color:#666; background: #ff4444; background:radial-gradient(ellipse at center, #ff4444 12%,#bb3333 99%);}
-	table.launchpad tr td.amber{color:#666; background: #ffA544; background:radial-gradient(ellipse at center, #ffA544 12%,#aa7744 99%);}
-	
-	table.launchpad tr td.side{border:1px solid #333; border-radius:60px; }
-	table.launchpad tr.top td{border:1px solid #333; border-radius:60px; }
 
-	div.note{padding:2px; text-align:left; color:#CCC; position:absolute; width:140px; height:45px; font-size:12px; margin-left:65px; margin-top:-14px; border:1px solid #666; background-color:rgba(127,127,127,0.5); border-radius:5px;}
-	div.noteTop{padding:2px; text-align:left; color:#CCC; float:top; position:absolute; width:50px; font-size:12px; margin-left:0px; margin-top:-85px; height:60px; border:1px solid #666; background-color:rgba(127,127,127,0.5); border-radius:5px;}
+	<style>
+		table.launchpad{border:2px solid grey; background-color:#444; padding:25px; border-collapse:separate; border-spacing:7px 7px; border-radius:10px;page-break-inside:avoid }
 
-	li,dd{color:#CCC;}
-</style>
+		table.launchpad tr td{color:#CCC; vertical-align:top; vertical-align:middle; border:0px solid #333; width:60px; height:60px; text-align:center}
+		table.launchpad tr td{background-color:#888; border-radius:5px; background:radial-gradient(ellipse at center, #888 12%,#777 99%);}
+
+		table.launchpad tr td.green{color:#666; background: #00aa00; background:radial-gradient(ellipse at center, #77cc33 12%,#669933 99%);}
+		table.launchpad tr td.red{color:#666; background: #ff4444; background:radial-gradient(ellipse at center, #ff4444 12%,#bb3333 99%);}
+		table.launchpad tr td.amber{color:#666; background: #ffA544; background:radial-gradient(ellipse at center, #ffA544 12%,#aa7744 99%);}
+
+		table.launchpad tr td.side{border:1px solid #333; border-radius:60px; }
+		table.launchpad tr.top td{border:1px solid #333; border-radius:60px; }
+
+		div.note{padding:2px; text-align:left; color:#CCC; position:absolute; width:140px; height:45px; font-size:12px; margin-left:65px; margin-top:-14px; border:1px solid #666; background-color:rgba(127,127,127,0.5); border-radius:5px;}
+		div.noteTop{padding:2px; text-align:left; color:#CCC; float:top; position:absolute; width:50px; font-size:12px; margin-left:0px; margin-top:-85px; height:60px; border:1px solid #666; background-color:rgba(127,127,127,0.5); border-radius:5px;}
+
+
+	</style>
   <style type="text/css" media="print">
    div.note {color:black; background-color:#ddd;}
    div.noteTop {color:black; background-color:#ddd;}
@@ -40,1530 +42,1545 @@
    li,dd{color:black;}
   </style>
 
-<h1 style="display:none">Launchpad95 : Novation Launchpad scripts with Instrument Controller, Step Sequencer and Device Controller for Ableton LIVE</h1>
-<h1>Launchpad95 : Improved Novation Launchpad remote scripts with Step Sequencer and Device Controller</h1>
-<!--div style="width:80%;text-align:right"><p>
-	<a href="http://flattr.com/thing/958327/Launchpad85-Ableton-LIVE-control-surface-remote-scripts-for-Novation-Launchpad-with-STEP-SEQUENCER" target="_blank">
-        <img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a>
-	<br/><small>support me if you feel like it !</small>
-</p>
-</div-->
-</p>
-<div style="width:700px;text-align:left">
-<p>
-	These scripts are modified version of Ableton Live 9.1 scripts for Novation Launchpad and 
-	provide the same functionality but add support for editing the midi clips using a step sequencer
-	, an Instrument Controller and Device Controller and an improved Instrument Mode.
-	It does not require any external tool like Max for Live (M4L) in order to work. 
-	This script is just a plain Live Control Surface Python Script.
-</p>
-<br/>
-<p>
-	Comment, feedback and updates : please check this thread on Ableton forum <a href="http://forum.ableton.com/viewtopic.php?f=1&amp;t=168495">http://forum.ableton.com/viewtopic.php?f=1&amp;t=168495</a>
-</a>
-<!--p>
-	It uses the Ableton live python api and is partly based on Hanz Petrov's step sequencer for AKAI APC40 
-	<a href="http://remotescripts.blogspot.com/p/apc-64-40.html">http://remotescripts.blogspot.com/p/apc-64-40.html</a>
-	which i hacked a little and merged into launchpad scripts.
-	Thanks to Matkainc and Chymera for their help and ideas.
-</p>
-<p>
-	Sunny from <a href="http://wwww.controllerism.com">controllerism.com</a> made a great walkthrough of Launchpad95 covering the main functions :
-	<iframe width="560" height="315" src="http://www.youtube.com/embed/RIidvnGvZZY" frameborder="0" allowfullscreen></iframe>
-</p-->
-
-<h2>Installation</h2>
-<p>
-	First, download the installation archive :<br/>
-	- live 9.1.2 (earlier versions are not supported anymore due to changes in Live API) : <a href="Launchpad95.zip">Launchpad95.zip</a><br/>
-	- live 8.4 : have a look at the documentation for <a href="launchpad85.html">Launchpad85</a><br/>
-	Unzip the zip file and copy the folder Launchpad95 into the Ableton Live's "MIDI Remote Scripts" folder. (where is that folder ? look at <a href="#faq-3">faq 3</a>.
-</p>
-<p>
-	After the folder has been copied, plug-in your Launchpad in the computer 
-	and start Ableton Live. Open up the preferences panel and go to "MIDI Sync" panel. 
-	Select Launchpad95 as your control surface and select the launchpad Midi Port midi ports like so : <br/>
-	<img src="setup.png"/>
-</p>
-<p>
-	For those adept of <a href="http://forum.ableton.com/viewtopic.php?f=2&amp;t=141471&amp;p=1245986">Launchpad Color</a>
-	I adapted this script to be compatible with Launchpad95. You can grab  <a href="Launchpad95Colour.zip">Launchpad95Colour here</a>! 
-</p>
-
-
-<h2>Mode of Operation</h2>
-<p>
-	Four modes are added on top of the existing modes.
-	These are <strong>Drum Step Sequencer</strong> mode to edit midi clips, 
-	a <strong>medodic step sequencer</strong>, 
-	and <strong>Device Controller</strong> mode to edit any parameter of any instrument, 
-	effect or device on any track of your arrangement, and
-	finally an <strong>Instrument Mode</strong> providing a tighter integration with Live.  
-</p>
-
-<section>
-<h3>Instrument Controller Mode</h3>
-<p>
-	Instrument Mode replaces classic User Mode 1.
-	To activate Instrument Controller Mode, press User Mode 1 button (mode button remains amber). 
-	Press User Mode 1 button once again, button turns green, activating the Device Controller.
-	Once more the button will turn red, activating the plain old User Mode 1 in case you need it. 
-</p>
-<p>
-	The top up/down navigation buttons allow to navigate scenes, while the left/right button allow to navigate tracks.
-	The scene buttons allow you to control the currently selected track and clip, arm, solo, record, play, stop etc (see below).
-</p>
-<p>
-	The matrix of buttons act as a midi keyboard proposing a drum rack layout, and a melodic mode.
-	Melodic mode enable you to select root note, type of mode (major, minor etc), and the octave you play in.
-</p>
-<p>
-	Most of the scene buttons have alternate functions when you hold them long (0.5 sec) :<br/>
-	- undo : a long press will perform a redo !<br/>
-	- stop : a long press will DELETE currently selected clip. No worries this is undoable !<br/>
-	- solo : a long press on solo will enable/disable the selected track.<br/>
-	- arm : holding arm for more than 0.5 seconds will toggle live's metronome. a very long press (2 sec) will alternate between auto arm of track and manual track arming. colour of the button will reflect the selected mode. this is really useful if you have more than one controller/person interacting with Live.
-</p>
-	
-	
-<table class="launchpad">
-	<tr class="top">
-		<td class="green">prev scene</td>
-		<td class="green">next scene</td>
-		<td class="green">prev track</td>
-		<td class="green">next track</td>
-		<td>Session mode</td>
-		<td class="amber">user&nbsp;1 Inst.</td>
-		<td>user&nbsp;2 step</td>
-		<td>mixer mode</td>
-	</tr>
-
-	<tr>
-		<td class="amber">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="side amber"><div class="note">enter scale edition mode</div>scale</td>
-	</tr>
-	<tr>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="side amber"><div class="note">undo. long press to redo</div>undo</td>
-	</tr>
-	<tr>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="side green"><div class="note"></div>octave up</td>
-	</tr>
-	<tr>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="side green"><div class="note"></div>octave down</td>
-	</tr>
-	<tr>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="side red"><div class="note">stop selected clip</div>stop</td>
-	</tr>
-	<tr>
-		<td class="green">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="side red"><div class="note">start selected clip</div>start</td>
-	</tr>
-	<tr>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="side amber"><div class="note">solo current track</div>solo</td>
-	</tr>
-		<td class="amber">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="side red"><div class="note">session record</div>overdub</td>
-	</tr>
-</table>
-</section>
-
-<section>
-<h4>scale edition mode</h4>
-<p>
-	To enter scale edition mode press the 1st scene button from Instrument mode.<br/>
-	Top red buttons provide mode selection (drumrack, chromatic, diatonic).<br/>
-	2nd and 3rd amber rows provide root note selection.<br/>
-	4th red row allows you to select the octave. <br/>
-	Bottom green rows allow to select the mode. 
-</p>
-<p>
-	You can select the orientation (vertical or horizontal of the layout).<br/>
-	The 2nd top left button selects the interval among 3rd, 4th and 6th for the diatonic layout. 4th is the default mode, also on the push. 3rd is very practical to play chords vertically.<br/>
-	the 3rd top left button (amber) let you fix the first (bottom left) note to scale root or live it an a C.
-<p/>
-
-<table class="launchpad">
-	<tr class="top">
-		<td class="green">prev scene</td>
-		<td class="green">next scene</td>
-		<td class="green">prev track</td>
-		<td class="green">next track</td>
-		<td>Session mode</td>
-		<td class="amber">user&nbsp;1 Inst.</td>
-		<td>user&nbsp;2 step</td>
-		<td>mixer mode</td>
-	</tr>
-
-	<tr>
-		<td class="amber" title="orientation">orient.</td>
-		<td class="amber">absolute root</td>
-		<td class="red">chromatic guitar</td>
-		<td class="red">diatonic sequent</td>
-		<td class="red">diatonic 3rd</td>
-		<td class="red">diatonic 4th</td>
-		<td class="red">chromatic</td>
-		<td class="red">drumrack</td>
-		<td class="side amber"><div class="note">enter scale edition mode</div>scale</td>
-	</tr>
-	<tr>
-		<td class="amber">C#</td>
-		<td class="amber">D#</td>
-		<td class="red">relative scale</td>
-		<td class="amber">F#</td>
-		<td class="amber">G#</td>
-		<td class="amber">A#</td>
-		<td class="red">5th left</td>
-		<td class="green">quick scale mode</td>
-		<td class="side amber"><div class="note">undo. long press to redo</div>undo</td>
-	</tr>
-	<tr>
-		<td class="amber">C</td>
-		<td class="amber">D</td>
-		<td class="amber">E</td>
-		<td class="amber">F</td>
-		<td class="amber">G</td>
-		<td class="amber">A</td>
-		<td class="amber">B</td>
-		<td class="red">5th right</td>
-		<td class="side green"><div class="note"></div>octave up</td>
-	</tr>
-	<tr>
-		<td class="red" title="octave -2">-2</td>
-		<td class="red" title="octave -1">-1</td>
-		<td class="red" title="octave 0">0</td>
-		<td class="red" title="octave 1">1</td>
-		<td class="red" title="octave 2">2</td>
-		<td class="red" title="octave 3">3</td>
-		<td class="red" title="octave 4">4</td>
-		<td class="red" title="octave 5">5</td>
-		<td class="side green"><div class="note"></div>octave down</td>
-	</tr>
-	<tr>
-		<td class="green">Major</td>
-		<td class="green">Minor</td>
-		<td class="green">Dorian</td>
-		<td class="green" title="Mixolydian">Mixolyd.</td>
-		<td class="green">Lydian</td>
-		<td class="green">Phrygian</td>
-		<td class="green">Locrian</td>
-		<td class="green" title="Diminished">Diminish.</td>
-		<td class="side red"><div class="note">stop selected clip</div>stop</td>
-	</tr>
-	<tr>
-		<td class="green">Whole-half</td>
-		<td class="green">Whole Tone</td>
-		<td class="green">Minor Blues</td>
-		<td class="green" title="Minor Pentatonic">Minor Penta.</td>
-		<td class="green"title="Major Pentatonic">Major Penta.</td>
-		<td class="green">Harmonic Minor</td>
-		<td class="green">Melodic Minor</td>
-		<td class="green">Super Locrian</td>
-
-		<td class="side red"><div class="note">start selected clip</div>start</td>
-	</tr>
-	<tr>
-		<td class="green">Bhairav</td>
-		<td class="green" title="Hungarian Minor">Hunga. Minor</td>
-		<td class="green">Minor Gypsy</td>
-		<td class="green">Hirojoshi</td>
-		<td class="green">In-Sen</td>
-		<td class="green">Iwato</td>
-		<td class="green">Kumoi</td>
-		<td class="green">Pelog</td>
-		<td class="side amber"><div class="note">solo current track</div>solo</td>
-	</tr>
-	</tr>
-		<td class="green">Spanish</td>
-		<td class="green">IonEol</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side red"><div class="note">session record</div>overdub</td>
-	</tr>
-</table>
-</section>
-
-<section>
-<h4>quick scale modes</h4>
-<p>if quick scale is activated (last button on the right on the 2nd row in scale edit mode), the two first rows of the launchpad allow you to quickly change the scale.</p>
-<p>this shows the two first rows of the launchpad. the last button of the first row changes between root note selection and mode selection.</p>
-<h5>root note</h5>
-<p> in this mode you can select the root note of your scale. you can also quickly alternate between minor and major by pressing the button again</p>
-<table class="launchpad">
-	<tr>
-		<td class="amber">C#</td>
-		<td class="amber">D#</td>
-		<td class="red">relative scale</td>
-		<td class="amber">F#</td>
-		<td class="amber">G#</td>
-		<td class="amber">A#</td>
-		<td class="red">5th left</td>
-		<td class="red">scale / mode toggle</td>
-		<td class="side amber"><div class="note">enter scale edition mode</div>scale</td>
-	</tr>
-	<tr>
-		<td class="amber">C</td>
-		<td class="amber">D</td>
-		<td class="amber">E</td>
-		<td class="amber">F</td>
-		<td class="amber">G</td>
-		<td class="amber">A</td>
-		<td class="amber">B</td>
-		<td class="red">5th right</td>
-		<td class="side amber"><div class="note">undo. long press to redo</div>undo</td>
-	</tr>
-</table>
-
-<h5>quick scale modes: modus</h5>
-<p> in this mode you can select the mode of your scale.</p>
-<table class="launchpad">
-	<tr>
-		<td class="amber">Major</td>
-		<td class="amber">Minor</td>
-		<td class="amber">Dorian</td>
-		<td class="amber" title="Mixolydian">Mixolyd.</td>
-		<td class="amber">Lydian</td>
-		<td class="amber">Phrygian</td>
-		<td class="amber">Locrian</td>
-		<td class="red">scale / mode toggle</td>
-		<td class="side amber"><div class="note">enter scale edition mode</div>scale</td>
-	</tr>
-	<tr>
-		<td class="amber" title="Diminished">Diminish.</td>
-		<td class="amber">Minor Blues</td>
-		<td class="amber">Harmonic Minor</td>
-		<td class="amber">Melodic Minor</td>
-		<td class="amber">Super Locrian</td>
-		<td class="amber" title="Hungarian Minor">Hunga. Minor</td>
-		<td class="amber">Minor Gypsy</td>
-		<td class="amber">Spanish</td>
-		<td class="side amber"><div class="note">undo. long press to redo</div>undo</td>
-	</tr>
-</table>
-</section>
-
-
-
-<section>
-<h3>Drum Step Sequencer Mode</h3>
-<p>
-	To activate the Drum Step Sequencer, select a midi clip in the clip view.
-	Then press User Mode 2 button once, activating the step sequencer (in normal mode). 
-	Press user mode 2 button once more opens the Melodic step sequencer
-</p>
-<p> 
-	this sequencer has two sub modes detailed below. combined and multinotes. (note there is a second step sequencer, melodic step sequencer detailed further down).
-</p>
-<p>		
-	A playback/metronome indicator is scrolling thru the grid in amber to indicate the playing position of the clip as the clip is playing. 
-	This is just an overlay, it does not affect the functionality of the buttons.
-</p>
-<p>
-	Here are the colour codes used : <br/>
-	- Normal notes are shown in Green, intensity depending on their velocity.<br/>
-	- Muted notes are displayed in red.<br/> 
-	- Notes being currently played are flashing in red.<br/>
-	- Notes being played and being outside of the currently displaying midi clip block will also flash in red.<br/>
-</p>
-<p>
-	Some other information is displayed, using orange colour :<br/>
-	- Note markers help to better visualise what row correspond to which note:<br/> 
-	&nbsp;&nbsp;&nbsp;&nbsp; - root note of the selected are marked with three orange left buttons lit up.<br/>
-	&nbsp;&nbsp;&nbsp;&nbsp; - other notes of the scale are marked with one orange button lit on the left-most row.<br/>
-	- while scrolling left and right along the clip, a vertical bar will display you where you are in the clip<br/>
-</p>
-<p>
-	A summary of functions assigned to the buttons is shown in the table below. hover your mouse above a button to get detailed descriptions.
-</p>
-<p>
-	StepSeq by default works in combined mode. pressing the 4th scene button toggles between combined mode and multi note mode. Multinote mode works in similarly to the the previous step in launchpad85, while combined mode offers mode close to the way Push StepSeq behaves. 
-</p>
-</section>
-
-<section>
-<h5>Combined Mode</h5>
-<p>
-	The bottom left area let you select the note currently being edited on the top note editor.
-</p>
-<p>
-	The bottom right area allows you the select the currently clip part currently being displayed (single button press) and edited (double press or one button after the other).
-</p>
-<p>
-	Some buttons have combined function : <br/>
-	<ul> 
-		<li>Lock (2nd scene button):
-		<ul>
-			<li>press long to switch between clip lock and play clip on locked track mode</li>
-			<li>yellow : track lock mode. step sequencer is locked to current track and will follow playing clip on this track</li>
-			<li>red : step sequencer is locked to current clip.</li>
-		</ul>
-		<li>quantize (3rd scene button):
-		<ul>
-			<li>press long duplicate clip in a new clip</li>
-		</ul>
-		</li>
-		<li>Mute (last scene button):
-		<ul>
-			<li>hold mute button and click on a note to mute it</li>
-			<li>hold mute button and press on a note in the bottom left quadrant to mute it</li>
-			<li>hold mute button and select a loop range in the loop selector to delete it</li>
-		</ul>
-		</li>
-		<li>velocity (7th scene button):
-		<ul>
-			<li>hold velocity button and click on a note to change its velocity</li>
-			<li>hold velocity button and click on a note to change in the note selector to ear a preview of the sound</li>
-			<li>hold velocity button and select a loop range in the loop selector to extend the original clip content to the newly selected length</li>
-		</ul>
-		</li>
-		<li>velocity (7th scene button) and mute
-		<ul>
-			<li>hold velocity button and mute button at the same time and select a loop range in the loop selector in order to mute this time selection</li>
-		</ul>
-		</li>
-	</ul>
-</p>
-
-<br/><br/><br/>
-<table class="launchpad">
-	<tr class="top">
-		<td class="green">prev scene</td>
-		<td class="green">next scene</td>
-		<td class="green">prev track</td>
-		<td class="green">next track</td>
-		<td>Session mode</td>
-		<td>user&nbsp;1 device</td>
-		<td class="amber"><div class="noteTop" style="width:160px">cycle thru  StepSequencers and User Mode 2</div>user&nbsp;2 step</td>
-		<td>mixer mode</td>
-	</tr>
-
-	<tr>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side amber"><div class="note">Display Scale Selection Overlay</div>scale</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side red"><div class="note">lock step seq to current clip (very useful !). long pres to lock on current track only</div>lock</td>
-	</tr>
-	<tr>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side amber"><div class="note">cycle thru available quantisations</div>quant.</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side amber"><div class="note">switches between combined and multinote modes</div>modes</td>
-	</tr>
-	<tr>
-		<td class="amber">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="side green"><div class="note">scroll up (notes)</div>up</td>
-	</tr>
-	<tr>
-		<td class="green">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side green"><div class="note">scroll down (notes)</div>down</td>
-	</tr>
-	<tr>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side green" title="Velocity and Velocity Shift : Press shortly to cycle thru available velocities (used for creating note while pressing a button on the 8*8 matrix). hold and press a note in the matrix to alter its velocity"><div class="note">cycle thru velocities and velocity shift notes</div>velocity</td>
-	</tr>
-		<td class="amber">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side red"><div class="note" style="height:90px">hold and press a note in the matrix to (un)mute it. <br/> hold and press a note in the note selector to mute a lane<br/>hold+nav keys to scroll up/down one octave</div>mute</td>
-	</tr>
-</table>
-</section>
-
-<section>
-<h5>Multinote Mode</h5>
-<p>
-to activate this mode, press user mode 2 button until it turns green.
-</p>
-<p>
-	This mode uses the grid as a 8*8 matrix. one midi note per row. it follows the scale mode selected. Note that the left and right arrows are used to navigate left and right in the clip.
-</p>
-<br/><br/><br/>
-<table class="launchpad">
-	<tr class="top">
-		<td class="green"><div class="noteTop">select prev scene</div>prev scene</td>
-		<td class="green"><div class="noteTop">select next scene</div>next scene</td>
-				<td class="green"><div class="noteTop">select prev clip page</div>prev<br/>page</td>
-		<td class="green"><div class="noteTop">select next clip page</div>next<br/>page</td>
-		<td>Session mode</td>
-		<td>user&nbsp;1 device</td>
-		<td class="amber"><div class="noteTop" style="width:160px">cycle thru StepSequencers and User Mode 2</div>user&nbsp;2 step</td>
-		<td>mixer mode</td>
-	</tr>
-
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side amber"><div class="note">Display Scale Selection Overlay</div>scale</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side red"><div class="note">lock step seq to current clip (very useful !)</div>lock</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side amber"><div class="note">cycle thru available quantisations</div>quant.</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side amber"><div class="note">switches between combined and multinote modes</div>modes</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="red">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side green"><div class="note">scroll up (notes)</div>up</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side green"><div class="note">scroll down (notes)</div>down</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side green" title="Velocity and Velocity Shift : Press shortly to cycle thru available velocities (used for creating note while pressing a button on the 8*8 matrix). hold and press a note in the matrix to alter its velocity"><div class="note">cycle thru velocities and velocity shift notes</div>velocity</td>
-	</tr>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side red"><div class="note" style="height:90px">hold and press a note in the matrix to (un)mute it. <br/> hold and press a note in the note selector to mute a lane<br/>hold+nav keys to scroll up/down one octave</div>mute</td>
-	</tr>
-</table>
-</section>
-
-
-<section>
-<h4>Melodic StepSequencer</h4>
-<p>
-	This mode behave more how a hardware stepsequencer works. it uses the grid as a 7*8 matrix to edit note pitch, velocity, length and octave. one function per page.
-	of course notes pitches follow the selected scale !
-</p>
-<p>
-	The last row of the matrix acts as a page selector and work in the similar fashion to the combined step stequencer loop selector.
-</p>
-<p>
-	double press on the last scene button toggles between monophonic and polyphonic modes.
-</p>
-
-<br/><br/><br/>
-<table class="launchpad">
-	<tr class="top">
-		<td class="green"><div class="noteTop">select prev scene</div>prev scene</td>
-		<td class="green"><div class="noteTop">select next scene</div>next scene</td>
-		<td class="green">prev track</td>
-		<td class="green">next track</td>
-		<td>Session mode</td>
-		<td>user&nbsp;1 device</td>
-		<td class="green"><div class="noteTop" style="width:160px">cycle thru StepSequencers and User Moder 2</div>user&nbsp;2 step</td>
-		<td>mixer mode</td>
-	</tr>
-
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side amber"><div class="note">Display Scale Selection Overlay</div>scale</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side red"><div class="note">lock step seq to current clip (very useful !)</div>lock</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side amber"><div class="note">cycle thru available quantisations</div>quant.</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side green"><div class="note">randomise the selected function (pitch,length,velocity,octave)</div>random !</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="red">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side amber">length</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side red">octave</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side red">velocity</td>
-	</tr>
-		<td class="amber">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side green">notes</td>
-	</tr>
-</table>
-</section>
-
-<section>
-<h3>Device Controller Mode</h3>
-<p>
-	Device Controller mode is a sub mode of User Mode 1. 
-	To activate Device Controller Mode, press User Mode 1 button once, 
-	the normal User Mode 1 is activated (mode button remains amber). 
-	Press User Mode 1 button once again, button turns green, activating the Device Controller. 
-</p>
-<p>		
-	You can edit eight parameters of the selected device on the 
-	selected track at once. One parameter per column.
-</p>
-<p>
-	Navigation among tracks and devices is done using the top left navigation buttons. 
-	Right side buttons control on/off, device locking, parameter banks navigation and precision mode.
-</p>
-<p>
-	A summary of functions assigned to the buttons is shown in 
-	the table below. hover your mouse above a button to get detailed description.
-</p>
-
-<table class="launchpad">
-	<tr class="top">
-		<td class="green">prev device</td>
-		<td class="green">next device</td>
-		<td class="green">prev track</td>
-		<td class="green">next track</td>
-		<td>Session mode</td>
-		<td class="green">user&nbsp;1 device</td>
-		<td>user&nbsp;2 step</td>
-		<td>mixer mode</td>
-	</tr>
-
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side green"><div class="note">turns selected device on/off</div>on/off</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side red"><div class="note">locks the control surface to device</div>lock</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side amber"><div class="note">select previous bank of 8 parameters</div>bnk dwn</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side amber"><div class="note">select next bank of 8 parameters</div>bnk up</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side green" title="this mode allows to edit parameters with more precision. buttons close to the center are more precise. button further up or down give more amplitude"><div class="note">enable precision mode of sliders</div>precision</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>
-	</tr>
-		<td>&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>
-	</tr>
-</table>
-</section>
-
-
-<section>
-<h3>Session Mode</h3>
-<table class="launchpad">
-	<tr class="top">
-		<td class="green">scenes up</td>
-		<td class="green">scenes down</td>
-		<td class="green">tracks left</td>
-		<td class="green">tracks right</td>
-		<td class="amber">Session mode</td>
-		<td class="amber">user&nbsp;1 Inst.</td>
-		<td class="amber">user&nbsp;2 step</td>
-		<td class="amber">mixer mode</td>
-	</tr>
-	<tr>
-		<td class="red">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">scene</td>		
-	</tr>
-	<tr>
-		<td class="green">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">scene</td>		
-	</tr>
-	<tr>
-		<td class="red">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">scene</td>		
-	</tr>
-	<tr>
-		<td class="red">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">scene</td>		
-	</tr>
-	<tr>
-		<td class="red">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">scene</td>		
-	</tr>
-	<tr>
-		<td class="red">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">scene</td>		
-	</tr>
-		<tr>
-		<td class="red">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">scene</td>		
-	</tr>
-		<tr>
-		<td class="red">&nbsp;</td>
-		<td>&nbsp;</td><td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">scene</td>		
-	</tr>
-</table>
-</section>
-
-
-<section>
-<h3>User1 Mode</h3>
-<table class="launchpad">
-	<tr class="top">
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="amber">Session mode</td>
-		<td class="red">user&nbsp;1 Inst.</td>
-		<td class="amber">user&nbsp;2 step</td>
-		<td class="amber">mixer mode</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>		
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>		
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>		
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>		
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>		
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>		
-	</tr>
-		<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>		
-	</tr>
-		<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>		
-	</tr>
-</table>
-</section>
-
-<section>
-<h3>User2 Mode</h3>
-<table class="launchpad">
-	<tr class="top">
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="amber">Session mode</td>
-		<td class="amber">user&nbsp;1 Inst.</td>
-		<td class="red">user&nbsp;2 step</td>
-		<td class="amber">mixer mode</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>		
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>		
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>		
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>		
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>		
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>		
-	</tr>
-		<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>		
-	</tr>
-		<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side">&nbsp;</td>		
-	</tr>
-</table>
-</section>
-
-<section>
-<h3>Mixer Mode</h3>
-<table class="launchpad">
-	<tr class="top">
-		<td class="green">prev scene</td>
-		<td class="green">next scene</td>
-		<td class="green">prev track</td>
-		<td class="green">next track</td>
-		<td class="amber">Session mode</td>
-		<td class="amber">user&nbsp;1 Inst.</td>
-		<td class="amber">user&nbsp;2 step</td>
-		<td class="amber">mixer mode</td>
-	</tr>
-	<tr>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side green">Volume</td>		
-	</tr>
-	<tr>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side green">Pan</td>
-	</tr>
-	<tr>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side green">Send A</td>		
-	</tr>
-	<tr>
-		<td class="green">&nbsp;</td>
-		<td class="green">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side green">Send B</td>
-	</tr>
-	<tr>
-		<td class="red">&nbsp;</td>
-		<td class="red">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side red">Stop All</td>		
-	</tr>
-	<tr>
-		<td class="amber">&nbsp;</td>
-		<td class="amber">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side amber">Active all</td>
-	</tr>
-		<tr>
-		<td class="red">&nbsp;</td>
-		<td class="red">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side red">Unsolo ll</td>	
-	</tr>
-		<tr>
-		<td class="red">&nbsp;</td>
-		<td class="red">&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td class="side red">Unarm All</td>		
-	</tr>
-</table>
-</section>
-
-
-<!--h2>Max For Live On Screen Display / Helper</h2>
-<p>
-	Launchpad95 comes packaged with a Max for Live device that will display useful information about currently selected tracks, clips and other parameters. 
-	Make sure to try it !
-</p>
-<p>
-	It is available Launchpad95/M4LDevice/Launchpad95 OSD.amxd
-</p-->
-
-
-
-<h2>Source</h2>
-<section>
-<ul>
-	<li><a href="https://github.com/hdavid/Launchpad95/">https://github.com/hdavid/Launchpad95/</a></li>
-</ul>
-
-<h2>F.A.Q.</h2>
-<dl>
-	<dt id="faq-1">1. Which Launchpad flavours are supported</dt>
-	<dd>
-		Launchpad 95 works with Launchpad Launchpad S, Launchpad Mini<br/>
-		<br/>
-	</dd>
-
-	<dt id="faq-2">2. Which Ableton live versions are supported</dt>
-	<dd>
-		Launchpad 95 works with Live 9.1+, 32 bit or 64 bit, Mac or Windows, suite or intro or standard. 
-		basically with every combination you may think of as long at it is live 9.1 or greater.<br/>
-		Of course Ableton from time to time change their Python Live without notification 
-		and therefore Launchpad95 might stop working. but i am trying to keep up and the changes.
+<div id="main">
+	<h1>Launchpad95 : Improved Novation Launchpad remote scripts</h1>
+	<p id="toc"></p>
+	<p>
+		These scripts are modified version of Ableton Live 9.1 scripts for Novation Launchpad and 
+		provide the same functionality but add support for editing the midi clips using a step sequencer
+		, an Instrument Controller and Device Controller and an improved Instrument Mode.
+		It does not require any external tool like Max for Live (M4L) in order to work. 
+		This script is just a plain Live Control Surface Python Script.
+	</p>
 	<br/>
-	</dd>
+	<p>
+		Comment, feedback and updates : please check this thread on Ableton forum <a href="http://forum.ableton.com/viewtopic.php?f=1&amp;t=168495">http://forum.ableton.com/viewtopic.php?f=1&amp;t=168495</a>
+	</a>
+	</p>
 
-	<dt id="faq-3">3. Where should i put the script ?</dt>
-	<dd>
-		On pc/windows 7 : inside "C:\ProgramData\Ableton\Live&nbsp;9&nbsp;Suite\Resources\MIDI&nbsp;Remote&nbsp;Scripts"<br/>
-		On a mac right-click the Live application you use (there might more than one installed!) and select "view package content", then browse to "App-Resources/MIDI&nbsp;Remote&nbsp;Scripts". <br/>
-		<br/>
-		Inside this "MIDI&nbsp;Remote&nbsp;Scripts" folder, you should have a folder called "Launchpad95". inside this folder you should have a bunch of .py files, and a for each of them a .pyc file. (.pyc files are compiled version of the .py that live compiles as you start it.)<br/>
-		<br/>
-		As sometimes Sometimes a picture is worth 1000 words ! take a look at these screenshots.<br/>
-		- On a mac it look like <a href="install_mac.png">this</a>.<br/>
-		- on a pc like <a href="install_windows.png">that</a><br/>
-		<br/>
-	</dd>
+	<section>
+	<h2>Installation</h2>
+	<p>
+		First, download the installation archive :<br/>
+		- live 9.1.2 : <strong><a href="Launchpad95.zip">Launchpad95.zip</a></strong><br/>
+		- live 8.4 : have a look at the documentation for <a href="launchpad85.html">Launchpad85</a><br/>
+		Unzip the zip file and copy the folder Launchpad95 into the Ableton Live's "MIDI Remote Scripts" folder. (where is that folder ? look at <a href="#faq-3">faq 3</a>.
+	</p>
+	<p>
+		After the folder has been copied, plug-in your Launchpad in the computer 
+		and start Ableton Live. Open up the preferences panel and go to "MIDI Sync" panel. 
+		Select Launchpad95 as your control surface and select the launchpad Midi Port midi ports like so : <br/>
+		<img src="setup.png"/>
+	</p>
+	<p>
+		For those adept of <a href="http://forum.ableton.com/viewtopic.php?f=2&amp;t=141471&amp;p=1245986">Launchpad Color</a>
+		I adapted this script to be compatible with Launchpad95. You can grab  <a href="Launchpad95Colour.zip">Launchpad95Colour here</a>! 
+	</p>
+	</section>
+	
+	<section>
+	<h2>User Manual</h2>
+	<p>
+		Four modes are added on top of the existing modes.
+		These are <strong>Drum Step Sequencer</strong> mode to edit midi clips, 
+		a <strong>medodic step sequencer</strong>, 
+		and <strong>Device Controller</strong> mode to edit any parameter of any instrument, 
+		effect or device on any track of your arrangement, and
+		finally an <strong>Instrument Mode</strong> providing a tighter integration with Live.  
+	</p>
+	</section>
+	
+	<section>
+	<h3>Instrument Controller Mode</h3>
+	<p>
+		Instrument Mode replaces classic User Mode 1.
+		To activate Instrument Controller Mode, press User Mode 1 button (mode button remains amber). 
+		Press User Mode 1 button once again, button turns green, activating the Device Controller.
+		Once more the button will turn red, activating the plain old User Mode 1 in case you need it. 
+	</p>
+	<p>
+		The top up/down navigation buttons allow to navigate scenes, while the left/right button allow to navigate tracks.
+		The scene buttons allow you to control the currently selected track and clip, arm, solo, record, play, stop etc (see below).
+	</p>
+	<p>
+		The matrix of buttons act as a midi keyboard proposing a drum rack layout, and a melodic mode.
+		Melodic mode enable you to select root note, type of mode (major, minor etc), and the octave you play in.
+	</p>
+	<p>
+		Most of the scene buttons have alternate functions when you hold them long (0.5 sec) :<br/>
+		- undo : a long press will perform a redo !<br/>
+		- stop : a long press will DELETE currently selected clip. No worries this is undoable !<br/>
+		- solo : a long press on solo will enable/disable the selected track.<br/>
+		- arm : holding arm for more than 0.5 seconds will toggle live's metronome. a very long press (2 sec) will alternate between auto arm of track and manual track arming. colour of the button will reflect the selected mode. this is really useful if you have more than one controller/person interacting with Live.
+	</p>
 
-	<dt id="faq-4">4. It does not work, i installed everything, but the launchpad does not light up when i select Launchpad95 in the dropdown in the preferences. what is wrong ? </dt>
-	<dd>
-		It is hard to guess what you did wrong. You must have installed not the right way somehow. 
-		try to install it from scratch again, download from this site, extract install, restart live.
-		among the list of things you can try to do :
-		<ul>
-			<li> - check the you installed at the right place. (check <a href="#faq-3">question #3</a> !)</li>	
-			<li> - Pay attention to the folder name AND its full path. (again see screenshots in above in <a href="#faq-3">question #3</a>)</li>
-			<li> - how many versions of live do you have installed ?</li>
-			<li> - are you running live 9.1 or greater ? for live 8 please use launchpad85. For live 9.0, upgrade to live 9.1. </li>
+
+	<table class="launchpad">
+		<tr class="top">
+			<td class="green">prev scene</td>
+			<td class="green">next scene</td>
+			<td class="green">prev track</td>
+			<td class="green">next track</td>
+			<td>Session mode</td>
+			<td class="amber">user&nbsp;1 Inst.</td>
+			<td>user&nbsp;2 step</td>
+			<td>mixer mode</td>
+		</tr>
+
+		<tr>
+			<td class="amber">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="side amber"><div class="note">enter scale edition mode</div>scale</td>
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="side amber"><div class="note">undo. long press to redo</div>undo</td>
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="side green"><div class="note"></div>octave up</td>
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="side green"><div class="note"></div>octave down</td>
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="side red"><div class="note">stop selected clip</div>stop</td>
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="side red"><div class="note">start selected clip</div>start</td>
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="side amber"><div class="note">solo current track</div>solo</td>
+		</tr>
+			<td class="amber">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="side red"><div class="note">session record</div>overdub</td>
+		</tr>
+	</table>
+	</section>
+
+	<section>
+	<h4>scale edition mode</h4>
+	<p>
+		To enter scale edition mode press the 1st scene button from Instrument mode.<br/>
+		Top red buttons provide mode selection (drumrack, chromatic, diatonic).<br/>
+		2nd and 3rd amber rows provide root note selection.<br/>
+		4th red row allows you to select the octave. <br/>
+		Bottom green rows allow to select the mode. 
+	</p>
+	<p>
+		You can select the orientation (vertical or horizontal of the layout).<br/>
+		The 2nd top left button selects the interval among 3rd, 4th and 6th for the diatonic layout. 4th is the default mode, also on the push. 3rd is very practical to play chords vertically.<br/>
+		the 3rd top left button (amber) let you fix the first (bottom left) note to scale root or live it an a C.
+	<p/>
+
+	<table class="launchpad">
+		<tr class="top">
+			<td class="green">prev scene</td>
+			<td class="green">next scene</td>
+			<td class="green">prev track</td>
+			<td class="green">next track</td>
+			<td>Session mode</td>
+			<td class="amber">user&nbsp;1 Inst.</td>
+			<td>user&nbsp;2 step</td>
+			<td>mixer mode</td>
+		</tr>
+
+		<tr>
+			<td class="amber" title="orientation">orient.</td>
+			<td class="amber">absolute root</td>
+			<td class="red">chromatic guitar</td>
+			<td class="red">diatonic sequent</td>
+			<td class="red">diatonic 3rd</td>
+			<td class="red">diatonic 4th</td>
+			<td class="red">chromatic</td>
+			<td class="red">drumrack</td>
+			<td class="side amber"><div class="note">enter scale edition mode</div>scale</td>
+		</tr>
+		<tr>
+			<td class="amber">C#</td>
+			<td class="amber">D#</td>
+			<td class="red">relative scale</td>
+			<td class="amber">F#</td>
+			<td class="amber">G#</td>
+			<td class="amber">A#</td>
+			<td class="red">5th left</td>
+			<td class="green">quick scale mode</td>
+			<td class="side amber"><div class="note">undo. long press to redo</div>undo</td>
+		</tr>
+		<tr>
+			<td class="amber">C</td>
+			<td class="amber">D</td>
+			<td class="amber">E</td>
+			<td class="amber">F</td>
+			<td class="amber">G</td>
+			<td class="amber">A</td>
+			<td class="amber">B</td>
+			<td class="red">5th right</td>
+			<td class="side green"><div class="note"></div>octave up</td>
+		</tr>
+		<tr>
+			<td class="red" title="octave -2">-2</td>
+			<td class="red" title="octave -1">-1</td>
+			<td class="red" title="octave 0">0</td>
+			<td class="red" title="octave 1">1</td>
+			<td class="red" title="octave 2">2</td>
+			<td class="red" title="octave 3">3</td>
+			<td class="red" title="octave 4">4</td>
+			<td class="red" title="octave 5">5</td>
+			<td class="side green"><div class="note"></div>octave down</td>
+		</tr>
+		<tr>
+			<td class="green">Major</td>
+			<td class="green">Minor</td>
+			<td class="green">Dorian</td>
+			<td class="green" title="Mixolydian">Mixolyd.</td>
+			<td class="green">Lydian</td>
+			<td class="green">Phrygian</td>
+			<td class="green">Locrian</td>
+			<td class="green" title="Diminished">Diminish.</td>
+			<td class="side red"><div class="note">stop selected clip</div>stop</td>
+		</tr>
+		<tr>
+			<td class="green">Whole-half</td>
+			<td class="green">Whole Tone</td>
+			<td class="green">Minor Blues</td>
+			<td class="green" title="Minor Pentatonic">Minor Penta.</td>
+			<td class="green"title="Major Pentatonic">Major Penta.</td>
+			<td class="green">Harmonic Minor</td>
+			<td class="green">Melodic Minor</td>
+			<td class="green">Super Locrian</td>
+
+			<td class="side red"><div class="note">start selected clip</div>start</td>
+		</tr>
+		<tr>
+			<td class="green">Bhairav</td>
+			<td class="green" title="Hungarian Minor">Hunga. Minor</td>
+			<td class="green">Minor Gypsy</td>
+			<td class="green">Hirojoshi</td>
+			<td class="green">In-Sen</td>
+			<td class="green">Iwato</td>
+			<td class="green">Kumoi</td>
+			<td class="green">Pelog</td>
+			<td class="side amber"><div class="note">solo current track</div>solo</td>
+		</tr>
+		</tr>
+			<td class="green">Spanish</td>
+			<td class="green">IonEol</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side red"><div class="note">session record</div>overdub</td>
+		</tr>
+	</table>
+	</section>
+
+	<section>
+	<h4>quick scale modes</h4>
+	<p>if quick scale is activated (last button on the right on the 2nd row in scale edit mode), the two first rows of the launchpad allow you to quickly change the scale.</p>
+	<p>this shows the two first rows of the launchpad. the last button of the first row changes between root note selection and mode selection.</p>
+	<h5>root note</h5>
+	<p> in this mode you can select the root note of your scale. you can also quickly alternate between minor and major by pressing the button again</p>
+	<table class="launchpad">
+		<tr>
+			<td class="amber">C#</td>
+			<td class="amber">D#</td>
+			<td class="red">relative scale</td>
+			<td class="amber">F#</td>
+			<td class="amber">G#</td>
+			<td class="amber">A#</td>
+			<td class="red">5th left</td>
+			<td class="red">scale / mode toggle</td>
+			<td class="side amber"><div class="note">enter scale edition mode</div>scale</td>
+		</tr>
+		<tr>
+			<td class="amber">C</td>
+			<td class="amber">D</td>
+			<td class="amber">E</td>
+			<td class="amber">F</td>
+			<td class="amber">G</td>
+			<td class="amber">A</td>
+			<td class="amber">B</td>
+			<td class="red">5th right</td>
+			<td class="side amber"><div class="note">undo. long press to redo</div>undo</td>
+		</tr>
+	</table>
+
+	<h5>quick scale modes: modus</h5>
+	<p> in this mode you can select the mode of your scale.</p>
+	<table class="launchpad">
+		<tr>
+			<td class="amber">Major</td>
+			<td class="amber">Minor</td>
+			<td class="amber">Dorian</td>
+			<td class="amber" title="Mixolydian">Mixolyd.</td>
+			<td class="amber">Lydian</td>
+			<td class="amber">Phrygian</td>
+			<td class="amber">Locrian</td>
+			<td class="red">scale / mode toggle</td>
+			<td class="side amber"><div class="note">enter scale edition mode</div>scale</td>
+		</tr>
+		<tr>
+			<td class="amber" title="Diminished">Diminish.</td>
+			<td class="amber">Minor Blues</td>
+			<td class="amber">Harmonic Minor</td>
+			<td class="amber">Melodic Minor</td>
+			<td class="amber">Super Locrian</td>
+			<td class="amber" title="Hungarian Minor">Hunga. Minor</td>
+			<td class="amber">Minor Gypsy</td>
+			<td class="amber">Spanish</td>
+			<td class="side amber"><div class="note">undo. long press to redo</div>undo</td>
+		</tr>
+	</table>
+	</section>
+
+
+
+	<section>
+	<h3>Drum Step Sequencer Mode</h3>
+	<p>
+		To activate the Drum Step Sequencer, select a midi clip in the clip view.
+		Then press User Mode 2 button once, activating the step sequencer (in normal mode). 
+		Press user mode 2 button once more opens the Melodic step sequencer
+	</p>
+	<p> 
+		this sequencer has two sub modes detailed below. combined and multinotes. (note there is a second step sequencer, melodic step sequencer detailed further down).
+	</p>
+	<p>		
+		A playback/metronome indicator is scrolling thru the grid in amber to indicate the playing position of the clip as the clip is playing. 
+		This is just an overlay, it does not affect the functionality of the buttons.
+	</p>
+	<p>
+		Here are the colour codes used : <br/>
+		- Normal notes are shown in Green, intensity depending on their velocity.<br/>
+		- Muted notes are displayed in red.<br/> 
+		- Notes being currently played are flashing in red.<br/>
+		- Notes being played and being outside of the currently displaying midi clip block will also flash in red.<br/>
+	</p>
+	<p>
+		Some other information is displayed, using orange colour :<br/>
+		- Note markers help to better visualise what row correspond to which note:<br/> 
+		&nbsp;&nbsp;&nbsp;&nbsp; - root note of the selected are marked with three orange left buttons lit up.<br/>
+		&nbsp;&nbsp;&nbsp;&nbsp; - other notes of the scale are marked with one orange button lit on the left-most row.<br/>
+		- while scrolling left and right along the clip, a vertical bar will display you where you are in the clip<br/>
+	</p>
+	<p>
+		A summary of functions assigned to the buttons is shown in the table below. hover your mouse above a button to get detailed descriptions.
+	</p>
+	<p>
+		StepSeq by default works in combined mode. pressing the 4th scene button toggles between combined mode and multi note mode. Multinote mode works in similarly to the the previous step in launchpad85, while combined mode offers mode close to the way Push StepSeq behaves. 
+	</p>
+	</section>
+
+	<section>
+	<h4>Combined Mode</h4>
+	<p>
+		The bottom left area let you select the note currently being edited on the top note editor.
+	</p>
+	<p>
+		The bottom right area allows you the select the currently clip part currently being displayed (single button press) and edited (double press or one button after the other).
+	</p>
+	<p>
+		Some buttons have combined function : <br/>
+		<ul> 
+			<li>Lock (2nd scene button):
+			<ul>
+				<li>press long to switch between clip lock and play clip on locked track mode</li>
+				<li>yellow : track lock mode. step sequencer is locked to current track and will follow playing clip on this track</li>
+				<li>red : step sequencer is locked to current clip.</li>
+			</ul>
+			<li>quantize (3rd scene button):
+			<ul>
+				<li>press long duplicate clip in a new clip</li>
+			</ul>
+			</li>
+			<li>Mute (last scene button):
+			<ul>
+				<li>hold mute button and click on a note to mute it</li>
+				<li>hold mute button and press on a note in the bottom left quadrant to mute it</li>
+				<li>hold mute button and select a loop range in the loop selector to delete it</li>
+			</ul>
+			</li>
+			<li>velocity (7th scene button):
+			<ul>
+				<li>hold velocity button and click on a note to change its velocity</li>
+				<li>hold velocity button and click on a note to change in the note selector to ear a preview of the sound</li>
+				<li>hold velocity button and select a loop range in the loop selector to extend the original clip content to the newly selected length</li>
+			</ul>
+			</li>
+			<li>velocity (7th scene button) and mute
+			<ul>
+				<li>hold velocity button and mute button at the same time and select a loop range in the loop selector in order to mute this time selection</li>
+			</ul>
+			</li>
 		</ul>
-		<br/>
-	</dd>
+	</p>
 
-	<dt id="faq-5">5. It does not work, i installed everything, but Launchpad95 does not appears the dropdown in the preferences. what is wrong ? </dt>
-	<dd>
-		see <a href="#faq-4">question 4</a>.<br/>
-		<br/>
-	</dd>
+	<br/><br/><br/>
+	<table class="launchpad">
+		<tr class="top">
+			<td class="green">prev scene</td>
+			<td class="green">next scene</td>
+			<td class="green">prev track</td>
+			<td class="green">next track</td>
+			<td>Session mode</td>
+			<td>user&nbsp;1 device</td>
+			<td class="amber"><div class="noteTop" style="width:160px">cycle thru  StepSequencers and User Mode 2</div>user&nbsp;2 step</td>
+			<td>mixer mode</td>
+		</tr>
 
-	<dt id="faq-6">6. Note Feedback is not working in Instrument Controller</dt>
-	<dd>
-		make sure you activated the launchapd midi in/out as "track" in Live midi preferences.<br/>
-		<br/>
-	</dd>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side amber"><div class="note">Display Scale Selection Overlay</div>scale</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side red"><div class="note">lock step seq to current clip (very useful !). long pres to lock on current track only</div>lock</td>
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side amber"><div class="note">cycle thru available quantisations</div>quant.</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side amber"><div class="note">switches between combined and multinote modes</div>modes</td>
+		</tr>
+		<tr>
+			<td class="amber">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="side green"><div class="note">scroll up (notes)</div>up</td>
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side green"><div class="note">scroll down (notes)</div>down</td>
+		</tr>
+		<tr>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side green" title="Velocity and Velocity Shift : Press shortly to cycle thru available velocities (used for creating note while pressing a button on the 8*8 matrix). hold and press a note in the matrix to alter its velocity"><div class="note">cycle thru velocities and velocity shift notes</div>velocity</td>
+		</tr>
+			<td class="amber">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side red"><div class="note" style="height:90px">hold and press a note in the matrix to (un)mute it. <br/> hold and press a note in the note selector to mute a lane<br/>hold+nav keys to scroll up/down one octave</div>mute</td>
+		</tr>
+	</table>
+	</section>
+
+	<section>
+	<h4>Multinote Mode</h4>
+	<p>
+	to activate this mode, press user mode 2 button until it turns green.
+	</p>
+	<p>
+		This mode uses the grid as a 8*8 matrix. one midi note per row. it follows the scale mode selected. Note that the left and right arrows are used to navigate left and right in the clip.
+	</p>
+	<br/><br/><br/>
+	<table class="launchpad">
+		<tr class="top">
+			<td class="green"><div class="noteTop">select prev scene</div>prev scene</td>
+			<td class="green"><div class="noteTop">select next scene</div>next scene</td>
+					<td class="green"><div class="noteTop">select prev clip page</div>prev<br/>page</td>
+			<td class="green"><div class="noteTop">select next clip page</div>next<br/>page</td>
+			<td>Session mode</td>
+			<td>user&nbsp;1 device</td>
+			<td class="amber"><div class="noteTop" style="width:160px">cycle thru StepSequencers and User Mode 2</div>user&nbsp;2 step</td>
+			<td>mixer mode</td>
+		</tr>
+
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side amber"><div class="note">Display Scale Selection Overlay</div>scale</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side red"><div class="note">lock step seq to current clip (very useful !)</div>lock</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side amber"><div class="note">cycle thru available quantisations</div>quant.</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side amber"><div class="note">switches between combined and multinote modes</div>modes</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="red">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side green"><div class="note">scroll up (notes)</div>up</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side green"><div class="note">scroll down (notes)</div>down</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side green" title="Velocity and Velocity Shift : Press shortly to cycle thru available velocities (used for creating note while pressing a button on the 8*8 matrix). hold and press a note in the matrix to alter its velocity"><div class="note">cycle thru velocities and velocity shift notes</div>velocity</td>
+		</tr>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side red"><div class="note" style="height:90px">hold and press a note in the matrix to (un)mute it. <br/> hold and press a note in the note selector to mute a lane<br/>hold+nav keys to scroll up/down one octave</div>mute</td>
+		</tr>
+	</table>
+	</section>
+
+
+	<section>
+	<h3>Melodic StepSequencer</h3>
+	<p>
+		This mode behave more how a hardware stepsequencer works. it uses the grid as a 7*8 matrix to edit note pitch, velocity, length and octave. one function per page.
+		of course notes pitches follow the selected scale !
+	</p>
+	<p>
+		The last row of the matrix acts as a page selector and work in the similar fashion to the combined step stequencer loop selector.
+	</p>
+	<p>
+		double press on the last scene button toggles between monophonic and polyphonic modes.
+	</p>
+
+	<br/><br/><br/>
+	<table class="launchpad">
+		<tr class="top">
+			<td class="green"><div class="noteTop">select prev scene</div>prev scene</td>
+			<td class="green"><div class="noteTop">select next scene</div>next scene</td>
+			<td class="green">prev track</td>
+			<td class="green">next track</td>
+			<td>Session mode</td>
+			<td>user&nbsp;1 device</td>
+			<td class="green"><div class="noteTop" style="width:160px">cycle thru StepSequencers and User Moder 2</div>user&nbsp;2 step</td>
+			<td>mixer mode</td>
+		</tr>
+
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side amber"><div class="note">Display Scale Selection Overlay</div>scale</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side red"><div class="note">lock step seq to current clip (very useful !)</div>lock</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side amber"><div class="note">cycle thru available quantisations</div>quant.</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side green"><div class="note">randomise the selected function (pitch,length,velocity,octave)</div>random !</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="red">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side amber">length</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side red">octave</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side red">velocity</td>
+		</tr>
+			<td class="amber">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side green">notes</td>
+		</tr>
+	</table>
+	</section>
+
+	<section>
+	<h3>Device Controller Mode</h3>
+	<p>
+		Device Controller mode is a sub mode of User Mode 1. 
+		To activate Device Controller Mode, press User Mode 1 button once, 
+		the normal User Mode 1 is activated (mode button remains amber). 
+		Press User Mode 1 button once again, button turns green, activating the Device Controller. 
+	</p>
+	<h4>Navigation</h4>
+	<p>
+		Navigation among tracks and devices is done using the top left navigation buttons. 
+	</p>
 	
-	<dt id="faq-7">7. good work ! i wish to donate ! is there a way to donate somehow ?</dt>
-	<dd>
-		sure ! i am on flattr : <a href="http://flattr.com/thing/958327/Launchpad85-Ableton-LIVE-control-surface-remote-scripts-for-Novation-Launchpad-with-STEP-SEQUENCER">http://flattr.com/thing/958327/Launchpad85-Ableton-LIVE-control-surface-remote-scripts-for-Novation-Launchpad-with-STEP-SEQUENCERa</a><br/>
-		<br/>
-		Okay, but i am not flattr and i don't want to create an account ! : 
-		 you can also use <a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_send-money&amp;nav=1&amp;email=hdavid@mail.com">paypal</a> to my account hdavid@mail.com.
-	</dd>
-	
-
-</dl>
-
-<h2>Known Issues</h2>
-<ul>
-	<li>in live 9, moving notes in clip editor while stepseq is open duplicates notes.</li>
-	<li><a href="launchpad85.html">Launchpad85</a> for live 8 is now longer maintained/improved.</li>
-</ul>
-
-<h2>History</h2>
-<ul>
-	<li>2014-09-16 - change: minor fixes in melodic stepseq.</li>
-	<li>2014-07-14 - change: double pressing mute button in stepseq holds shift.</li>
-	<li>2014-06-11 - fix: compatibility fix for live 9.1.3b8. should be backward compatible with 9.1.2 fix : minor fixes</li>
-	<li>2014-04-30 - add: m4l OSD/helper. fix : minor fixes in step seq. fix : uniformise scale edition and quick scale</li>
-	<li>2014-03-28 - fix: bugs while in drumrack mode. fix session scene not working while exiting user mode 1. add: relative scale to quick scales, added circle of fifth navigation</li>
-	<li>2014-03-12 - fix: compatiblity with max4live in user mode 2. fix midi channels for some modes.
-					 add: duplicate clip in step seq (hold lock button for 0.5sec). </li>
-	<li>2014-02-27 - major update !<br/>
-		&nbsp;&nbsp;&nbsp;&nbsp;- new melodic step seq !<br/>
-		&nbsp;&nbsp;&nbsp;&nbsp;- preview of notes in combined step seq (hold 7th scene button and play on the note selector in the lower left corner of the matrix)<br/>
-		&nbsp;&nbsp;&nbsp;&nbsp;- quick scale in instrument mode to quickly change scale while playing<br/>
-		&nbsp;&nbsp;&nbsp;&nbsp;- compatibility with live 9.1.1 and 9.1.2 or above.<br/>
-		&nbsp;&nbsp;&nbsp;&nbsp;- various bugs fixes and improvements.
-	</li>
-	<li>2014-01-06 - add: diatonic 3rd and sequent and guitar chromatic modes. fix: implicit arm. change: updated documentation</li>
-	<li>2014-01-06 - fix: track locking in step seq</li>
-	<li>2013-12-16 - fix: led feedback in instrument mode !</li>
-	<li>2013-12-11 - add: improve integration with launchpad95Colour.</li>
-	<li>2013-12-07 - change: change scale colour. minor bugfix.</li>
-	<li>2013-11-18 - fix: improve stepseq lock to a track mode.</li>
-	<li>2013-11-18 - add: long press on the stepseq lock button to lock to a track.</li>
-	<li>2013-11-11 - add: combos to mute, delete and extend clip content in step sequencer</li>
-	<li>2013-10-28 - fix: small bug fixes</li>
-	<li>2013-10-23 - add: add option to compress channels used by launchpad95 to free up channels for other devices</li>
-	<li>2013-10-18 - fix: show device panel while activating device controller. fix led blinking when entering stepseq. properly turn off scene buttons in user modes. add: use clip color palette to blink white clips</li>
-	<li>2013-10-09 - fix: Fix Clip linking in StepSeq. small fixes.</li>
-	<li>2013-09-27 - fix: matrix not fully updated while entering multinote stepseq.</li>
-	<li>2013-09-22 - fix: compatibility with live 9.1 beta. Fix Clip linking in StepSeq.</li>
-	<li>2013-09-02 - fix: fix a few bugs in metronome and clip callback in stepseq</li>
-	<li>2013-08-13 - add: complete rework of the stepseq</li>
-	<li>2013-05-28 - fix note highlighting in StepSeq in hires. various minor fixes in stepseq. Fix UserMode2 (was sending midi notes)</li>
-	<li>2013-05-25 - fix paging StepSeq, add support for selected DrumPad at the highest resolution. fix note feedback when entering instrument mode. add: very long press Arm in instrument mode to toggle implicit track arm</li>
-	<li>2013-05-09 - fix for live 9.0.4: replace overdub by session_record in TrackController. overdub in Python API started to behave strange from 9.0.4.</li>
-	<li>2013-05-04 - add: long press on solo to mute/unmute track in instrument mode. fix: disable implicit arm while leaving instrument mode.</li>
-	<li>2013-04-13 - change :  changed some buttons in instrument mode. support for implicit arm.</li>
-	<li>2013-04-13 - add : support for Instrument mode</li>
-	<li>2013-03-13 - fix : fix loop length dec button</li>
-	<li>2013-03-05 - add : Launchpad95 to support Live 9</li>
-	<li>2012-10-21 - change : while extending midi clip, clone existing notes in the newly created portion</li>
-	<li>2012-02-02 - change : fixed midi channels for step sequencer and device controller to avoid conflicts</li>
-	<li>2012-01-22 - add: up/down per octave paging in step sequencer (press and hold mute and press navigation keys) fix:scrolling boundaries</li>
-	<li>2012-01-21 - add: Scale mode. fix: better scrolling in fold and scale mode. change: merged mute shift and mute. changed: merge velocity and velocity shift. </li>
-	<li>2012-01-03 - add: easier to configure metronome and note markers in step sequencer. add: adapted LaunchpadColour (Launchpad85Colour) to this script, for color blind people</li>
-	<li>2012-01-02 - bug fix: improve button response time in step sequencer (was causing problem while pressing multiple buttons at once)</li>
-	<li>2011-12-31 - bug fix: loops longer than 8 blocks were not supported. add : scale marked in step sequencer marking C (3 amber blocks) and A (one amber block)</li>
-	<li>2011-12-29 - bug fix: some buttons not responding correctly in user mode 1</li>
-	<li>2011-12-26 - Improved live integration (shows Device chain/clip editor). fixed crash while loading Live Set</li>
-	<li>2011-12-23 - support for MaxForLive. addition of lock mode in step sequencer. bug fixes. renamed from Launchpad75 to Launchpad85.
-	<li>2011-10-05 - addition mute lane in step sequencer</li>
-	<li>2011-10-01 - addition of device controller</li>
-	<li>2011-08-20 - bug fixes</li>
-	<li>2011-07-22 - first public version</li>
-	<li>2011-05 - working on an initial version</li>	
-</ul>
-
-<h2>Contact</h2>
-<p>feel free to <a href="/contact.html">contact me</a> for any suggestions and bug reports.</p>
-<p><a href="..">back</a></p>
-
-<a href="#" onClick="javascript:toggle();return(false)">....</a>
-</section>
-
-<script type="text/javascript">
-	var b = true;
-	var backgroundStyle =""
-	var h3Color =""
-	function toggle(){
-		if (b)
-		{
-			d = "none";
-			var elements = document.getElementsByTagName("body");
-			for (var i = 0; i < elements.length; i++){
-				backgroundStyle = elements[i].style;
-				//elements[i].style.background = "white";
-			}
-			var elements = document.getElementsByTagName("h3");
-			for (var i = 0; i < elements.length; i++){
-				h3Color = elements[i].style.color
-				//elements[i].style.color = "black";
-			}
-		}else{
-			d = "block";
-			var elements = document.getElementsByTagName("body");
-			for (var i = 0; i < elements.length; i++)
-				backgroundStyle = elements[i].style;
-			var elements = document.getElementsByTagName("h3");
-			for (var i = 0; i < elements.length; i++){
-				elements[i].style.color = h3Color
-			}
-		}
-		b != b
-
-		var elements = document.getElementsByTagName("p");
-		for (var i = 0; i < elements.length; i++)
-			elements[i].style.display = d;
-		var elements = document.getElementsByTagName("ul");
-		for (var i = 0; i < elements.length; i++)
-			elements[i].style.display = d;
-		var elements = document.getElementsByTagName("h1");
-		for (var i = 0; i < elements.length; i++)
-			elements[i].style.display = d;
-
-		var elements = document.getElementsByTagName("h2");
-		for (var i = 0; i < elements.length; i++)
-			elements[i].style.display = d;
+	<h4>Editing parameters</h4>
+	<p>		
+		You can edit eight parameters of the selected device on the 
+		selected track at once. One parameter per column.
+		You can navigate banks of parameters using scene buttons 2 and 3.
+		depending on the type of parameter edited launchpad will display then in different ways.
+	</p>
+	<dl>
+		<dt>On/Off parameters</dt>
+		<dd>using the color code red. only one button will be used to change the parameter</dd>
 		
-		var elements = document.getElementsByTagName("dl");
-		for (var i = 0; i < elements.length; i++)
-			elements[i].style.display = d;
-	}
+		<dt>Parameter with list of values</dt>
+		<dd>for the parameters that have a list of values, the colour code it amber, for example a Synth wave form selector (square, sine, triangle). 
+			If the parameter has less that 8 values, they will be directly acessible one by one.
+			if more values are available, you can scroll thru the values. the closer the button to the center the more precise. the closer the top or bottom of the launchpad, the greater the value change will be at each press.</dd>
+		<dt>Parameter continuous values</dt>
+		<dd>for the parameters that have a continuous value, like Volume, Panning, etc, the colour code is green.
+			by default Launchpad displays the parameter like a volume slider on the mixer mode.
+			if you activate the precision slider mode (by pressing scene 4 button), the sliders will then work in the similar way to the case of parameter with list of values.
+		</dd>
+	<dl>
+	<h4>Locking to devices</h4>
+	<p>		
+		you can save up to 4 devices using the 4 bottom scene button. if not device is saved, the button will be amber.
+		To save a device, first select the desired device, then press one of the 4 last scene buttons for more than half a second.
+		the button turn red ! your device is save. you can recall it at any time by a short press on the scene button.
+		to unsave a device, apply a long press again on the button.  
+	</p>
+	<table class="launchpad">
+		<tr class="top">
+			<td class="green">prev device</td>
+			<td class="green">next device</td>
+			<td class="green">prev track</td>
+			<td class="green">next track</td>
+			<td>Session mode</td>
+			<td class="green">user&nbsp;1 device</td>
+			<td>user&nbsp;2 step</td>
+			<td>mixer mode</td>
+		</tr>
 
-</script>
+		<tr>
+			<td>&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side green"><div class="note">turns selected device on/off</div>on/off</td>
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side amber"><div class="note">select previous bank of 8 parameters</div>bnk dwn</td>
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side amber"><div class="note">select next bank of 8 parameters</div>bnk up</td>
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="side green" title="this mode allows to edit parameters with more precision. buttons close to the center are more precise. button further up or down give more amplitude"><div class="note">enable precision mode of sliders</div>precision</td>
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="side red"><div class="note">locks the control surface to device</div>lock 1</td>
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side red"><div class="note">locks the control surface to device</div>lock 2</td>
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side red"><div class="note">locks the control surface to device</div>lock 3</td>
+		</tr>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="red">&nbsp;</td>
+			<td class="red">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side red"><div class="note">locks the control surface to device</div>lock 4</td>
+		</tr>
+	</table>
+	</section>
 
-</body>
-</html>
+
+	<section>
+	<h3>Session Mode</h3>
+	<table class="launchpad">
+		<tr class="top">
+			<td class="green">scenes up</td>
+			<td class="green">scenes down</td>
+			<td class="green">tracks left</td>
+			<td class="green">tracks right</td>
+			<td class="amber">Session mode</td>
+			<td class="amber">user&nbsp;1 Inst.</td>
+			<td class="amber">user&nbsp;2 step</td>
+			<td class="amber">mixer mode</td>
+		</tr>
+		<tr>
+			<td class="red">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">scene</td>		
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">scene</td>		
+		</tr>
+		<tr>
+			<td class="red">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">scene</td>		
+		</tr>
+		<tr>
+			<td class="red">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">scene</td>		
+		</tr>
+		<tr>
+			<td class="red">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">scene</td>		
+		</tr>
+		<tr>
+			<td class="red">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">scene</td>		
+		</tr>
+			<tr>
+			<td class="red">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">scene</td>		
+		</tr>
+			<tr>
+			<td class="red">&nbsp;</td>
+			<td>&nbsp;</td><td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">scene</td>		
+		</tr>
+	</table>
+	</section>
+
+
+	<section>
+	<h3>User1 Mode</h3>
+	<table class="launchpad">
+		<tr class="top">
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="amber">Session mode</td>
+			<td class="red">user&nbsp;1 Inst.</td>
+			<td class="amber">user&nbsp;2 step</td>
+			<td class="amber">mixer mode</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">&nbsp;</td>		
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">&nbsp;</td>		
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">&nbsp;</td>		
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">&nbsp;</td>		
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">&nbsp;</td>		
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">&nbsp;</td>		
+		</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">&nbsp;</td>		
+		</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">&nbsp;</td>		
+		</tr>
+	</table>
+	</section>
+
+	<section>
+	<h3>User2 Mode</h3>
+	<table class="launchpad">
+		<tr class="top">
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="amber">Session mode</td>
+			<td class="amber">user&nbsp;1 Inst.</td>
+			<td class="red">user&nbsp;2 step</td>
+			<td class="amber">mixer mode</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">&nbsp;</td>		
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">&nbsp;</td>		
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">&nbsp;</td>		
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">&nbsp;</td>		
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">&nbsp;</td>		
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">&nbsp;</td>		
+		</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">&nbsp;</td>		
+		</tr>
+			<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side">&nbsp;</td>		
+		</tr>
+	</table>
+	</section>
+
+	<section>
+	<h3>Mixer Mode</h3>
+	<table class="launchpad">
+		<tr class="top">
+			<td class="green">prev scene</td>
+			<td class="green">next scene</td>
+			<td class="green">prev track</td>
+			<td class="green">next track</td>
+			<td class="amber">Session mode</td>
+			<td class="amber">user&nbsp;1 Inst.</td>
+			<td class="amber">user&nbsp;2 step</td>
+			<td class="amber">mixer mode</td>
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side green">Volume</td>		
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side green">Pan</td>
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side green">Send A</td>		
+		</tr>
+		<tr>
+			<td class="green">&nbsp;</td>
+			<td class="green">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side green">Send B</td>
+		</tr>
+		<tr>
+			<td class="red">&nbsp;</td>
+			<td class="red">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side red">Stop All</td>		
+		</tr>
+		<tr>
+			<td class="amber">&nbsp;</td>
+			<td class="amber">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side amber">Active all</td>
+		</tr>
+			<tr>
+			<td class="red">&nbsp;</td>
+			<td class="red">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side red">Unsolo ll</td>	
+		</tr>
+			<tr>
+			<td class="red">&nbsp;</td>
+			<td class="red">&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td class="side red">Unarm All</td>		
+		</tr>
+	</table>
+	</section>
+
+
+	<!--h2>Max For Live On Screen Display / Helper</h2>
+	<p>
+		Launchpad95 comes packaged with a Max for Live device that will display useful information about currently selected tracks, clips and other parameters. 
+		Make sure to try it !
+	</p>
+	<p>
+		It is available Launchpad95/M4LDevice/Launchpad95 OSD.amxd
+	</p-->
+
+
+	<section>
+	<h2>Source</h2>
+	<ul>
+		<li><a href="https://github.com/hdavid/Launchpad95/">https://github.com/hdavid/Launchpad95/</a></li>
+	</ul>
+	</section>
+		
+	<section>
+	<h2>F.A.Q.</h2>
+	<dl>
+		<dt id="faq-1">1. Which Launchpad flavours are supported</dt>
+		<dd>
+			Launchpad 95 works with Launchpad Launchpad S, Launchpad Mini<br/>
+			<br/>
+		</dd>
+
+		<dt id="faq-2">2. Which Ableton live versions are supported</dt>
+		<dd>
+			Launchpad 95 works with Live 9.1+, 32 bit or 64 bit, Mac or Windows, suite or intro or standard. 
+			basically with every combination you may think of as long at it is live 9.1 or greater.<br/>
+			Of course Ableton from time to time change their Python Live without notification 
+			and therefore Launchpad95 might stop working. but i am trying to keep up and the changes.
+		<br/>
+		</dd>
+
+		<dt id="faq-3">3. Where should i put the script ?</dt>
+		<dd>
+			On pc/windows 7 : inside "C:\ProgramData\Ableton\Live&nbsp;9&nbsp;Suite\Resources\MIDI&nbsp;Remote&nbsp;Scripts"<br/>
+			On a mac right-click the Live application you use (there might more than one installed!) and select "view package content", then browse to "App-Resources/MIDI&nbsp;Remote&nbsp;Scripts". <br/>
+			<br/>
+			Inside this "MIDI&nbsp;Remote&nbsp;Scripts" folder, you should have a folder called "Launchpad95". inside this folder you should have a bunch of .py files, and a for each of them a .pyc file. (.pyc files are compiled version of the .py that live compiles as you start it.)<br/>
+			<br/>
+			As sometimes Sometimes a picture is worth 1000 words ! take a look at these screenshots.<br/>
+			- On a mac it look like <a href="install_mac.png">this</a>.<br/>
+			- on a pc like <a href="install_windows.png">that</a><br/>
+			<br/>
+		</dd>
+
+		<dt id="faq-4">4. It does not work, i installed everything, but the launchpad does not light up when i select Launchpad95 in the dropdown in the preferences. what is wrong ? </dt>
+		<dd>
+			It is hard to guess what you did wrong. You must have installed not the right way somehow. 
+			try to install it from scratch again, download from this site, extract install, restart live.
+			among the list of things you can try to do :
+			<ul>
+				<li> - check the you installed at the right place. (check <a href="#faq-3">question #3</a> !)</li>	
+				<li> - Pay attention to the folder name AND its full path. (again see screenshots in above in <a href="#faq-3">question #3</a>)</li>
+				<li> - how many versions of live do you have installed ?</li>
+				<li> - are you running live 9.1 or greater ? for live 8 please use launchpad85. For live 9.0, upgrade to live 9.1. </li>
+			</ul>
+			<br/>
+		</dd>
+
+		<dt id="faq-5">5. It does not work, i installed everything, but Launchpad95 does not appears the dropdown in the preferences. what is wrong ? </dt>
+		<dd>
+			see <a href="#faq-4">question 4</a>.<br/>
+			<br/>
+		</dd>
+
+		<dt id="faq-6">6. Note Feedback is not working in Instrument Controller</dt>
+		<dd>
+			make sure you activated the launchapd midi in/out as "track" in Live midi preferences.<br/>
+			<br/>
+		</dd>
+
+		<dt id="faq-7">7. good work ! i wish to donate ! is there a way to donate somehow ?</dt>
+		<dd>
+			sure ! i am on flattr : <a href="http://flattr.com/thing/958327/Launchpad85-Ableton-LIVE-control-surface-remote-scripts-for-Novation-Launchpad-with-STEP-SEQUENCER">http://flattr.com/thing/958327/Launchpad85-Ableton-LIVE-control-surface-remote-scripts-for-Novation-Launchpad-with-STEP-SEQUENCERa</a><br/>
+			<br/>
+			Okay, but i am not flattr and i don't want to create an account ! : 
+			 you can also use <a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_send-money&amp;nav=1&amp;email=hdavid@mail.com">paypal</a> to my account hdavid@mail.com.
+		</dd>
+
+
+	</dl>
+
+	<section>
+	<h2>Known Issues</h2>
+	<ul>
+		<li>in live 9, moving notes in clip editor while stepseq is open duplicates notes.</li>
+		<li><a href="launchpad85.html">Launchpad85</a> for live 8 is now longer maintained/improved.</li>
+	</ul>
+	</section>
+	
+	<section>
+	<h2>History</h2>
+	<ul>
+		<li>2014-10-03 - change: revamped device controller !</li>
+		<li>2014-09-16 - change: minor fixes in melodic stepseq.</li>
+		<li>2014-07-14 - change: double pressing mute button in stepseq holds shift.</li>
+		<li>2014-06-11 - fix: compatibility fix for live 9.1.3b8. should be backward compatible with 9.1.2 fix : minor fixes</li>
+		<li>2014-04-30 - add: m4l OSD/helper. fix : minor fixes in step seq. fix : uniformise scale edition and quick scale</li>
+		<li>2014-03-28 - fix: bugs while in drumrack mode. fix session scene not working while exiting user mode 1. add: relative scale to quick scales, added circle of fifth navigation</li>
+		<li>2014-03-12 - fix: compatiblity with max4live in user mode 2. fix midi channels for some modes.
+						 add: duplicate clip in step seq (hold lock button for 0.5sec). </li>
+		<li>2014-02-27 - major update !<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;- new melodic step seq !<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;- preview of notes in combined step seq (hold 7th scene button and play on the note selector in the lower left corner of the matrix)<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;- quick scale in instrument mode to quickly change scale while playing<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;- compatibility with live 9.1.1 and 9.1.2 or above.<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;- various bugs fixes and improvements.
+		</li>
+		<li>2014-01-06 - add: diatonic 3rd and sequent and guitar chromatic modes. fix: implicit arm. change: updated documentation</li>
+		<li>2014-01-06 - fix: track locking in step seq</li>
+		<li>2013-12-16 - fix: led feedback in instrument mode !</li>
+		<li>2013-12-11 - add: improve integration with launchpad95Colour.</li>
+		<li>2013-12-07 - change: change scale colour. minor bugfix.</li>
+		<li>2013-11-18 - fix: improve stepseq lock to a track mode.</li>
+		<li>2013-11-18 - add: long press on the stepseq lock button to lock to a track.</li>
+		<li>2013-11-11 - add: combos to mute, delete and extend clip content in step sequencer</li>
+		<li>2013-10-28 - fix: small bug fixes</li>
+		<li>2013-10-23 - add: add option to compress channels used by launchpad95 to free up channels for other devices</li>
+		<li>2013-10-18 - fix: show device panel while activating device controller. fix led blinking when entering stepseq. properly turn off scene buttons in user modes. add: use clip color palette to blink white clips</li>
+		<li>2013-10-09 - fix: Fix Clip linking in StepSeq. small fixes.</li>
+		<li>2013-09-27 - fix: matrix not fully updated while entering multinote stepseq.</li>
+		<li>2013-09-22 - fix: compatibility with live 9.1 beta. Fix Clip linking in StepSeq.</li>
+		<li>2013-09-02 - fix: fix a few bugs in metronome and clip callback in stepseq</li>
+		<li>2013-08-13 - add: complete rework of the stepseq</li>
+		<li>2013-05-28 - fix note highlighting in StepSeq in hires. various minor fixes in stepseq. Fix UserMode2 (was sending midi notes)</li>
+		<li>2013-05-25 - fix paging StepSeq, add support for selected DrumPad at the highest resolution. fix note feedback when entering instrument mode. add: very long press Arm in instrument mode to toggle implicit track arm</li>
+		<li>2013-05-09 - fix for live 9.0.4: replace overdub by session_record in TrackController. overdub in Python API started to behave strange from 9.0.4.</li>
+		<li>2013-05-04 - add: long press on solo to mute/unmute track in instrument mode. fix: disable implicit arm while leaving instrument mode.</li>
+		<li>2013-04-13 - change :  changed some buttons in instrument mode. support for implicit arm.</li>
+		<li>2013-04-13 - add : support for Instrument mode</li>
+		<li>2013-03-13 - fix : fix loop length dec button</li>
+		<li>2013-03-05 - add : Launchpad95 to support Live 9</li>
+		<li>2012-10-21 - change : while extending midi clip, clone existing notes in the newly created portion</li>
+		<li>2012-02-02 - change : fixed midi channels for step sequencer and device controller to avoid conflicts</li>
+		<li>2012-01-22 - add: up/down per octave paging in step sequencer (press and hold mute and press navigation keys) fix:scrolling boundaries</li>
+		<li>2012-01-21 - add: Scale mode. fix: better scrolling in fold and scale mode. change: merged mute shift and mute. changed: merge velocity and velocity shift. </li>
+		<li>2012-01-03 - add: easier to configure metronome and note markers in step sequencer. add: adapted LaunchpadColour (Launchpad85Colour) to this script, for color blind people</li>
+		<li>2012-01-02 - bug fix: improve button response time in step sequencer (was causing problem while pressing multiple buttons at once)</li>
+		<li>2011-12-31 - bug fix: loops longer than 8 blocks were not supported. add : scale marked in step sequencer marking C (3 amber blocks) and A (one amber block)</li>
+		<li>2011-12-29 - bug fix: some buttons not responding correctly in user mode 1</li>
+		<li>2011-12-26 - Improved live integration (shows Device chain/clip editor). fixed crash while loading Live Set</li>
+		<li>2011-12-23 - support for MaxForLive. addition of lock mode in step sequencer. bug fixes. renamed from Launchpad75 to Launchpad85.
+		<li>2011-10-05 - addition mute lane in step sequencer</li>
+		<li>2011-10-01 - addition of device controller</li>
+		<li>2011-08-20 - bug fixes</li>
+		<li>2011-07-22 - first public version</li>
+		<li>2011-05 - working on an initial version</li>	
+	</ul>
+
+	</section>
+	
+	<h2>Contact</h2>
+	<p>feel free to <a href="/contact.html">contact me</a> for any suggestions and bug reports.</p>
+	
+	<p id='back'><a href="..">back</a></p>
+
+	<a href="#" onClick="javascript:toggle();return(false)">_</a>
+	</section>
+
+	<script type="text/javascript">
+		var b = true;
+		var backgroundStyle =""
+		var h3Color =""
+		function toggle(){
+			if (b)
+			{
+				d = "none";
+				var elements = document.getElementsByTagName("body");
+				for (var i = 0; i < elements.length; i++){
+					backgroundStyle = elements[i].style;
+					//elements[i].style.background = "white";
+				}
+				var elements = document.getElementsByTagName("h3");
+				for (var i = 0; i < elements.length; i++){
+					h3Color = elements[i].style.color
+					//elements[i].style.color = "black";
+				}
+			}else{
+				d = "block";
+				var elements = document.getElementsByTagName("body");
+				for (var i = 0; i < elements.length; i++)
+					backgroundStyle = elements[i].style;
+				var elements = document.getElementsByTagName("h3");
+				for (var i = 0; i < elements.length; i++){
+					elements[i].style.color = h3Color
+				}
+			}
+			b != b
+
+			var elements = document.getElementsByTagName("p");
+			for (var i = 0; i < elements.length; i++)
+				elements[i].style.display = d;
+			var elements = document.getElementsByTagName("ul");
+			for (var i = 0; i < elements.length; i++)
+				elements[i].style.display = d;
+			var elements = document.getElementsByTagName("h1");
+			for (var i = 0; i < elements.length; i++)
+				elements[i].style.display = d;
+
+			var elements = document.getElementsByTagName("h2");
+			for (var i = 0; i < elements.length; i++)
+				elements[i].style.display = d;
+
+			var elements = document.getElementsByTagName("dl");
+			for (var i = 0; i < elements.length; i++)
+				elements[i].style.display = d;
+		}
+
+	</script>
+
+	</body>
+	</html>
