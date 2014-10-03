@@ -250,30 +250,30 @@ class DeviceControllerComponent(DeviceComponent):
 								dev = i
 						if dev>=0:
 							if self._device != None:
-								self._parent._parent.show_message("Launchpad95: device is already at position "+ str(dev+1)+" : " + str(self._device.name))
+								self._parent._parent.show_message(" '"+str(self._device.name)+"' is stored in lock button "+ str(dev+1) )
 						else:
 							if self._device!=None:
 								self._locked_devices[index] = self._device
 								if self._device != None:
-									self._parent._parent.show_message("Launchpad95: saving device "+ str(index+1)+" : " + str(self._device.name))
+									self._parent._parent.show_message(" '"+ str(self._device.name)+"' stored into lock button " + str(index+1))
 					else:
 						#remove saved device
 						self._locked_devices[index] = None
 						self._locked_device_index = None
 						if self._device != None:
-							self._parent._parent.show_message("Launchpad95: removing locked device "+ str(index+1)+" : " + str(self._device.name))
+							self._parent._parent.show_message("removing '"+str(self._device.name)+"' from block button "+ str(index+1) )
 				else:
 					#use selected device
 					if self._locked_device_index == index:
 						if self._locked_devices[index] != None:
 							if self._locked_devices[index]!= None:
-								self._parent._parent.show_message("Launchpad95: unlocked from device "+ str(index+1)+" : " + str(self._locked_devices[index].name))
+								self._parent._parent.show_message("unlocked from ' "+ str(self._locked_devices[index].name)+"' ("+str(index+1)+")")
 						self._locked_device_index = None
 					elif self._locked_devices[index] != None:
 						self._locked_device_index = index
 						self.set_device(self._locked_devices[index])
 						if self._locked_devices[index]!= None:
-							self._parent._parent.show_message("Launchpad95: locked to device "+ str(index+1)+" : " + str(self._locked_devices[index].name))
+							self._parent._parent.show_message("locked to '"+ str(self._locked_devices[index].name)+" (" +str(index+1)+")" )
 						self.update()
 			self.update_track_buttons()
 			self.update_device_buttons()

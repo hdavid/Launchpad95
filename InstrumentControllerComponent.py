@@ -153,6 +153,7 @@ class InstrumentControllerComponent(CompoundComponent):
 
 	def _matrix_value_quickscale(self, value, x, y, is_momentary):  # matrix buttons listener for advanced mode
 		if self.is_enabled() and not self._scales.is_enabled() and self._scales.is_quick_scale:
+			keys = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 			if ((value != 0) or (not is_momentary)):
 				if self._quick_scale_root:
 					root = -1
@@ -161,8 +162,10 @@ class InstrumentControllerComponent(CompoundComponent):
 					if y == 1 and x < 7 or y == 0 and x in[0, 1, 3, 4, 5]:
 						if y == 1:
 							root = [0, 2, 4, 5, 7, 9, 11, 12][x]
+							self._parent._parent.show_message(keys[root]+" "+str(self._scales._modus_names[selected_modus]))
 						if y == 0 and x < 6:
 							root = [0, 2, 4, 5, 7, 9, 11, 12][x] + 1
+							self._parent._parent.show_message(keys[root]+" "+str(self._scales._modus_names[selected_modus]))
 						if root == selected_key:  # alternate minor/major
 							if selected_modus == 0:
 								selected_modus = self._scales._current_minor_mode
@@ -173,18 +176,26 @@ class InstrumentControllerComponent(CompoundComponent):
 								selected_modus = 12
 							elif selected_modus == 12:
 								selected_modus = 11
+							self._parent._parent.show_message(keys[root]+" "+str(self._scales._modus_names[selected_modus]))
 					else:
 						if y == 0 and x == 7:  # change mode
 							self._quick_scale_root = not self._quick_scale_root
+							if self._quick_scale_root:
+								self._parent._parent.show_message("quick scale : root")
+							else:
+								self._parent._parent.show_message("quick scale : modes")
 							self.update()
 						if y == 1 and x == 7 and False:  # rotate minor scales
 							if self._scales._selected_modus in self._scales._minor_modes:
 								self._scales.set_selected_modus(self._scales._minor_modes[(self.tuple_idx(self._scales._minor_modes, self._scales._selected_modus) + 1) % 3])
+								self._parent._parent.show_message(keys[root]+" "+str(self._scales._modus_names[self._scales._selected_modus]))
 								self.update()
 						if y == 1 and x == 7:  # nav circle of 5th right
 							root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS, selected_key) + 1 + 12) % 12]
+							self._parent._parent.show_message("circle of 5ths -> "+keys[selected_key]+" "+str(self._scales._modus_names[selected_modus])+" => "+keys[root]+" "+str(self._scales._modus_names[selected_modus]))
 						if y == 0 and x == 6:  # nav circle of 5th left
 							root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS, selected_key) - 1 + 12) % 12]
+							self._parent._parent.show_message("circle of 5ths <- "+keys[selected_key]+" "+str(self._scales._modus_names[selected_modus])+" => "+keys[root]+" "+str(self._scales._modus_names[selected_modus]))
 						if y == 0 and x == 2:  # relative scale
 							if selected_modus == 0:
 								selected_modus = self._scales._current_minor_mode
@@ -199,6 +210,7 @@ class InstrumentControllerComponent(CompoundComponent):
 							elif selected_modus == 12:
 								selected_modus = 11
 								root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS, selected_key) - 3 + 12) % 12]
+							self._parent._parent.show_message("Relative scale : "+keys[root]+" "+str(self._scales._modus_names[selected_modus]))
 
 					if root != -1:
 						self._scales.set_selected_modus(selected_modus)
@@ -209,13 +221,19 @@ class InstrumentControllerComponent(CompoundComponent):
 					if(y == 0):
 						if x < 7 and self._quick_scales[x] != -1:
 							self._scales.set_selected_modus(self._quick_scales[x])
+							self._parent._parent.show_message("mode : "+str(self._scales._modus_names[self._scales._selected_modus]))
 							self.update()
 						if x == 7:
 							self._quick_scale_root = not self._quick_scale_root
+							if self._quick_scale_root:
+								self._parent._parent.show_message("quick scale : root")
+							else:
+								self._parent._parent.show_message("quick scale : modes")
 							self.update()
 					if(y == 1):
 						if x < 8 and self._quick_scales[x + 7] != -1:
 							self._scales.set_selected_modus(self._quick_scales[x + 7])
+							self._parent._parent.show_message("mode : "+str(self._scales._modus_names[self._scales._selected_modus]))
 							self.update()
 
 	def update(self):

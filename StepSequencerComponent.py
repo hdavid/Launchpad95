@@ -841,6 +841,8 @@ class StepSequencerComponent(CompoundComponent):
 			self.on_clip_slot_changed()
 			# call super.set_enabled()
 			CompoundComponent.set_enabled(self, enabled)
+			if self._clip != None and self._is_locked:
+				self._parent._parent.show_message("stepseq : clip '"+str(self._clip.name)+"'")
 			self._on_notes_changed()
 			self._update_OSD()
 
@@ -1326,6 +1328,7 @@ class StepSequencerComponent(CompoundComponent):
 				self._last_quantize_button_press = now
 			else:
 				if now - self._last_quantize_button_press > 0.5:
+					self._parent._parent.show_message("stepseq : duplicate clip")
 					self.duplicate_clip()
 				else:
 					if(self._mode == STEPSEQ_MODE_SCALE_EDIT):
@@ -1333,6 +1336,7 @@ class StepSequencerComponent(CompoundComponent):
 					else:
 						self._quantization_index = (self._quantization_index + 1) % len(QUANTIZATION_MAP)
 					self.set_quantization(QUANTIZATION_MAP[self._quantization_index])
+					self._parent._parent.show_message("quantisation : "+QUANTIZATION_NAMES[self._quantization_index])
 					self._update_quantization_button()
 
 	def set_quantization(self, quantization):
@@ -1384,10 +1388,13 @@ class StepSequencerComponent(CompoundComponent):
 				if now - self._last_lock_button_press > self._long_press:
 					self._lock_to_track = (not self._lock_to_track)
 					if not self._is_locked:
+						self._parent._parent.show_message("stepseq : locked to clip '"+str(self._clip.name)+"'")
 						self._is_locked = True
 					self._update_lock_button()
 				else:
 					self._is_locked = (not self._is_locked)
+					if self._is_locked:
+						self._parent._parent.show_message("stepseq : locked to clip '"+str(self._clip.name)+"'")
 					self._update_lock_button()
 					self._update_OSD()
 

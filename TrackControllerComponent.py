@@ -262,15 +262,31 @@ class TrackControllerComponent(MixerComponent):
 				if now - self._last_session_record_button_press > self._long_press * 4:
 					self._implicit_arm = not self._implicit_arm
 					self._do_implicit_arm()
+					if self._implicit_arm:
+						self._parent.show_message("implicit arm : on")
+					else:
+						self._parent.show_message("implicit arm : off")
 					self.update()
 				elif now - self._last_session_record_button_press > self._long_press:
 					self.song().metronome = not self.song().metronome
+					if self.song().metronome :
+						self._parent.show_message("metronome : on")
+					else:
+						self._parent.show_message("metronome : off")
 				else:
 					if self._implicit_arm:
 						self.song().session_record = not self.song().session_record
+						if self.song().session_record :
+							self._parent.show_message("session record : on")
+						else:
+							self._parent.show_message("session record : off")
 					else:
 						if (self._selected_track.can_be_armed):
 							self._selected_track.arm = not self._selected_track.arm
+							if self._selected_track.arm :
+								self._parent.show_message("track "+str(self._selected_track.name)+" armed")
+							else:
+								self._parent.show_message("track "+str(self._selected_track.name)+" unarmed")
 					self.update()
 
 	def _play_value(self, value):
@@ -282,6 +298,7 @@ class TrackControllerComponent(MixerComponent):
 				if self.song().view.selected_scene != None:
 					slot = self.song().view.selected_scene.clip_slots[self.selected_track_idx()]
 					slot.fire()
+					self._parent.show_message("fire clip")
 			else:
 				self._play_button.turn_off()
 
@@ -300,11 +317,13 @@ class TrackControllerComponent(MixerComponent):
 						slot = self.song().view.selected_scene.clip_slots[self.selected_track_idx()]
 						if slot and slot.has_clip:
 							slot.delete_clip()
+							self._parent.show_message("delete clip")
 				else:
 
 					if self.song().view.selected_scene != None:
 						slot = self.song().view.selected_scene.clip_slots[self.selected_track_idx()]
 						slot.stop()
+						self._parent.show_message("stop clip")
 				self._stop_button.turn_off()
 
 	def _mute_value(self, value):
@@ -314,6 +333,10 @@ class TrackControllerComponent(MixerComponent):
 		if self.is_enabled():
 			if ((value != 0) or (not self._mute_button.is_momentary())):
 				self._selected_track.mute = not self._selected_track.mute
+				if self._selected_track.mute :
+					self._parent.show_message("track "+str(self._selected_track.name)+" muted")
+				else:
+					self._parent.show_message("track "+str(self._selected_track.name)+" unmuted")
 				self.update()
 
 	def _solo_value(self, value):
@@ -331,6 +354,10 @@ class TrackControllerComponent(MixerComponent):
 					self._selected_track.mute = not self._selected_track.mute
 				else:
 					self._selected_track.solo = not self._selected_track.solo
+					if self._selected_track.solo :
+						self._parent.show_message("track "+str(self._selected_track.name)+" solo")
+					else:
+						self._parent.show_message("track "+str(self._selected_track.name)+" unsolo")
 					self.update()
 
 	def _undo_value(self, value):
@@ -342,9 +369,11 @@ class TrackControllerComponent(MixerComponent):
 				if now - self._last_undo_button_press < self._long_press:
 					if self.song().can_undo:
 						self.song().undo()
+						self._parent.show_message("undo!")
 				else:
 					if self.song().can_redo:
 						self.song().redo()
+						self._parent.show_message("redo!")
 			self.update()
 
 	def _arm_value(self, value):
@@ -358,10 +387,18 @@ class TrackControllerComponent(MixerComponent):
 			else:
 				if now - self._last_arm_button_press > self._long_press:
 					self._implicit_arm = not self._implicit_arm
+					if self._implicit_arm:
+						self._parent.show_message("implicit arm : on")
+					else:
+						self._parent.show_message("implicit arm : off")
 					self._do_implicit_arm()
 				else:
 					if self._selected_track.can_be_armed:
 						self._selected_track.arm = not self._selected_track.arm
+						if self._selected_track.arm :
+							self._parent.show_message("track "+str(self._selected_track.name)+" armed")
+						else:
+							self._parent.show_message("track "+str(self._selected_track.name)+" unarmed")
 				self.update()
 
 	def update(self):

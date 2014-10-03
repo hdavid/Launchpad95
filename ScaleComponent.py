@@ -225,16 +225,14 @@ class ScalesComponent(ControlSurfaceComponent):
 	def set_key(self, n):
 		self._selected_key = n % 12
 
+
 	def set_octave_index(self, n):
 		self._octave_index = n
 
 	def set_selected_modus(self, n):
 		if n > -1 and n < len(self._modus_list):
 			self._selected_modus = n
-			# show message not working in live 9
-			if self._parent != None:
-				self._parent._parent._parent.log_message(str(self._modus_names[n]))
-				self._parent._parent._parent.show_message(str(self._modus_names[n]))
+			
 
 	def _set_preset(self, n):
 		if n > -1 and n < 6:
@@ -251,6 +249,7 @@ class ScalesComponent(ControlSurfaceComponent):
 				self._matrix.add_value_listener(self._matrix_value)
 			self.update()
 
+
 	def _matrix_value(self, value, x, y, is_momentary):  # matrix buttons listener
 		if self.is_enabled():
 			if ((value != 0) or (not is_momentary)):
@@ -259,26 +258,37 @@ class ScalesComponent(ControlSurfaceComponent):
 					if not self.is_drumrack():
 						if x == 0:
 							self.is_absolute = not self.is_absolute
+							if self.is_absolute:
+								self._parent._parent._parent.show_message("absolute root")
+							else:
+								self._parent._parent._parent.show_message("relative root")
 						if x == 1:
 							self._presets.toggle_orientation()
 					if x == 2:
 						self.set_chromatic_gtr()
 						self._presets.set_orientation('horizontal')
+						self._parent._parent._parent.show_message("mode: chromatic gtr")
 					if x == 3:
 						self.set_diatonic_ns()
 						self._presets.set_orientation('horizontal')
+						self._parent._parent._parent.show_message("mode: diatonic not staggered")
 					if x == 4:
 						self.set_diatonic(2)
 						self._presets.set_orientation('vertical')
-					if x == 6:
-						self.set_chromatic()
-						self._presets.set_orientation('horizontal')
+						self._parent._parent._parent.show_message("mode: diatonic vertical (chords)")
 					if x == 5:
 						self.set_diatonic(3)
 						self._presets.set_orientation('horizontal')
+						self._parent._parent._parent.show_message("mode: diatonic")
+					if x == 6:
+						self.set_chromatic()
+						self._presets.set_orientation('horizontal')
+						self._parent._parent._parent.show_message("mode: chromatic")
 					if x == 7:
 						self.set_drumrack(True)
-
+						self._parent._parent._parent.show_message("mode: drumrack")
+				
+				keys = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 				# root note
 				if not self.is_drumrack():
 					root = -1
@@ -288,6 +298,7 @@ class ScalesComponent(ControlSurfaceComponent):
 						root = [0, 2, 4, 5, 7, 9, 11, 12][x]
 						if y == 1:
 							root = root + 1
+						self._parent._parent._parent.show_message("root "+keys[root])
 
 					# if root == selected_key:#alternate minor/major
 					# 	if selected_modus==0:
@@ -302,8 +313,10 @@ class ScalesComponent(ControlSurfaceComponent):
 
 					if y == 2 and x == 7:  # nav circle of 5th right
 						root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS, selected_key) + 1 + 12) % 12]
+						self._parent._parent._parent.show_message("circle of 5ths -> "+keys[selected_key]+" "+str(self._modus_names[selected_modus])+" => "+keys[root]+" "+str(self._modus_names[selected_modus]))
 					if y == 1 and x == 6:  # nav circle of 5th left
 						root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS, selected_key) - 1 + 12) % 12]
+						self._parent._parent._parent.show_message("circle of 5ths <- "+keys[selected_key]+" "+str(self._modus_names[selected_modus])+" => "+keys[root]+" "+str(self._modus_names[selected_modus]))
 					if y == 1 and x == 2:  # relative scale
 						if self._selected_modus == 0:
 							selected_modus = self._current_minor_mode
@@ -318,18 +331,23 @@ class ScalesComponent(ControlSurfaceComponent):
 						elif self._selected_modus == 12:
 							selected_modus = 11
 							root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS, selected_key) - 3 + 12) % 12]
+						self._parent._parent._parent.show_message("Relative scale : "+keys[root]+" "+str(self._modus_names[selected_modus]))
 					if root != -1:
 						self.set_selected_modus(selected_modus)
 						self.set_key(root)
 
 				if y == 1 and x == 7 and not self.is_drumrack():
 					self.is_quick_scale = not self.is_quick_scale
+					self._parent._parent._parent.show_message("Quick scale")
 				# octave
 				if y == 3:
 					self._octave_index = x
+					self._parent._parent._parent.show_message("octave : "+str(n))
 				# modus
 				if y > 3 and not self.is_drumrack():
 					self.set_selected_modus((y - 4) * 8 + x)
+					self._parent._parent._parent.show_message("mode : "+str(self._modus_names[n]))
+					
 
 				self.update()
 
