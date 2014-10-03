@@ -1,6 +1,7 @@
 from _Framework.ButtonSliderElement import ButtonSliderElement
 from _Framework.InputControlElement import *  # noqa
 from consts import *  # noqa
+import math
 
 SLIDER_MODE_OFF = 0
 SLIDER_MODE_ONOFF = 1
@@ -10,6 +11,7 @@ SLIDER_MODE_SMALL_ENUM = 4
 SLIDER_MODE_BIG_ENUM = 5
 
 #TODO: repeat buttons.
+# not exact / rounding values in slider and precision slider
 
 
 class DeviceControllerStrip(ButtonSliderElement):
@@ -107,6 +109,13 @@ class DeviceControllerStrip(ButtonSliderElement):
 				self._update_off()
 
 
+	def reset(self):
+		self._update_off()
+		
+	def reset_if_no_parameter(self):
+		if self._parameter_to_map_to == None:
+			self.reset()
+			
 	def _update_off(self):
 		v =  [0 for index in range(len(self._buttons))]
 		self._update_buttons(tuple(v))
@@ -143,7 +152,7 @@ class DeviceControllerStrip(ButtonSliderElement):
 	def _update_slider(self):
 		v =  [0 for index in range(len(self._buttons))]
 		for index in range(len(self._buttons)):
-			if self._value>=self._value_map[index]*self._range+self._min:
+			if self._value >=self._value_map[index]*self._range+self._min:
 				v[index]=GREEN_FULL
 			else:
 				v[index]=GREEN_THIRD
@@ -208,14 +217,16 @@ class DeviceControllerStrip(ButtonSliderElement):
 					
 				elif (self._mode == SLIDER_MODE_PRECISION_SLIDER):
 					inc = float(self._range) / 128
+					if self._range>7 and inc<1:
+						inc=1
 					if index_of_sender >= 4:
-						inc = inc * 2**(index_of_sender - 3)
+						inc = inc * 2**(index_of_sender - 3-1)
 						if self._value + inc <= self._max:
 							self._parameter_to_map_to.value += inc
 						else:
 							self._parameter_to_map_to.value = self._max
 					else:
-						inc = inc * 2**(4 - index_of_sender)
+						inc = inc * 2**(4 - index_of_sender-1)
 						if self._value - inc >= self._min:
 							self._parameter_to_map_to.value -= inc
 						else:
@@ -228,25 +239,6 @@ class DeviceControllerStrip(ButtonSliderElement):
 
 	def _on_parameter_changed(self):
 		assert (self._parameter_to_map_to != None)
-		#param_range = abs(self._parameter_to_map_to.max - self._parameter_to_map_to.min)
-		#param_value = self._parameter_to_map_to.value
-		#param_min = self._parameter_to_map_to.min
-		#param_mid = param_range / 2 + param_min
-		#if(self._mode == SLIDER_MODE_PARAMETER):
-		#	self._value_map = tuple([float((self._parameter_to_map_to.max - self._parameter_to_map_to.min) * index / (len(self._buttons) - 1) + self._parameter_to_map_to.min) for index in range(len(self._buttons))])
-		#
-		#midi_value = 0
-		#if self._mode == SLIDER_MODE_PAN:
-		#	if param_value == param_mid:
-		#		midi_value = 64
-		#	else:
-		#		diff = abs(param_value - param_mid) / param_range * 127
-		#		if param_value > param_mid:
-		#			midi_value = 64 + int(diff)
-		#		else:
-		#			midi_value = 63 - int(diff)
-		#else:
-		#	midi_value = int(127 * abs(param_value - self._parameter_to_map_to.min) / param_range)
 		if self._parent is not None:
 			self._parent._update_OSD()
 		self.update()

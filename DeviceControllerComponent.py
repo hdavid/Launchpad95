@@ -153,6 +153,9 @@ class DeviceControllerComponent(DeviceComponent):
 				self._bank_index = 0
 			self._device = device
 			DeviceComponent.set_device(self, device)
+	
+
+
 
 # UPDATE
 	def update(self):
@@ -184,10 +187,8 @@ class DeviceControllerComponent(DeviceComponent):
 						
 			# update parent
 			DeviceComponent.update(self)
-			# reset sliders if no device
-			#if(self._device == None):
-			#	for slider in self._sliders:
-			#		slider.reset()
+			for slider in self._sliders:
+				slider.reset_if_no_parameter()
 			# additional updates :
 			self.update_track_buttons()
 			self.update_device_buttons()
@@ -248,25 +249,31 @@ class DeviceControllerComponent(DeviceComponent):
 							if self._locked_devices[i] == self._device:
 								dev = i
 						if dev>=0:
-							self._parent._parent.show_message("Launchpad95: device is already at position "+ str(dev+1)+" : " + str(self._device.name))
+							if self._device != None:
+								self._parent._parent.show_message("Launchpad95: device is already at position "+ str(dev+1)+" : " + str(self._device.name))
 						else:
 							if self._device!=None:
 								self._locked_devices[index] = self._device
-								self._parent._parent.show_message("Launchpad95: saving device "+ str(index+1)+" : " + str(self._device.name))
+								if self._device != None:
+									self._parent._parent.show_message("Launchpad95: saving device "+ str(index+1)+" : " + str(self._device.name))
 					else:
 						#remove saved device
 						self._locked_devices[index] = None
 						self._locked_device_index = None
-						self._parent._parent.show_message("Launchpad95: removing locked device "+ str(index+1)+" : " + str(self._device.name))
+						if self._device != None:
+							self._parent._parent.show_message("Launchpad95: removing locked device "+ str(index+1)+" : " + str(self._device.name))
 				else:
 					#use selected device
 					if self._locked_device_index == index:
-						self._parent._parent.show_message("Launchpad95: unlocked from device "+ str(index+1)+" : " + str(self._locked_devices[index].name))
+						if self._locked_devices[index] != None:
+							if self._locked_devices[index]!= None:
+								self._parent._parent.show_message("Launchpad95: unlocked from device "+ str(index+1)+" : " + str(self._locked_devices[index].name))
 						self._locked_device_index = None
 					elif self._locked_devices[index] != None:
 						self._locked_device_index = index
 						self.set_device(self._locked_devices[index])
-						self._parent._parent.show_message("Launchpad95: locked to device "+ str(index+1)+" : " + str(self._locked_devices[index].name))
+						if self._locked_devices[index]!= None:
+							self._parent._parent.show_message("Launchpad95: locked to device "+ str(index+1)+" : " + str(self._locked_devices[index].name))
 						self.update()
 			self.update_track_buttons()
 			self.update_device_buttons()
@@ -329,10 +336,20 @@ class DeviceControllerComponent(DeviceComponent):
 					self._on_off_button.turn_off()
 
 	def _on_off_value(self, value):
-		if (self._lock_button != None and self.is_enabled()):
+		if (self._on_off_button != None and self.is_enabled()):
 			DeviceComponent._on_off_value(self, value)
 			self.update_on_off_button()
 
+
+	def set_on_off_button(self, button):
+		assert (isinstance(button, (ButtonElement, type(None))))
+		if (self._on_off_button != button):
+			if (self._on_off_button != None):
+				self._on_off_button.remove_value_listener(self._on_off_value)
+			self._on_off_button = button
+			if (self._on_off_button != None):
+				assert isinstance(button, ButtonElement)
+				self._on_off_button.add_value_listener(self._on_off_value)
 
 # TRACKS Buttons
 	def update_track_buttons(self):
