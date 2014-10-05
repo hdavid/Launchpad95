@@ -38,7 +38,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 		self._session.set_osd(self._osd)
 		
 		if self._parent._live_major_version>=9 and self._parent._live_minor_version>=1 and self._parent._live_bugfix_version>=3:
-				self._zooming = DeprecatedSessionZoomingComponent(self._session)
+			self._zooming = DeprecatedSessionZoomingComponent(self._session)
 		else:
 			self._zooming = SessionZoomingComponent(self._session)
 		self._session.name = 'Session_Control'
@@ -48,6 +48,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 		self._nav_buttons = top_buttons[:4]
 		self._config_button = config_button
 		self._zooming.set_empty_value(LED_OFF)
+		
 		self._all_buttons = []
 		for button in self._side_buttons + self._nav_buttons:
 			self._all_buttons.append(button)
@@ -56,6 +57,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 		self._sub_modes.name = 'Mixer_Modes'
 		self._sub_modes._mixer.set_osd(self._osd)
 		self._sub_modes.set_update_callback(self._update_control_channels)
+		
 		self._stepseq = StepSequencerComponent(self._matrix, self._side_buttons, self._nav_buttons, self)
 		self._stepseq.set_osd(self._osd)
 		self._stepseq2 = StepSequencerComponent2(self._matrix, self._side_buttons, self._nav_buttons, self)
@@ -279,7 +281,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 
 		# matrix
 		self._activate_matrix(True)
-		for scene_index in range(8):
+		for scene_index in range(self._session._num_scenes):
 			scene = self._session.scene(scene_index)
 			if as_active:
 				scene_button = self._side_buttons[scene_index]
@@ -287,8 +289,8 @@ class MainSelectorComponent(ModeSelectorComponent):
 				scene_button.set_on_off_values(127, LED_OFF)
 				scene.set_launch_button(scene_button)
 			else:
-				scene.set_launch_button(None)
-			for track_index in range(8):
+				scene.set_launch_button(None)  
+			for track_index in range(self._session._num_tracks):
 				if as_active:
 					button = self._matrix.get_button(track_index, scene_index)
 					button.set_on_off_values(127, LED_OFF)
@@ -416,11 +418,11 @@ class MainSelectorComponent(ModeSelectorComponent):
 			# api for 9.1.1 below
 			self._session.set_stop_track_clip_value(AMBER_BLINK)
 
-		for scene_index in range(self._matrix.height()):
+		for scene_index in range(self._session._num_scenes):
 			scene = self._session.scene(scene_index)
 			scene.set_triggered_value(GREEN_BLINK)
 			scene.name = 'Scene_' + str(scene_index)
-			for track_index in range(self._matrix.width()):
+			for track_index in range(self._session._num_tracks):
 				clip_slot = scene.clip_slot(track_index)
 				clip_slot.set_triggered_to_play_value(GREEN_BLINK)
 				clip_slot.set_triggered_to_record_value(RED_BLINK)
@@ -428,8 +430,6 @@ class MainSelectorComponent(ModeSelectorComponent):
 				clip_slot.set_started_value(GREEN_FULL)
 				clip_slot.set_recording_value(RED_FULL)
 				clip_slot.set_record_button_value(RED_THIRD)
-				# clip_slot.set_clip_palette(CLIP_COLOR_TABLE)
-				# clip_slot.set_clip_rgb_table(RGB_COLOR_TABLE)
 				clip_slot.name = str(track_index) + '_Clip_Slot_' + str(scene_index)
 				self._all_buttons.append(self._matrix.get_button(track_index, scene_index))
 
@@ -460,65 +460,3 @@ class MainSelectorComponent(ModeSelectorComponent):
 			button.set_channel(new_channel)
 			button.set_force_next_value()
 
-
-CLIP_COLOR_TABLE = {
-	15549221: AMBER_FULL,
-	12411136: AMBER_FULL,
-	11569920: AMBER_FULL,
-	8754719: AMBER_FULL,
-	5480241: AMBER_FULL,
-	695438: AMBER_FULL,
-	31421: AMBER_FULL,
-	197631: AMBER_FULL,
-	3101346: AMBER_FULL,
-	6441901: AMBER_FULL,
-	8092539: AMBER_FULL,
-	3947580: AMBER_FULL,
-	16712965: AMBER_FULL,
-	12565097: AMBER_FULL,
-	10927616: AMBER_FULL,
-	8046132: AMBER_FULL,
-	4047616: AMBER_FULL,
-	49071: AMBER_FULL,
-	1090798: AMBER_FULL,
-	5538020: AMBER_FULL,
-	8940772: AMBER_FULL,
-	10701741: AMBER_FULL,
-	12008809: AMBER_FULL,
-	9852725: AMBER_FULL,
-	16149507: AMBER_FULL,
-	12581632: AMBER_FULL,
-	8912743: AMBER_FULL,
-	1769263: AMBER_FULL,
-	2490280: AMBER_FULL,
-	6094824: AMBER_FULL,
-	1698303: AMBER_FULL,
-	9160191: AMBER_FULL,
-	9611263: AMBER_FULL,
-	12094975: AMBER_FULL,
-	14183652: AMBER_FULL,
-	16726484: AMBER_FULL,
-	16753961: AMBER_FULL,
-	16773172: AMBER_FULL,
-	14939139: AMBER_FULL,
-	14402304: AMBER_FULL,
-	12492131: AMBER_FULL,
-	9024637: AMBER_FULL,
-	8962746: AMBER_FULL,
-	10204100: AMBER_FULL,
-	8758722: AMBER_FULL,
-	13011836: AMBER_FULL,
-	15810688: AMBER_FULL,
-	16749734: AMBER_FULL,
-	16753524: AMBER_FULL,
-	16772767: AMBER_FULL,
-	13821080: AMBER_FULL,
-	12243060: AMBER_FULL,
-	11119017: AMBER_FULL,
-	13958625: AMBER_FULL,
-	13496824: AMBER_FULL,
-	12173795: AMBER_FULL,
-	13482980: AMBER_FULL,
-	13684944: AMBER_FULL,
-	14673637: AMBER_FULL,
-	16777215: AMBER_BLINK}

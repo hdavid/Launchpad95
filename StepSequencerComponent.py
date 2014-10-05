@@ -744,6 +744,7 @@ class StepSequencerComponent(CompoundComponent):
 		self._scale_selector.set_enabled(False)
 		self._scale_selector.set_matrix(self._matrix)
 		self._scale_selector.set_chromatic()
+		self._scale_selector._parent=self
 		self._scale_selector_button = None
 		self.set_scale_selector_button(self._side_buttons[0])
 
