@@ -342,11 +342,11 @@ class ScalesComponent(ControlSurfaceComponent):
 				# octave
 				if y == 3:
 					self._octave_index = x
-					self._parent._parent._parent.show_message("octave : "+str(n))
+					self._parent._parent._parent.show_message("octave : "+str(self._octave_index))
 				# modus
 				if y > 3 and not self.is_drumrack():
 					self.set_selected_modus((y - 4) * 8 + x)
-					self._parent._parent._parent.show_message("mode : "+str(self._modus_names[n]))
+					self._parent._parent._parent.show_message("mode : "+str(self._modus_names[self._selected_modus]))
 					
 
 				self.update()
