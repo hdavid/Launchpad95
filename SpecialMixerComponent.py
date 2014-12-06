@@ -8,9 +8,9 @@ class SpecialMixerComponent(MixerComponent):
 
 	""" Class encompassing several defaultable channel strips to form a mixer """
 
-	def __init__(self, num_tracks, num_returns=0, with_eqs=False, with_filters=False):
+	def __init__(self, num_tracks, num_returns = 0):
 		self._osd = None
-		MixerComponent.__init__(self, num_tracks, num_returns, with_eqs, with_filters)
+		MixerComponent.__init__(self, num_tracks, num_returns)
 		self._unarm_all_button = None
 		self._unsolo_all_button = None
 		self._unmute_all_button = None
@@ -31,22 +31,22 @@ class SpecialMixerComponent(MixerComponent):
 		assert isinstance(unarm_all, (ButtonElement, type(None)))
 		assert isinstance(unsolo_all, (ButtonElement, type(None)))
 		assert isinstance(unmute_all, (ButtonElement, type(None)))
-		if (self._unarm_all_button != None):
+		if self._unarm_all_button != None:
 			self._unarm_all_button.remove_value_listener(self._unarm_all_value)
 		self._unarm_all_button = unarm_all
-		if (self._unarm_all_button != None):
+		if self._unarm_all_button != None:
 			self._unarm_all_button.add_value_listener(self._unarm_all_value)
 			self._unarm_all_button.turn_off()
-		if (self._unsolo_all_button != None):
+		if self._unsolo_all_button != None:
 			self._unsolo_all_button.remove_value_listener(self._unsolo_all_value)
 		self._unsolo_all_button = unsolo_all
-		if (self._unsolo_all_button != None):
+		if self._unsolo_all_button != None:
 			self._unsolo_all_button.add_value_listener(self._unsolo_all_value)
 			self._unsolo_all_button.turn_off()
-		if (self._unmute_all_button != None):
+		if self._unmute_all_button != None:
 			self._unmute_all_button.remove_value_listener(self._unmute_all_value)
 		self._unmute_all_button = unmute_all
-		if (self._unmute_all_button != None):
+		if self._unmute_all_button != None:
 			self._unmute_all_button.add_value_listener(self._unmute_all_value)
 			self._unmute_all_button.turn_off()
 
@@ -98,7 +98,7 @@ class SpecialMixerComponent(MixerComponent):
 		assert self.is_enabled()
 		assert (self._unarm_all_button != None)
 		assert (value in range(128))
-		if ((value != 0) or (not self._unarm_all_button.is_momentary())):
+		if value != 0 or not self._unarm_all_button.is_momentary():
 			for track in self.song().tracks:
 				if track.can_be_armed and track.arm:
 					track.arm = False

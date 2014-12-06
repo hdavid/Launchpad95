@@ -24,6 +24,7 @@ class Launchpad(ControlSurface):
 		self._live_minor_version = live.get_minor_version()
 		self._live_bugfix_version = live.get_bugfix_version()
 		ControlSurface.__init__(self, c_instance)
+		#self._device_selection_follows_track_selection = True
 		with self.component_guard():
 			self._suppress_send_midi = True
 			self._suppress_session_highlight = True
@@ -80,7 +81,6 @@ class Launchpad(ControlSurface):
 
 			self.set_highlighting_session_component(self._selector.session_component())
 			self._suppress_session_highlight = False
-			# self.set_suppress_rebuild_requests(False)
 
 			self.log_message("LaunchPad95 Loaded !")
 
@@ -103,9 +103,9 @@ class Launchpad(ControlSurface):
 
 	_active_instances = []
 
-	def highlighting_session_component(self):
-		" Return the session component showing the ring in Live session "
-		return self._selector.session_component()
+	#def highlighting_session_component(self):
+	#	" Return the session component showing the ring in Live session "
+	#	return self._selector.session_component()
 
 	def _combine_active_instances():
 		support_devices = False
@@ -182,9 +182,9 @@ class Launchpad(ControlSurface):
 
 	def _user_byte_value(self, value):
 		assert (value in range(128))
-		if (not self._wrote_user_byte):
+		if not self._wrote_user_byte:
 			enabled = (value == 1)
-			self._control_is_with_automap = (not enabled)
+			self._control_is_with_automap = not enabled
 			self._suppress_send_midi = self._control_is_with_automap
 			if not self._control_is_with_automap:
 				for control in self.controls:
@@ -198,10 +198,10 @@ class Launchpad(ControlSurface):
 			self._wrote_user_byte = False
 
 	def _button_value(self, value):
-		assert (value in range(128))
+		assert value in range(128)
 
 	def _config_value(self, value):
-		assert (value in range(128))
+		assert value in range(128)
 
 	def _set_session_highlight(self, track_offset, scene_offset, width, height, include_return_tracks):
 		if not self._suppress_session_highlight:

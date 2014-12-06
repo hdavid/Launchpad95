@@ -230,7 +230,6 @@ class NoteEditorComponent(ControlSurfaceComponent):
 					note_key = note[0]  # key: 0-127 MIDI note #
 					note_velocity = note[3]
 					note_muted = note[4]
-
 					note_page = int(note_position / self.quantization / self.width / self.number_of_lines_per_note)
 					note_grid_x_position = int(note_position / self.quantization) % self.width
 					note_grid_y_position = int(note_position / self.quantization / self.width) % self.height
@@ -260,11 +259,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 
 					if note_grid_x_position >= 0:
 						# compute colors
-						# highlight_color = self.playing_note_color
-						# for index in range(len(self.velocity_map)):
-							# if note_velocity >= self.velocity_map[index]:
-								# highlight_color = self.playing_note_color
-						velocity_color = self.velocity_map[0]
+						velocity_color = self.velocity_color_map[0]
 						for index in range(len(self.velocity_map)):
 							if note_velocity >= self.velocity_map[index]:
 								velocity_color = self.velocity_color_map[index]
@@ -404,12 +399,17 @@ class NoteEditorComponent(ControlSurfaceComponent):
 					# cycle thru velocities
 					self._velocity_index = (len(self.velocity_map) + self._velocity_index + 1) % len(self.velocity_map)
 					self._velocity = self.velocity_map[self._velocity_index]
+				self._parent._track_controller._implicit_arm = False
+				if self._is_velocity_shifted:
+					self._parent._track_controller._do_implicit_arm(False)
 				self._is_velocity_shifted = False
 				self._update_velocity_button()
 			if ((value is not 0) or (not sender.is_momentary())):
 				# button pressed
 				self._velocity_notes_pressed = 0
 				self._is_velocity_shifted = True
+				self._parent._track_controller._implicit_arm = True
+				self._parent._track_controller._do_implicit_arm(True)
 				self._velocity_last_press = time.time()
 			self._parent._note_selector.update()
 

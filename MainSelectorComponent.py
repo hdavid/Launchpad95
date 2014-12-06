@@ -8,6 +8,7 @@ from InstrumentControllerComponent import InstrumentControllerComponent
 from SubSelectorComponent import *  # noqa
 from StepSequencerComponent import StepSequencerComponent
 from StepSequencerComponent2 import StepSequencerComponent2
+import traceback
 
 class MainSelectorComponent(ModeSelectorComponent):
 
@@ -270,6 +271,10 @@ class MainSelectorComponent(ModeSelectorComponent):
 
 			self._session.set_allow_update(True)
 			self._zooming.set_allow_update(True)
+			#self.log_message("main selector update")
+			#for line in traceback.format_stack():
+			#	self.log_message(line.strip())
+				
 
 	def _setup_session(self, as_active, as_enabled):
 		assert isinstance(as_active, type(False))
@@ -418,11 +423,11 @@ class MainSelectorComponent(ModeSelectorComponent):
 			# api for 9.1.1 below
 			self._session.set_stop_track_clip_value(AMBER_BLINK)
 
-		for scene_index in range(self._session._num_scenes):
+		for scene_index in range(self._matrix.height()):
 			scene = self._session.scene(scene_index)
 			scene.set_triggered_value(GREEN_BLINK)
 			scene.name = 'Scene_' + str(scene_index)
-			for track_index in range(self._session._num_tracks):
+			for track_index in range(self._matrix.width()):
 				clip_slot = scene.clip_slot(track_index)
 				clip_slot.set_triggered_to_play_value(GREEN_BLINK)
 				clip_slot.set_triggered_to_record_value(RED_BLINK)

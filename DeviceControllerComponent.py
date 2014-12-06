@@ -133,10 +133,12 @@ class DeviceControllerComponent(DeviceComponent):
 			self._osd.update()
 
 # DEVICE SELECTION
+
 	def _on_device_changed(self):
 		if not self._locked_to_device2:
 			self._selected_track = self.song().view.selected_track
 			self.set_device(self.song().appointed_device)
+			#self.set_device(self._selected_track.view.selected_device)
 			if self.is_enabled():
 				self.update()
 
@@ -146,7 +148,7 @@ class DeviceControllerComponent(DeviceComponent):
 			self.set_device(self._selected_track.view.selected_device)
 			if self.is_enabled():
 				self.update()
-
+	
 	def set_device(self, device):
 		if(device != self._device):
 			if self._number_of_parameter_banks() <= self._bank_index:

@@ -737,6 +737,7 @@ class StepSequencerComponent(CompoundComponent):
 		self._track_controller.set_next_track_button(self._top_buttons[3])
 		self._track_controller._parent = self._parent._parent
 		self._track_controller._notify_parent = True
+		self._track_controller._implicit_arm = False
 
 	def _set_scale_selector(self):
 		self._scale_selector = self.register_component(ScalesComponent())
