@@ -25,6 +25,7 @@ LONG_BUTTON_PRESS = 1.0
 class NoteSelectorComponent(ControlSurfaceComponent):
 
 	def __init__(self, parent, offset_buttons):
+		self._parent = parent
 		ControlSurfaceComponent.__init__(self)
 		self.set_enabled(False)
 		self._parent = parent
@@ -84,7 +85,8 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 	@property
 	def is_diatonic(self):
 		return self._parent._scale_selector.is_diatonic()
-
+	
+	
 	# DOWN Button
 	def _update_down_button(self):
 		if self.is_enabled():
@@ -183,6 +185,8 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 				self._parent._scale_updated()
 
 	def update(self):
+		#if self._parent != None:
+			#self._parent._parent.log_message("loopselector.update:")
 		if self.is_enabled():
 			self._parent._track_controller._do_implicit_arm(self._is_velocity_shifted and not self._parent._is_locked)
 			if self._is_velocity_shifted and not self._parent._is_locked:
@@ -821,6 +825,7 @@ class StepSequencerComponent(CompoundComponent):
 
 # enabled
 	def set_enabled(self, enabled):
+		#self._parent._parent.log_message("stepseq.set_mode:"+str(enabled))
 		if enabled:
 			if self._mode == STEPSEQ_MODE_SCALE_EDIT:
 				self.set_mode(self._mode_backup)
@@ -838,7 +843,9 @@ class StepSequencerComponent(CompoundComponent):
 				self._note_selector.set_selected_note(index_of(self._drum_group_device.drum_pads, self._drum_group_device.view.selected_drum_pad))
 
 			self._track_controller.set_enabled(enabled)
-
+			self._loop_selector.set_enabled(enabled)
+			self._note_selector.set_enabled(enabled)
+			self._note_editor.set_enabled(enabled)
 			# update clip notes as they might have changed while we were sleeping
 			self.on_clip_slot_changed()
 			# call super.set_enabled()
@@ -850,9 +857,13 @@ class StepSequencerComponent(CompoundComponent):
 
 		else:
 			self._track_controller.set_enabled(enabled)
+			self._loop_selector.set_enabled(enabled)
+			self._note_selector.set_enabled(enabled)
+			self._note_editor.set_enabled(enabled)
 			CompoundComponent.set_enabled(self, enabled)
 
 	def set_mode(self, mode, number_of_lines_per_note=1):
+		#self._parent._parent.log_message("stepseq.set_mode:"+str(mode))
 		if self._mode != mode or number_of_lines_per_note != self._number_of_lines_per_note:
 			self._number_of_lines_per_note = number_of_lines_per_note
 			self._note_editor.set_multinote(mode == STEPSEQ_MODE_MULTINOTE, number_of_lines_per_note)
@@ -918,6 +929,7 @@ class StepSequencerComponent(CompoundComponent):
 # UPDATE
 	def update(self):
 		if self.is_enabled():
+			#self._parent._parent.log_message("stepseq.update:")
 			self._update_track_controller()
 			self._update_scale_selector()
 			self._update_loop_selector()

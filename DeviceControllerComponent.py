@@ -3,6 +3,7 @@ from _Framework.DeviceComponent import DeviceComponent
 from _Framework.ButtonElement import ButtonElement
 from DeviceControllerStrip import DeviceControllerStrip
 import time
+import Live
 
 
 class DeviceControllerComponent(DeviceComponent):
@@ -115,7 +116,10 @@ class DeviceControllerComponent(DeviceComponent):
 
 			if self._selected_track != None:
 				if self._locked_to_device2:
-					self._osd.info[0] = "track : " + self._selected_track.name
+					if self._device != None:
+						self._osd.info[0] = "track : " + self.get_device_track_name(self._device) + " (locked)"
+					else:
+						self._osd.info[0] = "track : " + self._selected_track.name
 				else:
 					self._osd.info[0] = "track : " + self._selected_track.name
 			else:
@@ -252,30 +256,33 @@ class DeviceControllerComponent(DeviceComponent):
 								dev = i
 						if dev>=0:
 							if self._device != None:
-								self._parent._parent.show_message(" '"+str(self._device.name)+"' is stored in lock button "+ str(dev+1) )
+								self._parent._parent.show_message(" '"+self.get_device_track_name(self._device)+" - "+str(self._device.name)+"' is already stored in lock button "+ str(dev+1)+" ! aborting." )
 						else:
 							if self._device!=None:
 								self._locked_devices[index] = self._device
 								if self._device != None:
-									self._parent._parent.show_message(" '"+ str(self._device.name)+"' stored into lock button " + str(index+1))
+									self._parent._parent.show_message(" '"+self.get_device_track_name(self._device)+" - "+str(self._device.name)+"' stored into lock button " + str(index+1))
+									self._locked_device_index = index
+									self.update()
+									
 					else:
 						#remove saved device
 						self._locked_devices[index] = None
 						self._locked_device_index = None
 						if self._device != None:
-							self._parent._parent.show_message("removing '"+str(self._device.name)+"' from block button "+ str(index+1) )
+							self._parent._parent.show_message("removing '"+self.get_device_track_name(self._locked_devices[index])+" - "+str(self._device.name)+"' from block button "+ str(index+1) )
 				else:
 					#use selected device
 					if self._locked_device_index == index:
 						if self._locked_devices[index] != None:
 							if self._locked_devices[index]!= None:
-								self._parent._parent.show_message("unlocked from ' "+ str(self._locked_devices[index].name)+"' ("+str(index+1)+")")
+								self._parent._parent.show_message("unlocked from ' "+self.get_device_track_name(self._locked_devices[index])+" - "+str(self._locked_devices[index].name)+"' ("+str(index+1)+")")
 						self._locked_device_index = None
 					elif self._locked_devices[index] != None:
 						self._locked_device_index = index
 						self.set_device(self._locked_devices[index])
 						if self._locked_devices[index]!= None:
-							self._parent._parent.show_message("locked to '"+ str(self._locked_devices[index].name)+" (" +str(index+1)+")" )
+							self._parent._parent.show_message("locked to '"+self.get_device_track_name(self._locked_devices[index])+" - "+str(self._locked_devices[index].name)+" (" +str(index+1)+")" )
 						self.update()
 			self.update_track_buttons()
 			self.update_device_buttons()
@@ -284,6 +291,12 @@ class DeviceControllerComponent(DeviceComponent):
 				self.on_selected_track_changed()		
 			self.update_lock_buttons()
 				
+		
+	def get_device_track_name(self, device):
+			if str(type(device)) == "<class 'Track.Track'>":
+				return str(device.name)
+			else:
+				return self.get_device_track_name(device.canonical_parent)
 			
 			
 
