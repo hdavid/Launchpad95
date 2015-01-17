@@ -35,7 +35,17 @@ class MainSelectorComponent(ModeSelectorComponent):
 		for index in range(4):
 			self._sub_mode_index[index] = 0
 		self.set_mode_buttons(top_buttons[4:])
-		self._session = SpecialSessionComponent(matrix.width(), matrix.height(), self)
+			
+		if False:
+			#session with bottom stop buttons
+			clip_stop_buttons = [] 
+			for column in range(8):
+				clip_stop_buttons.append(matrix.get_button(column,matrix.height()-1))
+			self._session = SpecialSessionComponent(matrix.width(), matrix.height()-1, clip_stop_buttons, self)
+		else:
+			#no stop buttons
+			self._session = SpecialSessionComponent(matrix.width(), matrix.height(), None, self)
+			
 		self._session.set_osd(self._osd)
 		
 		if self._parent._live_major_version>=9 and self._parent._live_minor_version>=1 and self._parent._live_bugfix_version>=3:
@@ -304,6 +314,20 @@ class MainSelectorComponent(ModeSelectorComponent):
 				else:
 					scene.clip_slot(track_index).set_launch_button(None)
 
+		if as_active:
+			if self._session._stop_clip_buttons != None:
+				for button in self._session._stop_clip_buttons:
+					button.set_enabled(as_active)
+					button.set_on_off_values(AMBER_THIRD, LED_OFF)
+				self._session.set_stop_track_clip_buttons(self._session._stop_clip_buttons)
+
+				self._side_buttons[self._session._num_scenes].set_enabled(as_active)
+				self._side_buttons[self._session._num_scenes].set_on_off_values(AMBER_THIRD, LED_OFF)
+				self._session.set_stop_all_clips_button(self._side_buttons[self._session._num_scenes])
+			else:
+				self._session.set_stop_track_clip_buttons(None)
+				self._session.set_stop_all_clips_button(None)
+				
 		# zoom
 		if as_active:
 			self._zooming.set_zoom_button(self._modes_buttons[0])
@@ -423,7 +447,11 @@ class MainSelectorComponent(ModeSelectorComponent):
 			# api for 9.1.1 below
 			self._session.set_stop_track_clip_value(AMBER_BLINK)
 
-		for scene_index in range(self._matrix.height()):
+		session_height = self._matrix.height()
+		if self._session._stop_clip_buttons != None:
+			session_height = self._matrix.height()-1
+			
+		for scene_index in range(session_height):
 			scene = self._session.scene(scene_index)
 			scene.set_triggered_value(GREEN_BLINK)
 			scene.name = 'Scene_' + str(scene_index)
