@@ -37,7 +37,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 			self._sub_mode_index[index] = 0
 		self.set_mode_buttons(top_buttons[4:])
 			
-		if Setttings.CLIP_STOPBUTTONS:
+		if Settings.CLIP_STOPBUTTONS:
 			#session with bottom stop buttons
 			clip_stop_buttons = [] 
 			for column in range(8):
