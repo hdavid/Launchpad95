@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
 
-LINK_SESSION = False
-LINK_STEPSEQ = False
-CLIP_STOPBUTTONS = False
+
+#Link sessions between multiple launchpad95
+SESSION__LINK = False 
+
+#Link stepseq to follow session. experimental
+STEPSEQ__LINK_WITH_SESSION = False
+
+#Add Stop buttons at the bottom of the Session
+SESSION__STOP_BUTTONS = False
+
+
