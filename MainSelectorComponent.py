@@ -8,6 +8,7 @@ from InstrumentControllerComponent import InstrumentControllerComponent
 from SubSelectorComponent import *  # noqa
 from StepSequencerComponent import StepSequencerComponent
 from StepSequencerComponent2 import StepSequencerComponent2
+import Settings
 import traceback
 
 class MainSelectorComponent(ModeSelectorComponent):
@@ -36,7 +37,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 			self._sub_mode_index[index] = 0
 		self.set_mode_buttons(top_buttons[4:])
 			
-		if False:
+		if Setttings.CLIP_STOPBUTTONS:
 			#session with bottom stop buttons
 			clip_stop_buttons = [] 
 			for column in range(8):
