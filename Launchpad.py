@@ -7,12 +7,14 @@ from _Framework.ButtonMatrixElement import ButtonMatrixElement
 from ConfigurableButtonElement import ConfigurableButtonElement
 from MainSelectorComponent import MainSelectorComponent
 from M4LInterface import M4LInterface
+import Settings
+
 SIDE_NOTES = (8, 24, 40, 56, 72, 88, 104, 120)
 DRUM_NOTES = (41, 42, 43, 44, 45, 46, 47, 57, 58, 59, 60, 61, 62, 63, 73, 74, 75, 76, 77, 78, 79, 89, 90, 91, 92, 93, 94, 95, 105, 106, 107)
 DO_COMBINE = Live.Application.combine_apcs()  # requires 8.2 & higher
-LINK_SESSION = False
-LINK_STEPSEQ = False
 
+LINK_SESSION = Settings.LINK_SESSION
+LINK_STEPSEQ = Settings.LINK_STEPSEQ
 
 class Launchpad(ControlSurface):
 
