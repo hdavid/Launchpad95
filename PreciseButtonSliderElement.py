@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from _Framework.ButtonSliderElement import ButtonSliderElement
 from _Framework.InputControlElement import *  # noqa
 SLIDER_MODE_SINGLE = 0

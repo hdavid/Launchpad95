@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import Live
 from consts import *  # noqa
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent

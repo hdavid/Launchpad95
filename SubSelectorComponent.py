@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from _Framework.ModeSelectorComponent import ModeSelectorComponent
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
