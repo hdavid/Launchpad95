@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #Add Stop buttons at the bottom of the Session
-SESSION__STOP_BUTTONS = True
+SESSION__STOP_BUTTONS = False
 
 #Link sessions between multiple launchpad95
 SESSION__LINK = False 
