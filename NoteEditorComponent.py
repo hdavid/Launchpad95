@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from consts import *  # noqa
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.ButtonElement import ButtonElement

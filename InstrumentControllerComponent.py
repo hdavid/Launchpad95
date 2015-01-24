@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import Live
 from _Framework.CompoundComponent import CompoundComponent
 from _Framework.SubjectSlot import subject_slot
