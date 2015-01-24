@@ -330,6 +330,9 @@ class MainSelectorComponent(ModeSelectorComponent):
 			else:
 				self._session.set_stop_track_clip_buttons(None)
 				self._session.set_stop_all_clips_button(None)
+		else:
+			self._session.set_stop_track_clip_buttons(None)
+			self._session.set_stop_all_clips_button(None)
 				
 		# zoom
 		if as_active:
