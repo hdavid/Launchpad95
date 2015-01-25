@@ -67,9 +67,9 @@ class SpecialSessionComponent(SessionComponent):
 			self._update_OSD()
 
 	def _update_stop_clips_led(self, index):
-		if self.is_enabled() and self._stop_track_clip_buttons != None:
-			if index<len(self._stop_track_clip_buttons):
-				button = self._stop_track_clip_buttons[index]
+		if self.is_enabled() and self._stop_clip_buttons != None:
+			if index<len(self._stop_clip_buttons):
+				button = self._stop_clip_buttons[index]
 				tracks_to_use = self.tracks_to_use()
 				track_index = index + self.track_offset()
 				if 0 <= track_index < len(tracks_to_use):
