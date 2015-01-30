@@ -151,8 +151,8 @@ class SubSelectorComponent(ModeSelectorComponent):
 				self._update_callback()
 			self._mixer.set_allow_update(True)
 			self._session.set_allow_update(True)
-		else:
-			self.release_controls()
+		#else:
+			#self.release_controls()
 
 	def _setup_mixer_overview(self):
 		trkon_index = 5

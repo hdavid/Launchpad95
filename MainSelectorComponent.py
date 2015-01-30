@@ -50,18 +50,16 @@ class MainSelectorComponent(ModeSelectorComponent):
 			self._session = SpecialSessionComponent(matrix.width(), matrix.height(), None, self)
 			
 		self._session.set_osd(self._osd)
-		
-		if self._parent._live_major_version>=9 and self._parent._live_minor_version>=1 and self._parent._live_bugfix_version>=3:
-			self._zooming = DeprecatedSessionZoomingComponent(self._session)
-		else:
-			self._zooming = SessionZoomingComponent(self._session)
 		self._session.name = 'Session_Control'
+		
+		self._zooming = DeprecatedSessionZoomingComponent(self._session)
 		self._zooming.name = 'Session_Overview'
+		self._zooming.set_empty_value(LED_OFF)
+		
 		self._matrix = matrix
 		self._side_buttons = side_buttons
 		self._nav_buttons = top_buttons[:4]
 		self._config_button = config_button
-		self._zooming.set_empty_value(LED_OFF)
 		
 		self._all_buttons = []
 		for button in self._side_buttons + self._nav_buttons:
@@ -71,9 +69,10 @@ class MainSelectorComponent(ModeSelectorComponent):
 		self._sub_modes.name = 'Mixer_Modes'
 		self._sub_modes._mixer.set_osd(self._osd)
 		self._sub_modes.set_update_callback(self._update_control_channels)
-		
+
 		self._stepseq = StepSequencerComponent(self._matrix, self._side_buttons, self._nav_buttons, self)
 		self._stepseq.set_osd(self._osd)
+		
 		self._stepseq2 = StepSequencerComponent2(self._matrix, self._side_buttons, self._nav_buttons, self)
 		self._stepseq2.set_osd(self._osd)
 
@@ -189,6 +188,8 @@ class MainSelectorComponent(ModeSelectorComponent):
 
 		return new_channel
 
+				
+	
 	def update(self):
 		assert (self._modes_buttons != None)
 		if self.is_enabled():
@@ -287,8 +288,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 			#self.log_message("main selector update")
 			#for line in traceback.format_stack():
 			#	self.log_message(line.strip())
-				
-
+		
 	def _setup_session(self, as_active, as_enabled):
 		assert isinstance(as_active, type(False))
 		for button in self._nav_buttons:
@@ -411,27 +411,27 @@ class MainSelectorComponent(ModeSelectorComponent):
 
 	def _setup_step_sequencer(self, as_active):
 		if(self._stepseq != None):
-			if(self._stepseq.is_enabled() != as_active):
-				if as_active:
-					self._activate_scene_buttons(True)
-					self._activate_matrix(True)
-					self._activate_navigation_buttons(True)
-					self._config_button.send_value(32)
-					self._stepseq.set_enabled(True)
-				else:
-					self._stepseq.set_enabled(False)
+			#if(self._stepseq.is_enabled() != as_active):
+			if as_active:
+				self._activate_scene_buttons(True)
+				self._activate_matrix(True)
+				self._activate_navigation_buttons(True)
+				self._config_button.send_value(32)
+				self._stepseq.set_enabled(True)
+			else:
+				self._stepseq.set_enabled(False)
 
 	def _setup_step_sequencer2(self, as_active):
 		if(self._stepseq2 != None):
-			if(self._stepseq2.is_enabled() != as_active):
-				if as_active:
-					self._activate_scene_buttons(True)
-					self._activate_matrix(True)
-					self._activate_navigation_buttons(True)
-					self._config_button.send_value(32)
-					self._stepseq2.set_enabled(True)
-				else:
-					self._stepseq2.set_enabled(False)
+			#if(self._stepseq2.is_enabled() != as_active):
+			if as_active:
+				self._activate_scene_buttons(True)
+				self._activate_matrix(True)
+				self._activate_navigation_buttons(True)
+				self._config_button.send_value(32)
+				self._stepseq2.set_enabled(True)
+			else:
+				self._stepseq2.set_enabled(False)
 
 	def _setup_mixer(self, as_active):
 		assert isinstance(as_active, type(False))
@@ -442,6 +442,9 @@ class MainSelectorComponent(ModeSelectorComponent):
 			if(self._sub_modes.is_enabled()):
 				# go back to default mode
 				self._sub_modes.set_mode(-1)
+		else:
+			self._sub_modes.release_controls()
+
 		self._sub_modes.set_enabled(as_active)
 
 	def _init_session(self):
