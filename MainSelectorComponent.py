@@ -448,7 +448,10 @@ class MainSelectorComponent(ModeSelectorComponent):
 		self._sub_modes.set_enabled(as_active)
 
 	def _init_session(self):
-		if self._parent._live_major_version >= 9 and self._parent._live_minor_version >= 1 and self._parent._live_bugfix_version >= 2:
+		major = self._parent._live_major_version
+		minor = self._parent._live_minor_version
+		bugfix = self._parent._live_bugfix_version
+		if (major >= 9 and minor > 1) or (major >= 9 and minor >= 1 and bugfix >= 2):
 			# api changed in 9.1.2
 			self._session.set_stop_clip_value(AMBER_THIRD)
 			self._session.set_stop_clip_triggered_value(AMBER_BLINK)
