@@ -10,6 +10,7 @@ from TrackControllerComponent import TrackControllerComponent
 from ScaleComponent import *  # noqa
 from StepSequencerComponent import StepSequencerComponent
 from consts import *  # noqa
+import Settings
 
 class InstrumentControllerComponent(CompoundComponent):
 
@@ -67,12 +68,17 @@ class InstrumentControllerComponent(CompoundComponent):
 		if not enabled:
 			self._parent._parent.release_controlled_track()
 		else:
-			self._parent._parent.set_controlled_track(self.song().view.selected_track)
+			self._parent._parent.set_controlled_track(self._track_controller.selected_track)
 
 		if self._track_controller != None:
 			self._track_controller._do_implicit_arm(enabled)
 			self._track_controller.set_enabled(enabled)
+			
 		if enabled:
+			if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "track":  
+				self._scales.from_object(self._track_controller.selected_track)
+			if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":  
+				self._scales.from_object(self._track_controller.selected_clip)
 			self._update_OSD()
 
 	def _set_feedback_velocity(self):
@@ -116,14 +122,19 @@ class InstrumentControllerComponent(CompoundComponent):
 		if self.is_enabled():
 			self._scales_toggle_button.set_on_off_values(AMBER_FULL, AMBER_THIRD)
 			if (value is not 0):
-				self._osd_mode_backup = self._osd.mode
 				self._scales.set_enabled(True)
+				self._osd_mode_backup = self._osd.mode
 				self._osd.mode = self._osd_mode_backup + ' - Scale'
 				self._scales_toggle_button.turn_on()
 				self._scales.update()
 			else:
 				self._scales_toggle_button.turn_off()
 				self._scales.set_enabled(False)
+				#TODO: save scale setting in track or clip. detect if changed
+				if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "track":
+					self._scales.update_object_name(self._track_controller.selected_track)
+				if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":
+					self._scales.update_object_name(self._track_controller.selected_clip)
 				self._osd.mode = self._osd_mode_backup
 				self.update()
 
@@ -217,12 +228,23 @@ class InstrumentControllerComponent(CompoundComponent):
 					if root != -1:
 						self._scales.set_selected_modus(selected_modus)
 						self._scales.set_key(root)
+						#TODO: save scale in clip or track name
+						if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "track":
+							if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "track":
+								self._scales.update_object_name(self._track_controller.selected_track)
+							if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":
+								self._scales.update_object_name(self._track_controller.selected_clip)
 						self.update()
 
 				else:
 					if(y == 0):
 						if x < 7 and self._quick_scales[x] != -1:
 							self._scales.set_selected_modus(self._quick_scales[x])
+							#TODO: save scale in clip or track name
+							if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "track":
+								self._scales.update_object_name(self._track_controller.selected_track)
+							if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":
+								self._scales.update_object_name(self._track_controller.selected_clip)
 							self._parent._parent.show_message("mode : "+str(self._scales._modus_names[self._scales._selected_modus]))
 							self.update()
 						if x == 7:
@@ -235,6 +257,11 @@ class InstrumentControllerComponent(CompoundComponent):
 					if(y == 1):
 						if x < 8 and self._quick_scales[x + 7] != -1:
 							self._scales.set_selected_modus(self._quick_scales[x + 7])
+							#TODO: save scale in clip or track name
+							if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "track":
+								self._scales.update_object_name(self._track_controller.selected_track)
+							if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":
+								self._scales.update_object_name(self._track_controller.selected_clip)
 							self._parent._parent.show_message("mode : "+str(self._scales._modus_names[self._scales._selected_modus]))
 							self.update()
 
@@ -295,8 +322,8 @@ class InstrumentControllerComponent(CompoundComponent):
 			self._osd.attributes[7] = " "
 			self._osd.attribute_names[7] = " "
 
-			if self.song().view.selected_track != None:
-				self._osd.info[0] = "track : " + self.song().view.selected_track.name
+			if self._track_controller.selected_track != None:
+				self._osd.info[0] = "track : " + self._track_controller.selected_track.name
 			else:
 				self._osd.info[0] = " "
 
@@ -322,11 +349,28 @@ class InstrumentControllerComponent(CompoundComponent):
 				self._scales.set_drumrack(True)
 			else:
 				self._scales.set_drumrack(False)
+				
+			#load scale settings from track
+			if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "track":  
+				self._scales.from_object(self._track_controller.selected_track)
+			if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":  
+				self._scales.from_object(self._track_controller.selected_clip)
+				# must be delayed.... self._scales.update_object_name(track)
+					
+			self.update()
+	
+	def on_selected_scene_changed(self):
+		if self._track_controller._implicit_arm:
+			#load scale settings from track
+			if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":  
+				self._scales.from_object(self._track_controller.selected_clip)
+				# must be delayed.... self._scales.update_object_name(track)
+					
 			self.update()
 
 	def _get_drumrack_device(self):
-		if self.song().view.selected_track != None:
-			track = self.song().view.selected_track
+		if self._track_controller.selected_track != None:
+			track = self._track_controller.selected_track
 			if(track.devices != None and len(track.devices) > 0):
 				#device = track.devices[0]
 				device = self.find_drum_group_device(track)

@@ -227,7 +227,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		self._update_matrix()
 
 	def _update_clip_notes(self):
-		if self._clip != None:
+		if self._clip != None and self._parent.is_enabled():
 			note_cache = list()
 			for x in range(len(self._notes_velocities)):
 				for note_index in range(7):
@@ -239,8 +239,18 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 						if(pitch >= 0 and pitch < 128 and velocity >= 0 and velocity < 128 and length >= 0):
 							note_cache.append([pitch, time, length, velocity, False])
 			self._clip.select_all_notes()
-			self._clip.replace_selected_notes(tuple(note_cache))
+			self._clip.replace_selected_notes(tuple(note_cache))	
+			#self._parent._parent._parent.schedule_message(1, self._sch_update, ([self._clip,tuple(note_cache)]))
 
+	def _sch_update(self, data):
+			clip = data[0]
+			note_cache = data[1]
+			clip.select_all_notes()
+			if(note_cache == None):
+				clip.replace_selected_notes(tuple())
+			else:
+				clip.replace_selected_notes(note_cache)
+				
 	def update(self, force=False):
 		if force:
 			self._force_update = True

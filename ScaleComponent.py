@@ -2,6 +2,8 @@
 
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from consts import *  # noqa
+import string
+import traceback
 
 class InstrumentPresetsComponent():
 
@@ -182,7 +184,97 @@ class ScalesComponent(ControlSurfaceComponent):
 
 	def get_scale_highlight_color(self):
 		return self.scale_highlight_color
+	
+	def from_object(self, obj = None , obj2 = None):
+		datas = None
+		
+		if obj != None:
+			data = obj.name
+			d = string.split(data,'^')
+			if len(d)==2:
+				d = string.split(d[1],",")
+				if len(d)==4:
+					datas = d
+				
+		if obj2 != None and datas == None:
+			data = obj2.name
+			d = string.split(data,'^')
+			if len(d)==2:
+				d = string.split(d[1],",")
+				if len(d)==4:
+					datas = d
+				
+		if datas !=None and len(datas)==4:
+			try:	
+				self._selected_key = int(datas[0])
+			except ValueError:
+				self._selected_key = 0
+			try:	
+				self._selected_modus = int(datas[1])
+			except ValueError:
+				self._selected_modus = 0
+			try:	
+				self._octave_index = int(datas[2])
+			except ValueError:
+				self._octave_index = 3
+		
+			mode = datas[3]
+			if mode=="d":
+				self._is_drumrack = True
+				#self._is_chromatic = True
+				#self._is_diatonic = False
+				#self._is_diatonic_ns = False
+				#self._is_chromatic_gtr = False
+			else:
+				self._is_drumrack = False
+				if mode=="g":
+					self._is_chromatic_gtr = True
+					self._is_diatonic = False
+					self._is_diatonic_ns = False
+					self._is_chromatic = False
+				elif mode=="c":
+					self._is_chromatic = True
+					self._is_diatonic = False
+					self._is_diatonic_ns = False
+					self._is_chromatic_gtr = False
+				elif mode=="n":
+					self._is_diatonic_ns = True
+					self._is_diatonic = False
+					self._is_chromatic_gtr = False
+					self._is_chromatic = False
+				else:
+					self._is_diatonic = True
+					self._is_diatonic_ns = False
+					self._is_chromatic_gtr = False
+					self._is_chromatic = False
 
+	def get_string(self):
+		mode = "c";
+		if(self._is_drumrack):
+			mode="d"
+		else:
+			mode="a"
+			if(self._is_chromatic):
+				mode="c"
+			if(self._is_chromatic_gtr):
+				mode="g"
+			if(self._is_diatonic):
+				mode="a"
+			if(self._is_diatonic_ns):
+				mode="n"
+		return(str(self._selected_key)+","+str(self._selected_modus)+","+str(self._octave_index)+","+mode)
+	
+	def update_object_name(self, obj , obj2 = None):
+		scale_string = self.get_string()
+		if obj != None:
+			name = obj.name
+			data = string.split(name," ^")
+			obj.name = data[0] + " ^" + scale_string
+		if obj2 != None:
+			name = obj2.name
+			data = string.split(name," ^")
+			obj2.name = data[0] + " ^" + scale_string
+			
 	def set_diatonic(self, interval=-1):
 		self._is_drumrack = False
 		self._is_chromatic = False
@@ -352,6 +444,7 @@ class ScalesComponent(ControlSurfaceComponent):
 					
 
 				self.update()
+			#self._parent._parent._parent.show_message("mode : "+self.get_string())
 
 	def tuple_idx(self, tuple, obj):
 		for i in xrange(0, len(tuple)):

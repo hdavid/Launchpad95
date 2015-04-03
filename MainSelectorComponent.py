@@ -214,60 +214,21 @@ class MainSelectorComponent(ModeSelectorComponent):
 				self._update_control_channels()
 				self._mode_index = 0
 
-			elif self._main_mode_index == 1:
-				self._setup_session(not as_active, not as_enabled)
-				self._setup_step_sequencer(not as_active)
-				self._setup_step_sequencer2(not as_active)
-				self._setup_mixer(not as_active)
-				if self._sub_mode_index[self._main_mode_index] == 0:
-					# instrument controller
-					self._setup_device_controller(not as_active)
-					self._update_control_channels()
-					self._setup_instrument_controller(as_active)
-					self._mode_index = 4
-				elif self._sub_mode_index[self._main_mode_index] == 1:
-					# device controller
-					self._setup_instrument_controller(not as_active)
-					self._setup_device_controller(as_active)
-					self._update_control_channels()
-					self._mode_index = 5
-				else:
-					# plain user mode 1
-					self._setup_device_controller(not as_active)
-					self._setup_instrument_controller(not as_active)
-					self._setup_user_mode(True, True, False, True)
-					self._update_control_channels()
-					self._mode_index = 1
-					self._osd.clear()
-					self._osd.mode = "User 1"
-					self._osd.update()
-
-			elif self._main_mode_index == 2:
-				self._setup_session(not as_active, not as_enabled)
-				self._setup_instrument_controller(not as_active)
-				self._setup_device_controller(not as_active)
-				self._setup_mixer(not as_active)
-				if self._sub_mode_index[self._main_mode_index] == 0:
-					# stepseq
-					self._setup_step_sequencer2(not as_active)
-					self._setup_step_sequencer(as_active)
-					self._mode_index = 6
-				elif self._sub_mode_index[self._main_mode_index] == 1:
-					# melodic step seq
-					self._setup_step_sequencer(not as_active)
-					self._setup_step_sequencer2(as_active)
-					self._mode_index = 7
-				else:
-					# plain user mode 2
-					self._setup_step_sequencer(not as_active)
-					self._setup_step_sequencer2(not as_active)
-					self._setup_user_mode(False, False, False, False)
-					self._mode_index = 2
-					self._osd.clear()
-					self._osd.mode = "User 2"
-					self._osd.update()
-
-				self._update_control_channels()
+			elif self._main_mode_index == 1 or self._main_mode_index == 2:
+				self._setup_usermode(Settings.USER_MODES[ (self._main_mode_index-1) * 3 + self._sub_mode_index[self._main_mode_index] ] )
+				#if self._sub_mode_index[self._main_mode_index] == 0:
+				#	self._setup_usermode(Settings.USER_MODES[0])
+				#elif self._sub_mode_index[self._main_mode_index] == 1:
+				#	self._setup_usermode(Settings.USER_MODES[1])
+				#else:
+				#	self._setup_usermode(Settings.USER_MODES[2])
+			#elif self._main_mode_index == 2:
+			#	if self._sub_mode_index[self._main_mode_index] == 0:
+			#		self._setup_usermode(Settings.USER_MODES[3])
+			#	elif self._sub_mode_index[self._main_mode_index] == 1:
+			#		self._setup_usermode(Setting.USER_MODES[4])
+			#	else:
+			#		self._setup_usermode(Settings.USER_MODES[5])
 
 			elif self._main_mode_index == 3:
 				# mixer
@@ -288,6 +249,72 @@ class MainSelectorComponent(ModeSelectorComponent):
 			#self.log_message("main selector update")
 			#for line in traceback.format_stack():
 			#	self.log_message(line.strip())
+		
+	def _setup_usermode(self, mode):
+		as_active = True
+		as_enabled = True
+		if mode == "instrument":
+			self._setup_session(not as_active, not as_enabled)
+			self._setup_step_sequencer(not as_active)
+			self._setup_step_sequencer2(not as_active)
+			self._setup_mixer(not as_active)
+			self._setup_device_controller(not as_active)
+			self._update_control_channels()
+			self._setup_instrument_controller(as_active)
+			self._mode_index = 4
+		elif mode == "melodic stepseq":
+			self._setup_session(not as_active, not as_enabled)
+			self._setup_instrument_controller(not as_active)
+			self._setup_device_controller(not as_active)
+			self._setup_mixer(not as_active)
+			self._setup_step_sequencer(not as_active)
+			self._setup_step_sequencer2(as_active)
+			self._update_control_channels()
+			self._mode_index = 7
+		elif mode == "user 1":
+			self._setup_session(not as_active, not as_enabled)
+			self._setup_step_sequencer(not as_active)
+			self._setup_step_sequencer2(not as_active)
+			self._setup_mixer(not as_active)
+			self._setup_device_controller(not as_active)
+			self._setup_instrument_controller(not as_active)
+			self._setup_user_mode(True, True, False, True)
+			self._update_control_channels()
+			self._mode_index = 1
+			self._osd.clear()
+			self._osd.mode = "User 1"
+			self._osd.update()
+		elif mode == "drum stepseq":
+			self._setup_session(not as_active, not as_enabled)
+			self._setup_instrument_controller(not as_active)
+			self._setup_device_controller(not as_active)
+			self._setup_mixer(not as_active)
+			self._setup_step_sequencer2(not as_active)
+			self._setup_step_sequencer(as_active)
+			self._update_control_channels()
+			self._mode_index = 6
+		elif mode == "device":
+			self._setup_session(not as_active, not as_enabled)
+			self._setup_step_sequencer(not as_active)
+			self._setup_step_sequencer2(not as_active)
+			self._setup_mixer(not as_active)
+			self._setup_instrument_controller(not as_active)
+			self._setup_device_controller(as_active)
+			self._update_control_channels()
+			self._mode_index = 5
+		elif mode == "user 2":
+			self._setup_session(not as_active, not as_enabled)
+			self._setup_instrument_controller(not as_active)
+			self._setup_device_controller(not as_active)
+			self._setup_mixer(not as_active)
+			self._setup_step_sequencer(not as_active)
+			self._setup_step_sequencer2(not as_active)
+			self._setup_user_mode(False, False, False, False)
+			self._update_control_channels()
+			self._mode_index = 2
+			self._osd.clear()
+			self._osd.mode = "User 2"
+			self._osd.update()
 		
 	def _setup_session(self, as_active, as_enabled):
 		assert isinstance(as_active, type(False))
