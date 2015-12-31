@@ -7,10 +7,10 @@ class ConfigurableButtonElement(ButtonElement):
 
 	""" Special button class that can be configured with custom on- and off-values """
 
-	def __init__(self, is_momentary, msg_type, channel, identifier):
+	def __init__(self, is_momentary, msg_type, channel, identifier, off_value = 4):
 		ButtonElement.__init__(self, is_momentary, msg_type, channel, identifier)
 		self._on_value = 127
-		self._off_value = 4
+		self._off_value = off_value
 		self._is_enabled = True
 		self._is_notifying = False
 		self._force_next_value = False

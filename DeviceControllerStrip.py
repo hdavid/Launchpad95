@@ -19,12 +19,14 @@ SLIDER_MODE_BIG_ENUM = 5
 class DeviceControllerStrip(ButtonSliderElement):
 
 
-	def __init__(self, buttons, parent):
+	def __init__(self, buttons, control_surface):
 		ButtonSliderElement.__init__(self, buttons)
+		self._control_surface = control_surface
+		self._skin = self._control_surface._skin
 		self._num_buttons = len(buttons)
 		self._value_map = tuple([float(index) / (self._num_buttons-1) for index in range(self._num_buttons)])
 		self._precision_mode = False
-		self._parent = parent
+	
 		self._enabled = True
 	
 	def set_enabled(self,enabled):
@@ -125,51 +127,51 @@ class DeviceControllerStrip(ButtonSliderElement):
 	def _update_onoff(self):
 		v =  [0 for index in range(len(self._buttons))]
 		if self._value==self._max:
-		 	v[0]=RED_FULL
+		 	v[0]=self._skin.device.toggle_on
 		else:
-			v[0]=RED_THIRD
+			v[0]=self._skin.device.toggle_off
 		self._update_buttons(tuple(v))
 
 	def _update_small_enum(self):
 		v =  [0 for index in range(len(self._buttons))]
 		for index in range(int(self._range+1)):
 			if self._value==index+self._min:
-				v[index]=AMBER_FULL
+				v[index]=self._skin.device.list_on
 			else:
-				v[index]=AMBER_THIRD
+				v[index]=self._skin.device.list_off
 		self._update_buttons(tuple(v))
 
 	def _update_big_enum(self):
 		v =  [0 for index in range(len(self._buttons))]
 		if self._value>self._min:
-			v[3]=AMBER_FULL
+			v[3]=self._skin.device.list_on
 		else:
-			v[3]=AMBER_THIRD
+			v[3]=self._skin.device.list_off
 		if self._value<self._max:
-			v[4]=AMBER_FULL
+			v[4]=self._skin.device.list_on
 		else:
-			v[4]=AMBER_THIRD
+			v[4]=self._skin.device.list_off
 		self._update_buttons(tuple(v))
 	
 	def _update_slider(self):
 		v =  [0 for index in range(len(self._buttons))]
 		for index in range(len(self._buttons)):
 			if self._value >=self._value_map[index]*self._range+self._min:
-				v[index]=GREEN_FULL
+				v[index]=self._skin.device.slider_on
 			else:
-				v[index]=GREEN_THIRD
+				v[index]=self._skin.device.slider_off
 		self._update_buttons(tuple(v))
 		
 	def _update_precision_slider(self):
 		v =  [0 for index in range(len(self._buttons))]
 		if self._value>self._min:
-			v[3]=GREEN_FULL
+			v[3]=self._skin.device.slider_on
 		else:
-			v[3]=GREEN_THIRD
+			v[3]=self._skin.device.slider_off
 		if self._value<self._max:
-			v[4]=GREEN_FULL
+			v[4]=self._skin.device.slider_on
 		else:
-			v[4]=GREEN_THIRD
+			v[4]=self._skin.device.slider_off
 		self._update_buttons(tuple(v))
 			
 	def _update_buttons(self, buttons):

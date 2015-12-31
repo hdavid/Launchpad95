@@ -16,11 +16,16 @@ USER_MODES = ["instrument", "device", "user 1", "drum stepseq", "melodic stepseq
 
 # allow sep seq and instrument modes to save their scale settings.
 # as live does not offer any api we are stuck with using the track or clip name...
-# possible values : "clip" to save in clip, None (case matter)
+# possible values : "clip" to save in clip, set, None,  (case matter)
 #STEPSEQ__SAVE_SCALE = "clip"
 #INSTRUMENT__SAVE_SCALE = "clip"
 STEPSEQ__SAVE_SCALE = None
 INSTRUMENT__SAVE_SCALE = None
+
+# Default mode for all non RGB launchpads
+DEVICE = "launchpad"
+# uncomment the line below to enable launchpad mk2 mode
+#DEVICE = "launchpad mk2"
 
 
 
