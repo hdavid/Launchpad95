@@ -19,10 +19,11 @@ SLIDER_MODE_BIG_ENUM = 5
 class DeviceControllerStrip(ButtonSliderElement):
 
 
-	def __init__(self, buttons, control_surface):
+	def __init__(self, buttons, control_surface, parent = None):
 		ButtonSliderElement.__init__(self, buttons)
 		self._control_surface = control_surface
 		self._skin = self._control_surface._skin
+		self._parent = parent
 		self._num_buttons = len(buttons)
 		self._value_map = tuple([float(index) / (self._num_buttons-1) for index in range(self._num_buttons)])
 		self._precision_mode = False
