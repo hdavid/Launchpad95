@@ -241,7 +241,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 							note_idx = self.key_indexes.index(note_key)
 						except ValueError:
 							note_idx = -1
-						note_grid_y_base = self.key_indexes.index(note_key) * self.number_of_lines_per_note
+						note_grid_y_base = note_idx * self.number_of_lines_per_note
 						if(note_grid_y_base >= 0):
 							note_grid_y_base = (7 - note_grid_y_base) - (self.number_of_lines_per_note - 1)
 						if(note_grid_y_base < 0):
