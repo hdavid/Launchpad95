@@ -164,7 +164,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 
 	def _display_selected_page(self):
 		for i in range(0, self._height):
-			self._grid_back_buffer[self._page % self.width][i] = self._skin.note_selector.page_marker
+			self._grid_back_buffer[self._page % self.width][i] = self._skin.note_editor.page_marker
 
 	def _display_note_markers(self):
 		for i in range(0, self.height / self.number_of_lines_per_note):
