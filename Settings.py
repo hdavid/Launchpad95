@@ -23,9 +23,9 @@ STEPSEQ__SAVE_SCALE = None
 INSTRUMENT__SAVE_SCALE = None
 
 # Default mode for all non RGB launchpads
-DEVICE = "launchpad"
+# DEVICE = "launchpad"
 # uncomment the line below to enable launchpad mk2 mode
-#DEVICE = "launchpad mk2"
+DEVICE = "launchpad mk2"
 
 
 

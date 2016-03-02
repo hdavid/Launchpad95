@@ -24,7 +24,7 @@ class Launchpad(ControlSurface):
 		self._live_major_version = live.get_major_version()
 		self._live_minor_version = live.get_minor_version()
 		self._live_bugfix_version = live.get_bugfix_version()
-		self._mk2_rgb = Settings.DEVICE=='Launchpad mk2'
+		self._mk2_rgb = Settings.DEVICE=='launchpad mk2'
 		if self._mk2_rgb:
 			self._skin = Skin('launchpad mk2')
 			self._side_notes = (89, 79, 69, 59, 49, 39, 29, 19)

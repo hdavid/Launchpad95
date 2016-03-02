@@ -73,6 +73,9 @@
 		<img src="setup.png"/>
 	</p>
 	<p>
+		For Launchpad MK2 RGB, edit the file Settings.py, and uncomment (remove the leading "#") the line '#DEVICE = "launchpad mk2"'
+	</p>
+	<p>
 		For those adept of <a href="http://forum.ableton.com/viewtopic.php?f=2&amp;t=141471&amp;p=1245986">Launchpad Color</a>
 		I adapted this script to be compatible with Launchpad95. You can grab  <a href="Launchpad95Colour.zip">Launchpad95Colour here</a>! 
 	</p>
@@ -1396,7 +1399,8 @@
 		<dd>
 			Launchpad (old version with 3-colored buttons), Launchpad S, Launchpad Mini are supported<br/>
 			Launchpad Launchpad  Mini MK2 is supported<br/>
-			Launchpad Pro and Launchpad MK2(with RGB leds) are not supported<br/>
+			Launchpad Pro and Launchpad MK2 is supported, but no RGB support yet. 
+			Edit the file Settings.py, and uncomment (remove the leading "#") the line '#DEVICE = "launchpad mk2"'<br/>
 		</dd>
 
 		<dt id="faq-2">2. Which Ableton live versions are supported</dt>
@@ -1470,6 +1474,7 @@
 	<section>
 	<h2>History</h2>
 	<ul>
+		<li>2016-03-02 - Launchpad MK2 RGB support.</li>
 		<li>2015-12-31 - code cleanup, partial and untested support for MK2 RGB, skinning</li>
 		<li>2015-04-03 <br/>
 				- save scale in clip in stepseq and instrument mode (off by default, check Settings.py) <br/>
