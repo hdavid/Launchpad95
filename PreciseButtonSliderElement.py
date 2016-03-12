@@ -135,9 +135,7 @@ class PreciseButtonSliderElement(ButtonSliderElement):
 			#		else:
 			#			self._parameter_to_map_to.value = self._parameter_to_map_to.min
 			self.notify_value(value)
-			#if self._parent is not None:
-			#	self._parent._update_OSD()
-
+			
 	def _on_parameter_changed(self):
 		assert (self._parameter_to_map_to != None)
 		param_range = abs(self._parameter_to_map_to.max - self._parameter_to_map_to.min)

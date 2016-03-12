@@ -10,9 +10,8 @@ from ConfigurableButtonElement import ConfigurableButtonElement
 from MainSelectorComponent import MainSelectorComponent
 from M4LInterface import M4LInterface
 import Settings
+from Skin import Skin
 
-SIDE_NOTES = (8, 24, 40, 56, 72, 88, 104, 120)
-DRUM_NOTES = (41, 42, 43, 44, 45, 46, 47, 57, 58, 59, 60, 61, 62, 63, 73, 74, 75, 76, 77, 78, 79, 89, 90, 91, 92, 93, 94, 95, 105, 106, 107)
 DO_COMBINE = Live.Application.combine_apcs()  # requires 8.2 & higher
 
 
@@ -21,19 +20,18 @@ class Launchpad(ControlSurface):
 	""" Script for Novation's Launchpad Controller """
 
 	def __init__(self, c_instance):
+		ControlSurface.__init__(self, c_instance)
 		live = Live.Application.get_application()
 		self._live_major_version = live.get_major_version()
 		self._live_minor_version = live.get_minor_version()
 		self._live_bugfix_version = live.get_bugfix_version()
-		ControlSurface.__init__(self, c_instance)
-		#self._device_selection_follows_track_selection = True
+		self._selector = None
 		with self.component_guard():
 			self._suppress_send_midi = True
 			self._suppress_session_highlight = True
-
 			is_momentary = True
-			self._suggested_input_port = 'Launchpad'
-			self._suggested_output_port = 'Launchpad'
+			self._suggested_input_port = ("Launchpad", "Launchpad Mini", "Launchpad S", "Launchpad MK2")
+			self._suggested_output_port = ("Launchpad", "Launchpad Mini", "Launchpad S", "Launchpad MK2")				
 			self._control_is_with_automap = False
 			self._user_byte_write_button = ButtonElement(is_momentary, MIDI_CC_TYPE, 0, 16)
 			self._user_byte_write_button.name = 'User_Byte_Button'
@@ -41,12 +39,30 @@ class Launchpad(ControlSurface):
 			self._user_byte_write_button.add_value_listener(self._user_byte_value)
 			self._wrote_user_byte = False
 			self._challenge = Live.Application.get_random_int(0, 400000000) & 2139062143
+			
+	def init(self):
+		if self._mk2_rgb:
+			self._skin = Skin('launchpad mk2')
+			self._side_notes = (89, 79, 69, 59, 49, 39, 29, 19)
+			self._drum_notes = (20, 30, 31, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126)
+		else:
+			self._skin = Skin('launchpad')
+			self._side_notes = (8, 24, 40, 56, 72, 88, 104, 120)
+			self._drum_notes = (41, 42, 43, 44, 45, 46, 47, 57, 58, 59, 60, 61, 62, 63, 73, 74, 75, 76, 77, 78, 79, 89, 90, 91, 92, 93, 94, 95, 105, 106, 107)
+
+		with self.component_guard():
+			is_momentary = True
 			matrix = ButtonMatrixElement()
 			matrix.name = 'Button_Matrix'
 			for row in range(8):
 				button_row = []
 				for column in range(8):
-					button = ConfigurableButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, row * 16 + column)
+					if self._mk2_rgb:
+						# for mk2 buttons are assigned "top to bottom"
+ 						midi_note = (81 - (10 * row)) + column
+					else:
+						midi_note = row * 16 + column
+					button = ConfigurableButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, midi_note, self._skin.off)
 					button.name = str(column) + '_Clip_' + str(row) + '_Button'
 					button_row.append(button)
 
@@ -54,8 +70,8 @@ class Launchpad(ControlSurface):
 
 			self._config_button = ButtonElement(is_momentary, MIDI_CC_TYPE, 0, 0, optimized_send_midi=False)
 			self._config_button.add_value_listener(self._config_value)
-			top_buttons = [ConfigurableButtonElement(is_momentary, MIDI_CC_TYPE, 0, 104 + index) for index in range(8)]
-			side_buttons = [ConfigurableButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, SIDE_NOTES[index]) for index in range(8)]
+			top_buttons = [ConfigurableButtonElement(is_momentary, MIDI_CC_TYPE, 0, 104 + index, self._skin.off) for index in range(8)]
+			side_buttons = [ConfigurableButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, self._side_notes[index], self._skin.off) for index in range(8)]
 			top_buttons[0].name = 'Bank_Select_Up_Button'
 			top_buttons[1].name = 'Bank_Select_Down_Button'
 			top_buttons[2].name = 'Bank_Select_Left_Button'
@@ -83,7 +99,8 @@ class Launchpad(ControlSurface):
 
 			self.set_highlighting_session_component(self._selector.session_component())
 			self._suppress_session_highlight = False
-
+			self.request_rebuild_midi_map()
+			self._selector.update()
 			self.log_message("LaunchPad95 Loaded !")
 
 	def disconnect(self):
@@ -97,6 +114,9 @@ class Launchpad(ControlSurface):
 		self._config_button.remove_value_listener(self._config_value)
 		ControlSurface.disconnect(self)
 		self._suppress_send_midi = False
+		if self._mk2_rgb:
+			self._send_midi((240, 0, 32, 41, 2, 24, 64, 247))
+			# launchpad mk2 needs disconnect string sent			
 		self._config_button.send_value(32)
 		self._config_button.send_value(0)
 		self._config_button = None
@@ -145,21 +165,40 @@ class Launchpad(ControlSurface):
 		self.schedule_message(5, self._update_hardware)
 
 	def handle_sysex(self, midi_bytes):
-		if len(midi_bytes) == 8:
-			if midi_bytes[1:5] == (0, 32, 41, 6):
-				response = long(midi_bytes[5])
-				response += long(midi_bytes[6]) << 8
-				if response == Live.Application.encrypt_challenge2(self._challenge):
-					self._suppress_send_midi = False
-					self.set_enabled(True)
+		#self.log_message("sysex:"+str(midi_bytes))
+		# mk2 has different challenge and params
+		if len(midi_bytes) == 10 and midi_bytes[:7] == (240, 0, 32, 41, 2, 24, 64):
+					response = long(midi_bytes[7])
+					response += long(midi_bytes[8]) << 8
+					if response == Live.Application.encrypt_challenge2(self._challenge):
+						self._mk2_rgb = True
+						self.log_message("Challenge Response ok (mk2)")
+						
+						self._suppress_send_midi = False
+						self.set_enabled(True)
+						self.init()
+						
+		#MK1 Challenge
+		elif len(midi_bytes) == 8 and midi_bytes[1:5] == (0, 32, 41, 6):
+					response = long(midi_bytes[5])
+					response += long(midi_bytes[6]) << 8
+					if response == Live.Application.encrypt_challenge2(self._challenge):
+						self.log_message("Challenge Response ok (mk1)")
+						self._mk2_rgb = False
+						self.init()
+						self._suppress_send_midi = False
+						self.set_enabled(True)
+		else:
+			ControlSurface.handle_sysex(self,midi_bytes)
+		
 
 	def build_midi_map(self, midi_map_handle):
 		ControlSurface.build_midi_map(self, midi_map_handle)
-		if self._selector.mode_index == 1:
+		if self._selector!=None and self._selector.mode_index == 1:
 			if self._selector._sub_mode_index[self._selector._mode_index] > 0:  # disable midi map rebuild for instrument mode to prevent light feedback errors
 				new_channel = self._selector.channel_for_current_mode()
 				# self.log_message(str(new_channel))
-				for note in DRUM_NOTES:
+				for note in self._drum_notes:
 					self._translate_message(MIDI_NOTE_TYPE, note, 0, note, new_channel)
 
 	def _send_midi(self, midi_bytes, optimized=None):
@@ -178,9 +217,14 @@ class Launchpad(ControlSurface):
 		self._send_challenge()
 
 	def _send_challenge(self):
+		#mk2
+		challenge_bytes = tuple([ self._challenge >> 8 * index & 127 for index in xrange(4) ])
+		self._send_midi((240, 0, 32, 41, 2, 24, 64) + challenge_bytes + (247,))
+		#mk1's
 		for index in range(4):
 			challenge_byte = self._challenge >> 8 * index & 127
 			self._send_midi((176, 17 + index, challenge_byte))
+		
 
 	def _user_byte_value(self, value):
 		assert (value in range(128))

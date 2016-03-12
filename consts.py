@@ -1,24 +1,6 @@
 # -*- coding: utf-8 -*-
 # flake8: noqa
 
-# LaunchPad Colours
-LED_OFF = 4
-
-RED_FULL = 7
-RED_HALF = 6
-RED_THIRD = 5
-RED_BLINK = 11
-
-GREEN_FULL = 52
-GREEN_HALF = 36
-GREEN_THIRD = 20
-GREEN_BLINK = 56
-
-AMBER_FULL = ((RED_FULL + GREEN_FULL) - 4)
-AMBER_HALF = ((RED_HALF + GREEN_HALF) - 4)
-AMBER_THIRD = ((RED_THIRD + GREEN_THIRD) - 4)
-AMBER_BLINK = ((AMBER_FULL - 4) + 8)
-
 # Scales
 KEY_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 CIRCLE_OF_FIFTHS = [7 * k % 12 for k in range(12)]
@@ -56,10 +38,3 @@ MUSICAL_MODES = [
 	'Spanish',			[0, 1, 3, 4, 5, 6, 8, 10],
 	'IonEol',			[0, 2, 3, 4, 5, 7, 8, 9, 10, 11]  # from aschneiderg@unal.edu.co
 ]
-
-
-def index_of(list, elt):
-	for i in range(0, len(list)):
-		if (list[i] == elt):
-			return i
-	return(-1)

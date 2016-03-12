@@ -8,10 +8,12 @@ class SpecialSessionComponent(SessionComponent):
 
 	""" Special session subclass that handles ConfigurableButtons """
 
-	def __init__(self, num_tracks, num_scenes, stop_clip_buttons,parent):
+	def __init__(self, num_tracks, num_scenes, stop_clip_buttons, control_surface, main_selector):
 		self._stop_clip_buttons=stop_clip_buttons
+		self._control_surface = control_surface
+		self._main_selector = main_selector
+		self._skin = self._control_surface._skin
 		self._osd = None
-		self._parent = parent
 		SessionComponent.__init__(self, num_tracks, num_scenes)
 
 	def link_with_track_offset(self, track_offset):
@@ -53,17 +55,17 @@ class SpecialSessionComponent(SessionComponent):
 
 	def update(self):
 		SessionComponent.update(self)
-		if self._parent._main_mode_index == 0:
+		if self._main_selector._main_mode_index == 0:
 			self._update_OSD()
 
 	def set_enabled(self, enabled):
 		SessionComponent.set_enabled(self, enabled)
-		if self._parent._main_mode_index == 0:
+		if self._main_selector._main_mode_index == 0:
 			self._update_OSD()
 
 	def _reassign_tracks(self):
 		SessionComponent._reassign_tracks(self)
-		if self._parent._main_mode_index == 0:
+		if self._main_selector._main_mode_index == 0:
 			self._update_OSD()
 
 	def _update_stop_clips_led(self, index):
@@ -77,9 +79,9 @@ class SpecialSessionComponent(SessionComponent):
 					if track.fired_slot_index == -2:
 						button.send_value(self._stop_clip_triggered_value)
 					elif track.playing_slot_index >= 0:
-						button.send_value(AMBER_THIRD)
+						button.send_value(self._skin.session.track_stop)
 					else:
-						#self._parent._parent.log_message("index:"+str(index))
+						#self._control_surface.log_message("index:"+str(index))
 						button.turn_off()
 				else:
 					button.send_value(4)
