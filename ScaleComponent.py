@@ -1,50 +1,463 @@
-# -*- coding: utf-8 -*-
-
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
-from consts import *  # noqa
-import string
-import traceback
+from _Framework.ToggleComponent import ToggleComponent
+#from _Framework.Control import PlayableControl, ButtonControl, ToggleButtonControl, control_matrix
 
-class InstrumentPresetsComponent():
+KEY_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+CIRCLE_OF_FIFTHS = [7 * k % 12 for k in range(12)]
+# KEY_CENTERS = CIRCLE_OF_FIFTHS[0:6] + CIRCLE_OF_FIFTHS[-1:5:-1]
 
-	def __init__(self, *a, **k):
-		self.octave_index_offset = 0
-		self.is_horizontal = True
-		self.interval = 3
+MUSICAL_MODES = [
 
-	def _set_scale_mode(self, octave_index_offset, orientation, interval):
-		self.octave_index_offset = octave_index_offset
-		self.is_horizontal = (orientation == 'horizontal' or orientation == True)
-		self.interval = interval
+	'Major',			[0, 2, 4, 5, 7, 9, 11],
+	'Minor',			[0, 2, 3, 5, 7, 8, 10],
+	'Dorian',			[0, 2, 3, 5, 7, 9, 10],
+	'Mixolydian',		[0, 2, 4, 5, 7, 9, 10],
+	'Lydian',			[0, 2, 4, 6, 7, 9, 11],
+	'Phrygian',			[0, 1, 3, 5, 7, 8, 10],
+	'Locrian',			[0, 1, 3, 5, 6, 8, 10],
+	'Diminished',		[0, 1, 3, 4, 6, 7, 9, 10],
 
-	def set_orientation(self, orientation):
-		self._set_scale_mode(self.octave_index_offset, orientation, self.interval)
+	'Whole-half',		[0, 2, 3, 5, 6, 8, 9, 11],
+	'Whole Tone',		[0, 2, 4, 6, 8, 10],
+	'Minor Blues',		[0, 3, 5, 6, 7, 10],
+	'Minor Pentatonic', [0, 3, 5, 7, 10],
+	'Major Pentatonic', [0, 2, 4, 7, 9],
+	'Harmonic Minor',	[0, 2, 3, 5, 7, 8, 11],
+	'Melodic Minor',	[0, 2, 3, 5, 7, 9, 11],
+	'Super Locrian',	[0, 1, 3, 4, 6, 8, 10],
 
-	def toggle_orientation(self):
-		if(self.is_horizontal):
-			self._set_scale_mode(self.octave_index_offset, 'vertical', self.interval)
+	'Bhairav',			[0, 1, 4, 5, 7, 8, 11],
+	'Hungarian Minor',	[0, 2, 3, 6, 7, 8, 11],
+	'Minor Gypsy',		[0, 1, 4, 5, 7, 8, 10],
+	'Hirojoshi',		[0, 2, 3, 7, 8],
+	'In-Sen',			[0, 1, 5, 7, 10],
+	'Iwato',			[0, 1, 5, 6, 10],
+	'Kumoi',			[0, 2, 3, 7, 9],
+	'Pelog',			[0, 1, 3, 4, 7, 8],
+
+	'Spanish',			[0, 1, 3, 4, 5, 6, 8, 10],
+	'IonEol',			[0, 2, 3, 4, 5, 7, 8, 9, 10, 11]
+]
+
+class ScaleComponent(ControlSurfaceComponent):
+	
+	#matrix = control_matrix(PlayableControl)
+
+	def __init__(self, control_surface = None, enabled = False, mode = "diatonic", *a, **k):
+		self._layout_set = False
+		self._modus_list = [Modus(MUSICAL_MODES[v], MUSICAL_MODES[v + 1]) for v in xrange(0, len(MUSICAL_MODES), 2)]
+		self._modus_names = [MUSICAL_MODES[v] for v in xrange(0, len(MUSICAL_MODES), 2)]
+		self._control_surface = control_surface
+		self._osd = None
+		self._modus = 0
+		self._key = 0
+		self._octave = 3 
+		self._mode = mode #chromatic, diatonic
+		self._is_drumrack = False
+		self._quick_scale = False
+		self._is_horizontal = True
+		self._is_absolute = False
+		self._interval = 3
+		self._matrix = None
+		
+		# C  D  E  F  G  A  B
+		self._white_notes_index = [0, 2, 4, 5, 7, 9, 11]
+		
+		self._current_minor_mode = 1
+		self._minor_modes = [1, 13, 14]
+		
+		super(ScaleComponent, self).__init__(*a, **k)
+		self.set_enabled(enabled)
+		
+	@property
+	def notes(self):
+		return self.modus.scale(self._key).notes
+
+	@property
+	def modus(self):
+		return self._modus_list[self._modus]
+
+	def set_key(self, key, message = True):
+		if key>=0 and key<=11:
+			self._key = key % 12
+			if message:
+				self._control_surface.show_message(str("selected key: " + KEY_NAMES[self._key])+" "+str(self._modus_names[self._modus]))
+		
+	def set_octave(self, octave, message = True):
+		if octave>=0 and octave<=7:
+			self._octave = octave
+			if message:
+				self._control_surface.show_message("selected octave: " + str(octave))
+
+	def octave_up(self, message = True):
+		self.set_octave(self._octave + 1, message) 
+	
+	def octave_down(self, message = True):
+		self.set_octave(self._octave - 1, message) 
+		
+	def set_modus(self, index, message = True):
+		if index > -1 and index < len(self._modus_list):
+			self._modus = index
+			if message:
+				self._control_surface.show_message(str("selected scale: " + KEY_NAMES[self._key])+" "+str(self._modus_names[self._modus]))
+	
+	def set_drumrack(self, drumrack):
+		self._is_drumrack = drumrack
+		
+	#def set_matrix(self, matrix):
+	#	if not matrix or not self._layout_set:
+	#		self._matrix = matrix
+	#		#self._matrix.set_control_element(matrix)
+	#		for index, button in enumerate(self._matrix):
+	#			#button.set_playable(False)
+	#			self._layout_set = bool(matrix)
+	#		self.update()
+	def set_matrix(self, matrix):
+		self._matrix = matrix
+		if matrix:
+			matrix.reset()
+		if (matrix != self._matrix):
+			if (self._matrix != None):
+				self._matrix.remove_value_listener(self._matrix_pressed)
+		self._matrix = matrix
+		if (self._matrix != None):
+			self._matrix.add_value_listener(self._matrix_pressed)
+		self.update()
+
+
+	
+	def set_osd(self, osd):
+		self._osd = osd
+
+	def _update_OSD(self):
+		if self._osd != None:
+			self._osd.attributes[0] = ""
+			self._osd.attribute_names[0] = ""
+			self._osd.attributes[1] = MUSICAL_MODES[self._modus * 2]
+			self._osd.attribute_names[1] = "Scale"
+			self._osd.attributes[2] = KEY_NAMES[self._key % 12]
+			self._osd.attribute_names[2] = "Root Note"
+			self._osd.attributes[3] = self._octave
+			self._osd.attribute_names[3] = "Octave"
+			self._osd.attributes[4] = " "
+			self._osd.attribute_names[4] = " "
+			self._osd.attributes[5] = " "
+			self._osd.attribute_names[5] = " "
+			self._osd.attributes[6] = " "
+			self._osd.attribute_names[6] = " "
+			self._osd.attributes[7] = " "
+			self._osd.attribute_names[7] = " "
+			self._osd.update()
+			
+	def update(self):
+		if self.is_enabled() and self._matrix!=None:
+			#self._control_surface.log_message("update scale: "+str(self._matrix))
+			super(ScaleComponent, self).update()
+			self._update_OSD()
+			#for index, button in enumerate(self._matrix):
+			for button, (col, row) in self._matrix.iterbuttons():
+				#row, col = button.coordinate
+				button.set_enabled(True)
+				if row==0:
+					if col == 0:
+						if self._is_absolute:
+							button.set_light("Scale.AbsoluteRoot")
+						else:
+							button.set_light("Scale.RelativeRoot")
+					elif col == 1:
+						button.set_light("DefaultButton.Disabled")
+					elif col == 2:
+						if not self.is_drumrack and self._mode == "chromatic_gtr":
+							button.set_light("Scale.Mode.On")
+						else:
+							button.set_light("Scale.Mode.Off")
+						button.turn_on()
+					elif col == 3:
+						if not self.is_drumrack and self._mode == "diatonic_ns":
+							button.set_light("Scale.Mode.On")
+						else:
+							button.set_light("Scale.Mode.Off")
+					elif col == 4:
+						if not self.is_drumrack and self._mode == "diatonic_chords":
+							button.set_light("Scale.Mode.On")
+						else:
+							button.set_light("Scale.Mode.Off")
+					elif col == 5:
+						if not self.is_drumrack and self._mode == "diatonic":
+							button.set_light("Scale.Mode.On")
+						else:
+							button.set_light("Scale.Mode.Off")
+					elif col == 6:
+						if not self.is_drumrack and self._mode == "chromatic":
+							button.set_light("Scale.Mode.On")
+						else:
+							button.set_light("Scale.Mode.Off")
+					elif col == 7:
+						if self.is_drumrack:
+							button.set_light("Scale.Mode.On")
+						else:
+							button.set_light("Scale.Mode.Off")
+				
+				elif row==1:
+					if self.is_drumrack:
+						button.set_light("DefaultButton.Disabled")
+					else:
+						if col==0 or col==1 or col==3 or col==4 or col==5:
+							if self._key == self._white_notes_index[col]+1:
+								button.set_light("Scale.Key.On")
+							else:
+								 button.set_light("Scale.Key.Off")
+						elif col==2:
+							button.set_light("Scale.RelativeScale")
+						elif col==6:
+							button.set_light("Scale.CircleOfFifths")
+						elif col==7:
+							if self._quick_scale:
+								button.set_light("Scale.QuickScale.On")
+							else:
+								button.set_light("Scale.QuickScale.Off")
+				elif row==2:
+					if self.is_drumrack:
+						button.set_light("DefaultButton.Disabled")
+					else:
+						if col<7:
+							if self._key == self._white_notes_index[col]:
+								button.set_light("Scale.Key.On")
+							else:
+								 button.set_light("Scale.Key.Off")
+						else:
+							button.set_light("Scale.CircleOfFifths")
+				elif row==3:
+					if self._octave == col:
+						button.set_light("Scale.Octave.On")
+					else:
+						button.set_light("Scale.Octave.Off")
+				elif row==4:
+					if self.is_drumrack:
+						button.set_light("DefaultButton.Disabled")
+					else:
+						if self._modus == col:
+							button.set_light("Scale.Modus.On")
+						else:
+							button.set_light("Scale.Modus.Off")
+				elif row==5:
+					if self.is_drumrack:
+						button.set_light("DefaultButton.Disabled")
+					else:
+						if self._modus == col+8:
+							button.set_light("Scale.Modus.On")
+						else:
+							button.set_light("Scale.Modus.Off")
+				elif row==6:
+					if self.is_drumrack:
+						button.set_light("DefaultButton.Disabled")
+					else:
+						if self._modus == col+16:
+							button.set_light("Scale.Modus.On")
+						else:
+							button.set_light("Scale.Modus.Off")
+				elif row==7:
+					if self.is_drumrack:
+						button.set_light("DefaultButton.Disabled")
+					else:
+						if col+24>len(self._modus_list):
+							button.set_light("DefaultButton.Disabled")
+						elif self._modus == col+24:
+							button.set_light("Scale.Modus.On")
+						else:
+							button.set_light("Scale.Modus.Off")
+				#button.set_enabled(False)
+				#button.update()
+			
+		
+		
+	#@matrix.pressed
+	def _matrix_pressed(self, value, x, y, is_momentary):
+		if self.is_enabled() and value>0:
+		 	#y, x = pad.coordinate
+			# modes
+			if y == 0:
+				if not self.is_drumrack:
+					if x == 0:
+						self._is_absolute = not self._is_absolute
+						if self._is_absolute:
+							self._control_surface.show_message("absolute root")
+						else:
+							self._control_surface.show_message("relative root")
+					if x == 1:
+						self._is_horizontal = not self._is_horizontal
+				if x == 2:
+					self._mode = "chromatic_gtr"
+					self._is_drumrack = False
+					self._interval=3
+					self._is_horizontal= True
+					self._control_surface.show_message("mode: chromatic gtr")
+				if x == 3:
+					self._mode = "diatonic_ns"
+					self._is_drumrack = False
+					self._interval=3
+					self._is_horizontal= True
+					self._control_surface.show_message("mode: diatonic not staggered")
+				if x == 4:
+					self._mode="diatonic_chords"
+					self._is_drumrack = False
+					self._interval=2
+					self._is_horizontal= False
+					self._control_surface.show_message("mode: diatonic vertical (chords)")
+				if x == 5:
+					self._mode="diatonic"
+					self._is_drumrack = False
+					self._interval=3
+					self._is_horizontal= True
+					self._control_surface.show_message("mode: diatonic")
+				if x == 6:
+					self._mode="chromatic"
+					self._is_drumrack = False
+					self._interval=3
+					self._is_horizontal=True
+					self._control_surface.show_message("mode: chromatic")
+				if x == 7:
+					self._is_drumrack = True
+					self._control_surface.show_message("mode: drumrack")
+		
+			keys = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
+			# root note
+			if not self.is_drumrack:
+				root = -1
+				selected_key = self._key
+				selected_modus = self._modus
+				if y == 1 and x in[0, 1, 3, 4, 5] or y == 2 and x < 7:
+					root = [0, 2, 4, 5, 7, 9, 11, 12][x]
+					if y == 1:
+						root = root + 1
+					self._control_surface.show_message("root "+keys[root])
+
+				# if root == selected_key:#alternate minor/major
+				# 	if selected_modus==0:
+				# 		selected_modus = self._current_minor_mode
+				# 	elif selected_modus in [1,13,14]:
+				# 		self._current_minor_mode = selected_modus
+				# 		selected_modus = 0
+				# 	elif selected_modus==11:
+				# 		selected_modus = 12
+				# 	elif selected_modus==12:
+				# 		selected_modus = 11
+
+				if y == 2 and x == 7:  # nav circle of 5th right
+					root = CIRCLE_OF_FIFTHS[(CIRCLE_OF_FIFTHS.index(selected_key) + 1 + 12) % 12]
+					self._control_surface.show_message("circle of 5ths -> "+keys[selected_key]+" "+str(self._modus_names[selected_modus])+" => "+keys[root]+" "+str(self._modus_names[selected_modus]))
+				if y == 1 and x == 6:  # nav circle of 5th left
+					root = CIRCLE_OF_FIFTHS[(CIRCLE_OF_FIFTHS.index(selected_key) - 1 + 12) % 12]
+					self._control_surface.show_message("circle of 5ths <- "+keys[selected_key]+" "+str(self._modus_names[selected_modus])+" => "+keys[root]+" "+str(self._modus_names[selected_modus]))
+				if y == 1 and x == 2:  # relative scale
+					if self._modus == 0:
+						selected_modus = self._current_minor_mode
+						root = CIRCLE_OF_FIFTHS[(CIRCLE_OF_FIFTHS.index(selected_key) + 3) % 12]
+					elif self._modus in [1, 13, 14]:
+						self._current_minor_mode = selected_modus
+						selected_modus = 0
+						root = CIRCLE_OF_FIFTHS[(CIRCLE_OF_FIFTHS.index(selected_key) - 3 + 12) % 12]
+					elif self._modus == 11:
+						selected_modus = 12
+						root = CIRCLE_OF_FIFTHS[(CIRCLE_OF_FIFTHS.index(selected_key) + 3) % 12]
+					elif self._modus == 12:
+						selected_modus = 11
+						root = CIRCLE_OF_FIFTHS[(CIRCLE_OF_FIFTHS.index(selected_key) - 3 + 12) % 12]
+					self._control_surface.show_message("Relative scale : "+keys[root]+" "+str(self._modus_names[selected_modus]))
+				if root != -1:
+					self.set_modus(selected_modus)
+					self.set_key(root)
+
+			if y == 1 and x == 7 and not self.is_drumrack:
+				self._quick_scale = not self._quick_scale
+				self._control_surface.show_message("Quick scale")
+			# octave
+			if y == 3:
+				self._octave = x
+				self._control_surface.show_message("octave : " + str(self._octave))
+			# modus
+			if y > 3 and not self.is_drumrack:
+				self.set_modus((y - 4) * 8 + x)
+				self._control_surface.show_message("mode : " + str(self._modus_names[self._modus]))
+			self.update()
+	
+	#@matrix.released
+	def matrix_release(self, pad):
+		pass
+		# selected_drum_pad = self._coordinate_to_pad_map[pad.coordinate]
+		# if selected_drum_pad in self._selected_pads:
+		# 	self._selected_pads.remove(selected_drum_pad)
+		# 	if not self._selected_pads:
+		# 		self._update_control_from_script()
+		# 	self.notify_pressed_pads()
+		# self._update_led_feedback()			
+
+			
+	@property
+	def is_drumrack(self):
+		return self._is_drumrack
+		
+	@property
+	def is_diatonic(self):
+		return not self.is_drumrack and  (self._mode == "diatonic" or self._mode == "diatonic_ns" or self._mode == "diatonic_chords")
+
+	@property
+	def is_chromatic(self):
+		return not self.is_drumrack  and  (self._mode =="chromatic" or self._mode == "chromatic_gtr")
+
+	@property
+	def is_diatonic_ns(self):
+		return self._mode == "diatonic_ns"
+	
+	@property	
+	def is_chromatic_gtr(self):
+		return self._mode == "chromatic_gtr"
+		
+	@property
+	def is_quick_scale(self):
+		return self._quick_scale
+	
+	
+	def get_pattern(self):
+		notes = self.notes
+		# origin
+		if not self._is_absolute:
+			origin = 0
+		elif self.is_diatonic:
+			origin = 0
+			for k in xrange(len(notes)):
+				if notes[k] >= 12:
+					origin = k - len(notes)
+					break
 		else:
-			self._set_scale_mode(self.octave_index_offset, 'horizontal', self.interval)
+			origin = -notes[0]
 
-	def set_interval(self, interval):
-		# 3rd : interval = 2
-		# 4th : interval = 3
-		# 6th : interval = 5
-		if interval == None:
-			self._set_scale_mode(-2, self.is_horizontal, None)
+		# interval
+		if self._interval == None:
+			interval = 8
+		elif self.is_chromatic:
+			interval = [0, 2, 4, 5, 7, 9, 10, 11][self._interval]
 		else:
-			self._set_scale_mode(0, self.is_horizontal, interval)
-
-	def cycle_intervals(self):
-		if(self.interval == None):
-			self.set_interval(2)
-		elif(self.interval == 2):
-			self.set_interval(3)
-		elif(self.interval == 3):
-			self.set_interval(5)
-		elif(self.interval == 5):
-			self.set_interval(2)
-
+			interval = self._interval
+		
+		# layout
+		if self._is_horizontal:
+			steps = [1, interval]
+			origin = [origin, 0]
+		else:
+			steps = [interval, 1]
+			origin = [0, origin]
+		
+		return MelodicPattern(
+			steps = steps, 
+			scale = notes, 
+			origin = origin, 
+			base_note = (self._octave + 1) * 12, 
+			chromatic_mode = self.is_chromatic, 
+			chromatic_gtr_mode = self.is_chromatic_gtr, 
+			diatonic_ns_mode = self.is_diatonic_ns
+		)
+		
 
 class Scale(object):
 
@@ -68,29 +481,35 @@ class Modus(Scale):
 
 class MelodicPattern(object):
 
-	def __init__(self, skin,steps=[0, 0], scale=range(12), base_note=0, origin=[0, 0], valid_notes=xrange(128), 
-		chromatic_mode=False, chromatic_gtr_mode=False, diatonic_ns_mode=False, *a, **k):
-		# base_note_color=GREEN_HALF, scale_note_color=AMBER_THIRD, scale_highlight_color=GREEN_FULL, foreign_note_color=LED_OFF, invalid_note_color=LED_OFF, 
+	def __init__(self,
+	 		steps=[0, 0], 
+			scale=range(12), 
+			base_note=0, 
+			origin=[0, 0], 
+			valid_notes=xrange(128), 
+			chromatic_mode=False,
+			chromatic_gtr_mode=False,
+			diatonic_ns_mode=False,
+			*a, **k):
 		super(MelodicPattern, self).__init__(*a, **k)
-		self._skin = skin
 		self.steps = steps
 		self.scale = scale
 		self.base_note = base_note
 		self.origin = origin
 		self.valid_notes = valid_notes
-		self.base_note_color = skin.AMBER_THIRD
-		self.scale_note_color = skin.GREEN_THIRD
-		self.scale_highlight_color = skin.GREEN_HALF
-		self.foreign_note_color = skin.off
-		self.invalid_note_color = skin.off
 		self.chromatic_mode = chromatic_mode
 		self.chromatic_gtr_mode = chromatic_gtr_mode
 		self.diatonic_ns_mode = diatonic_ns_mode
 
 	class NoteInfo:
 
-		def __init__(self, index, channel, color):
-			self.index, self.channel, self.color = index, channel, color
+		def __init__(self, index, channel, root = False, highlight = False, in_scale = False, valid = False):
+			self.index = index
+			self.channel = channel
+			self.root = root
+			self.highlight = highlight
+			self.in_scale = in_scale
+			self.valid = valid
 
 	@property
 	def _extended_scale(self):
@@ -115,535 +534,20 @@ class MelodicPattern(object):
 		note = scale[index % scale_size]
 		return (octave, note)
 
-	def _color_for_note(self, note):
-		if note == self.scale[0]:
-			return self.base_note_color
-		elif note == self.scale[2] or note == self.scale[4]:
-			return self.scale_highlight_color
-		elif note in self.scale:
-			return self.scale_note_color
-		else:
-			return self.foreign_note_color
-
 	def note(self, x, y):
 		octave, note = self._octave_and_note(x, y)
-		index = 12 * octave + note + self.base_note
-		if index in self.valid_notes:
-			return self.NoteInfo(index, x, self._color_for_note(note))
-		else:
-			return self.NoteInfo(None, x, self.invalid_note_color)
+		index = self.base_note + 12 * octave + note 
+	 	root = note == self.scale[0]
+		highlight =  note == self.scale[2] or note == self.scale[4]
+		in_scale = note in self.scale
+		valid = index in self.valid_notes
+		return self.NoteInfo(
+			index, 
+			x,
+			root = root,
+			highlight = highlight,
+			in_scale = in_scale,
+			valid = valid
+		)
 
 
-class ScalesComponent(ControlSurfaceComponent):
-
-	def __init__(self, control_surface, *a, **k):
-		super(ScalesComponent, self).__init__(*a, **k)
-		self._modus_list = [Modus(MUSICAL_MODES[v], MUSICAL_MODES[v + 1]) for v in xrange(0, len(MUSICAL_MODES), 2)]
-		self._modus_names = [MUSICAL_MODES[v] for v in xrange(0, len(MUSICAL_MODES), 2)]
-		self._selected_modus = 0
-		self._selected_key = 0
-		self._is_chromatic = False
-		self._is_chromatic_gtr = False  # variable for chromatic guitar mode
-		self._is_diatonic = True
-		self._is_diatonic_ns = False  # variable for diatonic non-staggered mode
-		self._is_drumrack = False
-		self.is_absolute = False
-		self.is_quick_scale = False
-		self._control_surface = control_surface
-		self._skin = self._control_surface._skin
-		self.base_note_color = self._skin.AMBER_THIRD
-		self.scale_note_color = self._skin.GREEN_THIRD
-		self.scale_highlight_color = self._skin.GREEN_HALF
-		self._presets = InstrumentPresetsComponent()
-		self._matrix = None
-		self._octave_index = 3
-		# C  D  E  F  G  A  B
-		self._index = [0, 2, 4, 5, 7, 9, 11]
-		self._control_surface = control_surface
-		self._current_minor_mode = 1
-		self._minor_modes = [1, 13, 14]
-
-	def is_diatonic(self):
-		return not self._is_drumrack and (self._is_diatonic or self._is_diatonic_ns)
-
-	def is_chromatic(self):
-		return not self._is_drumrack and (self._is_chromatic or self._is_chromatic_gtr)
-
-	def is_diatonic_ns(self):
-		return self._is_diatonic_ns
-
-	def is_chromatic_gtr(self):
-		return self._is_chromatic_gtr
-
-	def is_drumrack(self):
-		return self._is_drumrack
-
-	def get_base_note_color(self):
-		return self.base_note_color
-
-	def get_scale_note_color(self):
-		return self.scale_note_color
-
-	def get_scale_highlight_color(self):
-		return self.scale_highlight_color
-	
-	def from_object(self, obj = None , obj2 = None):
-		datas = None
-		
-		if obj != None:
-			data = obj.name
-			d = string.split(data,'^')
-			if len(d)==2:
-				d = string.split(d[1],",")
-				if len(d)==4:
-					datas = d
-				
-		if obj2 != None and datas == None:
-			data = obj2.name
-			d = string.split(data,'^')
-			if len(d)==2:
-				d = string.split(d[1],",")
-				if len(d)==4:
-					datas = d
-				
-		if datas !=None and len(datas)==4:
-			try:	
-				self._selected_key = int(datas[0])
-			except ValueError:
-				self._selected_key = 0
-			try:	
-				self._selected_modus = int(datas[1])
-			except ValueError:
-				self._selected_modus = 0
-			try:	
-				self._octave_index = int(datas[2])
-			except ValueError:
-				self._octave_index = 3
-		
-			mode = datas[3]
-			if mode=="d":
-				self._is_drumrack = True
-				#self._is_chromatic = True
-				#self._is_diatonic = False
-				#self._is_diatonic_ns = False
-				#self._is_chromatic_gtr = False
-			else:
-				self._is_drumrack = False
-				if mode=="g":
-					self._is_chromatic_gtr = True
-					self._is_diatonic = False
-					self._is_diatonic_ns = False
-					self._is_chromatic = False
-				elif mode=="c":
-					self._is_chromatic = True
-					self._is_diatonic = False
-					self._is_diatonic_ns = False
-					self._is_chromatic_gtr = False
-				elif mode=="n":
-					self._is_diatonic_ns = True
-					self._is_diatonic = False
-					self._is_chromatic_gtr = False
-					self._is_chromatic = False
-				else:
-					self._is_diatonic = True
-					self._is_diatonic_ns = False
-					self._is_chromatic_gtr = False
-					self._is_chromatic = False
-
-	def get_string(self):
-		mode = "c";
-		if(self._is_drumrack):
-			mode="d"
-		else:
-			mode="a"
-			if(self._is_chromatic):
-				mode="c"
-			if(self._is_chromatic_gtr):
-				mode="g"
-			if(self._is_diatonic):
-				mode="a"
-			if(self._is_diatonic_ns):
-				mode="n"
-		return(str(self._selected_key)+","+str(self._selected_modus)+","+str(self._octave_index)+","+mode)
-	
-	def update_object_name(self, obj , obj2 = None):
-		scale_string = self.get_string()
-		if obj != None:
-			name = obj.name
-			data = string.split(name," ^")
-			obj.name = data[0] + " ^" + scale_string
-		if obj2 != None:
-			name = obj2.name
-			data = string.split(name," ^")
-			obj2.name = data[0] + " ^" + scale_string
-			
-	def set_diatonic(self, interval=-1):
-		self._is_drumrack = False
-		self._is_chromatic = False
-		self._is_chromatic_gtr = False
-		self._is_diatonic = True
-		self._is_diatonic_ns = False
-		if interval != -1:
-			self._presets.set_interval(interval)
-
-	def set_diatonic_ns(self):
-		self._is_drumrack = False
-		self._is_chromatic = False
-		self._is_chromatic_gtr = False
-		self._is_diatonic = False
-		self._is_diatonic_ns = True
-
-	def set_chromatic(self):
-		self._is_drumrack = False
-		self._is_chromatic = True
-		self._is_chromatic_gtr = False
-		self._is_diatonic = False
-		self._is_diatonic_ns = False
-
-	def set_chromatic_gtr(self):
-		self._is_drumrack = False
-		self._is_chromatic = False
-		self._is_chromatic_gtr = True
-		self._is_diatonic = False
-		self._is_diatonic_ns = False
-
-	def set_drumrack(self, value):
-		self._is_drumrack = value
-
-	@property
-	def notes(self):
-		return self.modus.scale(self._selected_key).notes
-
-	@property
-	def modus(self):
-		return self._modus_list[self._selected_modus]
-
-	def set_key(self, n):
-		self._selected_key = n % 12
-
-
-	def set_octave_index(self, n):
-		self._octave_index = n
-
-	def set_selected_modus(self, n):
-		if n > -1 and n < len(self._modus_list):
-			self._selected_modus = n
-			
-
-	def _set_preset(self, n):
-		if n > -1 and n < 6:
-			self._selected_modus = n
-
-	def set_matrix(self, matrix):
-		if matrix:
-			matrix.reset()
-		if (matrix != self._matrix):
-			if (self._matrix != None):
-				self._matrix.remove_value_listener(self._matrix_value)
-			self._matrix = matrix
-			if (self._matrix != None):
-				self._matrix.add_value_listener(self._matrix_value)
-			self.update()
-
-
-	def _matrix_value(self, value, x, y, is_momentary):  # matrix buttons listener
-		if self.is_enabled():
-			if ((value != 0) or (not is_momentary)):
-				# modes
-				if y == 0:
-					if not self.is_drumrack():
-						if x == 0:
-							self.is_absolute = not self.is_absolute
-							if self.is_absolute:
-								self._control_surface.show_message("absolute root")
-							else:
-								self._control_surface.show_message("relative root")
-						if x == 1:
-							self._presets.toggle_orientation()
-					if x == 2:
-						self.set_chromatic_gtr()
-						self._presets.set_orientation('horizontal')
-						self._control_surface.show_message("mode: chromatic gtr")
-					if x == 3:
-						self.set_diatonic_ns()
-						self._presets.set_orientation('horizontal')
-						self._control_surface.show_message("mode: diatonic not staggered")
-					if x == 4:
-						self.set_diatonic(2)
-						self._presets.set_orientation('vertical')
-						self._control_surface.show_message("mode: diatonic vertical (chords)")
-					if x == 5:
-						self.set_diatonic(3)
-						self._presets.set_orientation('horizontal')
-						self._control_surface.show_message("mode: diatonic")
-					if x == 6:
-						self.set_chromatic()
-						self._presets.set_orientation('horizontal')
-						self._control_surface.show_message("mode: chromatic")
-					if x == 7:
-						self.set_drumrack(True)
-						self._control_surface.show_message("mode: drumrack")
-				
-				keys = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
-				# root note
-				if not self.is_drumrack():
-					root = -1
-					selected_key = self._selected_key
-					selected_modus = self._selected_modus
-					if y == 1 and x in[0, 1, 3, 4, 5] or y == 2 and x < 7:
-						root = [0, 2, 4, 5, 7, 9, 11, 12][x]
-						if y == 1:
-							root = root + 1
-						self._control_surface.show_message("root "+keys[root])
-
-					# if root == selected_key:#alternate minor/major
-					# 	if selected_modus==0:
-					# 		selected_modus = self._current_minor_mode
-					# 	elif selected_modus in [1,13,14]:
-					# 		self._current_minor_mode = selected_modus
-					# 		selected_modus = 0
-					# 	elif selected_modus==11:
-					# 		selected_modus = 12
-					# 	elif selected_modus==12:
-					# 		selected_modus = 11
-
-					if y == 2 and x == 7:  # nav circle of 5th right
-						root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS, selected_key) + 1 + 12) % 12]
-						self._control_surface.show_message("circle of 5ths -> "+keys[selected_key]+" "+str(self._modus_names[selected_modus])+" => "+keys[root]+" "+str(self._modus_names[selected_modus]))
-					if y == 1 and x == 6:  # nav circle of 5th left
-						root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS, selected_key) - 1 + 12) % 12]
-						self._control_surface.show_message("circle of 5ths <- "+keys[selected_key]+" "+str(self._modus_names[selected_modus])+" => "+keys[root]+" "+str(self._modus_names[selected_modus]))
-					if y == 1 and x == 2:  # relative scale
-						if self._selected_modus == 0:
-							selected_modus = self._current_minor_mode
-							root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS, selected_key) + 3) % 12]
-						elif self._selected_modus in [1, 13, 14]:
-							self._current_minor_mode = selected_modus
-							selected_modus = 0
-							root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS, selected_key) - 3 + 12) % 12]
-						elif self._selected_modus == 11:
-							selected_modus = 12
-							root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS, selected_key) + 3) % 12]
-						elif self._selected_modus == 12:
-							selected_modus = 11
-							root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS, selected_key) - 3 + 12) % 12]
-						self._control_surface.show_message("Relative scale : "+keys[root]+" "+str(self._modus_names[selected_modus]))
-					if root != -1:
-						self.set_selected_modus(selected_modus)
-						self.set_key(root)
-
-				if y == 1 and x == 7 and not self.is_drumrack():
-					self.is_quick_scale = not self.is_quick_scale
-					self._control_surface.show_message("Quick scale")
-				# octave
-				if y == 3:
-					self._octave_index = x
-					self._control_surface.show_message("octave : "+str(self._octave_index))
-				# modus
-				if y > 3 and not self.is_drumrack():
-					self.set_selected_modus((y - 4) * 8 + x)
-					self._control_surface.show_message("mode : "+str(self._modus_names[self._selected_modus]))
-					
-
-				self.update()
-			#self._control_surface.show_message("mode : "+self.get_string())
-
-	def tuple_idx(self, tuple, obj):
-		for i in xrange(0, len(tuple)):
-			if (tuple[i] == obj):
-				return i
-		return(False)
-
-	def set_osd(self, osd):
-		self._osd = osd
-
-	def _update_OSD(self):
-		if self._osd != None:
-			self._osd.attributes[0] = ""
-			self._osd.attribute_names[0] = ""
-			self._osd.attributes[1] = MUSICAL_MODES[self._selected_modus * 2]
-			self._osd.attribute_names[1] = "Scale"
-			self._osd.attributes[2] = KEY_NAMES[self._selected_key % 12]
-			self._osd.attribute_names[2] = "Root Note"
-			self._osd.attributes[3] = self._octave_index
-			self._osd.attribute_names[3] = "Octave"
-			self._osd.attributes[4] = " "
-			self._osd.attribute_names[4] = " "
-			self._osd.attributes[5] = " "
-			self._osd.attribute_names[5] = " "
-			self._osd.attributes[6] = " "
-			self._osd.attribute_names[6] = " "
-			self._osd.attributes[7] = " "
-			self._osd.attribute_names[7] = " "
-			self._osd.update()
-
-	def update(self):
-		if self.is_enabled():
-			self._update_OSD()
-			for button, (x, y) in self._matrix.iterbuttons():
-				button.use_default_message()
-				button.set_enabled(True)
-				button.force_next_send()
-
-			self._matrix.get_button(7, 2).set_on_off_values(self._skin.off, self._skin.off)
-			self._matrix.get_button(7, 2).turn_off()
-
-			absolute_button = self._matrix.get_button(0, 0)
-			orientation_button = self._matrix.get_button(1, 0)
-			quick_scale_button = self._matrix.get_button(7, 1)
-
-			drumrack_button = self._matrix.get_button(7, 0)
-			drumrack_button.set_on_off_values(self._skin.RED_FULL, self._skin.RED_THIRD)
-			drumrack_button.force_next_send()
-
-			chromatic_button = self._matrix.get_button(6, 0)
-			chromatic_button.set_on_off_values(self._skin.RED_FULL, self._skin.RED_THIRD)
-			chromatic_button.force_next_send()
-
-			diatonic_button_4th = self._matrix.get_button(5, 0)
-			diatonic_button_4th.set_on_off_values(self._skin.RED_FULL, self._skin.RED_THIRD)
-			diatonic_button_4th.force_next_send()
-
-			diatonic_button_3rd = self._matrix.get_button(4, 0)
-			diatonic_button_3rd.set_on_off_values(self._skin.RED_FULL, self._skin.RED_THIRD)
-			diatonic_button_3rd.force_next_send()
-
-			chromatic_gtr_button = self._matrix.get_button(2, 0)
-			chromatic_gtr_button.set_on_off_values(self._skin.RED_FULL, self._skin.RED_THIRD)
-			chromatic_gtr_button.force_next_send()
-
-			diatonic_ns_button = self._matrix.get_button(3, 0)
-			diatonic_ns_button.set_on_off_values(self._skin.RED_FULL, self._skin.RED_THIRD)
-			diatonic_ns_button.force_next_send()
-
-			# circle of 5th nav right
-			button = self._matrix.get_button(7, 2)
-			button.set_on_off_values(self._skin.RED_THIRD, self._skin.RED_THIRD)
-			button.force_next_send()
-			button.turn_on()
-			# circle of 5th nav left
-			button = self._matrix.get_button(6, 1)
-			button.set_on_off_values(self._skin.RED_THIRD, self._skin.RED_THIRD)
-			button.force_next_send()
-			button.turn_on()
-			# relative scale button
-			button = self._matrix.get_button(2, 1)
-			button.set_on_off_values(self._skin.RED_THIRD, self._skin.RED_THIRD)
-			button.force_next_send()
-			button.turn_on()
-
-			# mode buttons
-			if self.is_drumrack():
-				drumrack_button.turn_on()
-				chromatic_gtr_button.turn_off()
-				diatonic_ns_button.turn_off()
-				chromatic_button.turn_off()
-				diatonic_button_4th.turn_off()
-				diatonic_button_3rd.turn_off()
-				absolute_button.set_on_off_values(self._skin.off, self._skin.off)
-				absolute_button.turn_off()
-				orientation_button.set_on_off_values(self._skin.off, self._skin.off)
-				orientation_button.turn_off()
-				quick_scale_button.set_on_off_values(self._skin.off, self._skin.off)
-				quick_scale_button.turn_off()
-			else:
-				quick_scale_button.set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_THIRD)
-				if self.is_quick_scale:
-					quick_scale_button.turn_on()
-				else:
-					quick_scale_button.turn_off()
-				orientation_button.set_on_off_values(self._skin.AMBER_THIRD, self._skin.AMBER_FULL)
-				if self._presets.is_horizontal:
-					orientation_button.turn_on()
-				else:
-					orientation_button.turn_off()
-
-				absolute_button.set_on_off_values(self._skin.AMBER_THIRD, self._skin.AMBER_FULL)
-				if self.is_absolute:
-					absolute_button.turn_on()
-				else:
-					absolute_button.turn_off()
-
-				drumrack_button.turn_off()
-				if self.is_chromatic():
-					if self.is_chromatic_gtr():
-						chromatic_button.turn_off()
-						chromatic_gtr_button.turn_on()
-					else:
-						chromatic_button.turn_on()
-						chromatic_gtr_button.turn_off()
-					diatonic_button_4th.turn_off()
-					diatonic_button_3rd.turn_off()
-					diatonic_ns_button.turn_off()
-				else:
-					chromatic_button.turn_off()
-					chromatic_gtr_button.turn_off()
-					if self.is_diatonic_ns():
-						diatonic_button_4th.turn_off()
-						diatonic_button_3rd.turn_off()
-						diatonic_ns_button.turn_on()
-					else:
-						if self._presets.interval == 3:
-							diatonic_button_4th.turn_on()
-							diatonic_button_3rd.turn_off()
-						else:
-							diatonic_button_4th.turn_off()
-							diatonic_button_3rd.turn_on()
-						diatonic_ns_button.turn_off()
-
-			# Octave
-			scene_index = 3
-			for track_index in range(8):
-				button = self._matrix.get_button(track_index, scene_index)
-				button.set_on_off_values(self._skin.RED_FULL, self._skin.RED_THIRD)
-				if track_index == self._octave_index:
-					button.turn_on()
-				else:
-					button.turn_off()
-
-			if self.is_drumrack():
-				# clear scales buttons
-				for scene_index in range(1, 3):
-					for track_index in range(8):
-						button = self._matrix.get_button(track_index, scene_index)
-						button.set_on_off_values(self._skin.GREEN_FULL, self._skin.off)
-						button.turn_off()
-				for scene_index in range(4, 8):
-					for track_index in range(8):
-						button = self._matrix.get_button(track_index, scene_index)
-						button.set_on_off_values(self._skin.GREEN_FULL, self._skin.off)
-						button.turn_off()
-			else:
-				# root note button
-				scene_index = 1
-				for track_index in [0, 1, 3, 4, 5]:
-					button = self._matrix.get_button(track_index, scene_index)
-					if track_index in [0, 1, 3, 4, 5]:
-						button.set_on_off_values(self._skin.AMBER_FULL, self._skin.AMBER_THIRD)
-					if self._selected_key % 12 == (self._index[track_index] + 1) % 12:
-						button.turn_on()
-					else:
-						button.turn_off()
-
-				scene_index = 2
-				for track_index in range(7):
-					button = self._matrix.get_button(track_index, scene_index)
-					button.set_on_off_values(self._skin.AMBER_FULL, self._skin.AMBER_THIRD)
-					if self._selected_key % 12 == self._index[track_index] % 12:
-						button.turn_on()
-					else:
-						button.turn_off()
-
-				# modus buttons
-				for scene_index in range(4):
-					for track_index in range(8):
-						button = self._matrix.get_button(track_index, scene_index + 4)
-						if scene_index * 8 + track_index < len(self._modus_list):
-							button.set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_THIRD)
-							if self._selected_modus == scene_index * 8 + track_index:
-								button.turn_on()
-							else:
-								button.turn_off()
-						else:
-							button.set_on_off_values(self._skin.off, self._skin.off)
-							button.turn_off()

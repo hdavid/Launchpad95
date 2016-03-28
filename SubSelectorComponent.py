@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from _Framework.ModeSelectorComponent import ModeSelectorComponent
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
@@ -24,7 +22,6 @@ class SubSelectorComponent(ModeSelectorComponent):
 		assert isinstance(session, SessionComponent)
 		ModeSelectorComponent.__init__(self)
 		self._control_surface = control_surface
-		self._skin = self._control_surface._skin
 		self._session = session
 		self._mixer = SpecialMixerComponent(matrix.width())
 		self._matrix = matrix
@@ -102,7 +99,7 @@ class SubSelectorComponent(ModeSelectorComponent):
 	def release_controls(self):
 		for track in range(self._matrix.width()):
 			for row in range(self._matrix.height()):
-				self._matrix.get_button(track, row).set_on_off_values(127, self._skin.off)
+				self._matrix.get_button(track, row).set_on_off_values(127, "DefaultButton.Disabled")
 
 			strip = self._mixer.channel_strip(track)
 			strip.set_default_buttons(None, None, None, None)
@@ -122,14 +119,30 @@ class SubSelectorComponent(ModeSelectorComponent):
 		if self.is_enabled():
 			if (self._modes_buttons != None):
 				for index in range(len(self._modes_buttons)):
-					self._modes_buttons[index].set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_THIRD)
+					button = self._modes_buttons[index]
+					if index == 0:
+						button.set_on_off_values("Mixer.Volume")
+					elif index == 1:
+						button.set_on_off_values("Mixer.Pan")
+					elif index == 2:
+						button.set_on_off_values("Mixer.Sends")
+					elif index == 3:
+						button.set_on_off_values("Mixer.Sends")
+					elif index == 4:
+						button.set_on_off_values("Mixer.Stop")
+					elif index == 5:
+						button.set_on_off_values("Mixer.Mute")
+					elif index == 6:
+						button.set_on_off_values("Mixer.Solo")
+					elif index == 7:
+						button.set_on_off_values("Mixer.Arm")
 					if (index == self._mode_index):
-						self._modes_buttons[index].turn_on()
+						button.turn_on()
 					else:
-						self._modes_buttons[index].turn_off()
+						button.turn_off()
 
 			for button in self._side_buttons:
-				button.set_on_off_values(127, self._skin.off)
+				button.set_on_off_values(127, "DefaultButton.Disabled")
 				button.turn_off()
 
 			for index in range(self._matrix.width()):
@@ -166,15 +179,22 @@ class SubSelectorComponent(ModeSelectorComponent):
 			strip.set_volume_control(None)
 			self._sliders[track].release_parameter()
 			for row in range(self._matrix.height()):
-				full_value = self._skin.GREEN_THIRD
-				third_value = self._skin.GREEN_FULL
-				if row == trkon_index:
-					full_value = self._skin.AMBER_FULL
-					third_value = self._skin.AMBER_THIRD
-				elif row > 3:
-					full_value = self._skin.RED_FULL
-					third_value = self._skin.RED_THIRD
-				self._matrix.get_button(track, row).set_on_off_values(full_value, third_value)
+				if row == 0:
+					self._matrix.get_button(track, row).set_on_off_values("Mixer.Volume")
+				elif row == 1:
+					self._matrix.get_button(track, row).set_on_off_values("Mixer.Pan")
+				elif row == 2:
+					self._matrix.get_button(track, row).set_on_off_values("Mixer.Sends")
+				elif row == 3:
+					self._matrix.get_button(track, row).set_on_off_values("Mixer.Sends")
+				elif row == 4:
+					self._matrix.get_button(track, row).set_on_off_values("Mixer.Stop")
+				elif row == 5:
+					self._matrix.get_button(track, row).set_on_off_values("Mixer.Mute")
+				elif row == 6:
+					self._matrix.get_button(track, row).set_on_off_values("Mixer.Solo")
+				elif row == 7:
+					self._matrix.get_button(track, row).set_on_off_values("Mixer.Arm")
 
 			strip.set_default_buttons(self._matrix.get_button(track, 0), self._matrix.get_button(track, 1), self._matrix.get_button(track, 2), self._matrix.get_button(track, 3))
 			stop_buttons.append(self._matrix.get_button(track, 4))
@@ -183,12 +203,24 @@ class SubSelectorComponent(ModeSelectorComponent):
 			strip.set_arm_button(self._matrix.get_button(track, 7))
 
 		for button in self._side_buttons:
-			if list(self._side_buttons).index(button) == trkon_index - 4:
-				button.set_on_off_values(self._skin.AMBER_FULL, self._skin.AMBER_THIRD)
-			else:
-				button.set_on_off_values(self._skin.RED_FULL, self._skin.RED_THIRD)
-			button.set_force_next_value()
-			button.turn_off()
+			if row == 0:
+				button.set_on_off_values("Mixer.Volume")
+			elif row == 1:
+				button.set_on_off_values("Mixer.Pan")
+			elif row == 2:
+				button.set_on_off_values("Mixer.Sends")
+			elif row == 3:
+				button.set_on_off_values("Mixer.Sends")
+			elif row == 4:
+				button.set_on_off_values("Mixer.Stop")
+			elif row == 5:
+				button.set_on_off_values("Mixer.Mute")
+			elif row == 6:
+				button.set_on_off_values("Mixer.Solo")
+			elif row == 7:
+				button.set_on_off_values("Mixer.Arm")
+			button.force_next_send()
+			button.turn_on()
 
 		self._session.set_stop_track_clip_buttons(tuple(stop_buttons))
 		self._session.set_stop_all_clips_button(self._side_buttons[0])
@@ -204,7 +236,7 @@ class SubSelectorComponent(ModeSelectorComponent):
 			strip.set_send_controls((None, None))
 			strip.set_pan_control(None)
 			for row in range(self._matrix.height()):
-				self._matrix.get_button(track, row).set_on_off_values(self._skin.GREEN_FULL, self._skin.off)
+				self._matrix.get_button(track, row).set_on_off_values("Mixer.VolumeSlider")
 
 			self._sliders[track].set_mode(SLIDER_MODE_VOLUME)
 			self._sliders[track].set_value_map(VOL_VALUE_MAP)
@@ -224,7 +256,7 @@ class SubSelectorComponent(ModeSelectorComponent):
 			strip.set_send_controls((None, None))
 			strip.set_volume_control(None)
 			for row in range(self._matrix.height()):
-				self._matrix.get_button(track, row).set_on_off_values(self._skin.AMBER_FULL, self._skin.off)
+				self._matrix.get_button(track, row).set_on_off_values("Mixer.PanSlider")
 
 			self._sliders[track].set_mode(SLIDER_MODE_PAN)
 			self._sliders[track].set_value_map(PAN_VALUE_MAP)
@@ -244,7 +276,7 @@ class SubSelectorComponent(ModeSelectorComponent):
 			strip.set_volume_control(None)
 			strip.set_pan_control(None)
 			for row in range(self._matrix.height()):
-				self._matrix.get_button(track, row).set_on_off_values(self._skin.RED_FULL, self._skin.off)
+				self._matrix.get_button(track, row).set_on_off_values("Mixer.SendsSlider")
 
 			self._sliders[track].set_mode(SLIDER_MODE_VOLUME)
 			self._sliders[track].set_value_map(SEND_VALUE_MAP)
@@ -264,7 +296,7 @@ class SubSelectorComponent(ModeSelectorComponent):
 			strip.set_volume_control(None)
 			strip.set_pan_control(None)
 			for row in range(self._matrix.height()):
-				self._matrix.get_button(track, row).set_on_off_values(self._skin.RED_FULL, self._skin.off)
+				self._matrix.get_button(track, row).set_on_off_values("Mixer.SendsSlider")
 
 			self._sliders[track].set_mode(SLIDER_MODE_VOLUME)
 			self._sliders[track].set_value_map(SEND_VALUE_MAP)

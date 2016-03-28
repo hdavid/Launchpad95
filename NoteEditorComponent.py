@@ -9,26 +9,25 @@ import time
 
 class NoteEditorComponent(ControlSurfaceComponent):
 
-	def __init__(self, step_sequencer, matrix, control_surface):
+	def __init__(self, stepsequencer = None, matrix = None, control_surface = None):
 		ControlSurfaceComponent.__init__(self)
 		self.set_enabled(False)
-		self._step_sequencer = step_sequencer
+		self._stepsequencer = stepsequencer
 		self._control_surface = control_surface
-		self._skin = self._control_surface._skin
 		self._clip = None
 		self._note_cache = None
 		self._playhead = None
 
 		# metronome
 		self.display_metronome = True
-		self.metronome_color = self._skin.note_editor.metronome
+		self.metronome_color = "StepSequencer.NoteEditor.Metronome"
 
 		# Velocity colour map. this must remain of lengh 3.
 		self.velocity_map = [70, 90, 110]
-		self.velocity_color_map = [self._skin.note_editor.velocity_1, self._skin.note_editor.velocity_2, self._skin.note_editor.velocity_3]
+		self.velocity_color_map = ["StepSequencer.NoteEditor.Velocity0", "StepSequencer.NoteEditor.Velocity1", "StepSequencer.NoteEditor.Velocity2"]
 		# other colors
-		self.muted_note_color = self._skin.note_editor.muted
-		self.playing_note_color = self._skin.note_editor.playing
+		self.muted_note_color = "StepSequencer.NoteEditor.Muted"
+		self.playing_note_color = "StepSequencer.NoteEditor.Playing"
 
 		self.long_button_press = 0.500
 
@@ -38,12 +37,6 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		self._velocity_button = None
 		self._velocity_shift_button = None
 
-		# matrix
-		self.set_button_matrix(matrix)
-		self._width = self._matrix.width()
-		self._height = self._matrix.height()
-		self._grid_buffer = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]]
-		self._grid_back_buffer = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]]
 
 		# time
 		self._page = 0
@@ -72,6 +65,9 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		# modes
 		self._is_mute_shifted = False
 		self._is_mutlinote = False
+		if matrix != None:
+			self.set_matrix(matrix)
+
 
 	def disconnect(self):
 		self._matrix = None
@@ -156,39 +152,44 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		self._update_matrix()
 
 	def update(self, force=False):
-		if force:
-			self._force_update = True
 		if self.is_enabled():
+			if force:
+				self._force_update = True
 			self._update_velocity_button()
 			self._update_matrix()
 
 	def _display_selected_page(self):
 		for i in range(0, self._height):
-			self._grid_back_buffer[self._page % self.width][i] = self._skin.note_editor.page_marker
+			self._grid_back_buffer[self._page % self.width][i] = "StepSequencer.NoteEditor.PageMarker"
 
 	def _display_note_markers(self):
 		for i in range(0, self.height / self.number_of_lines_per_note):
 			if self._key_index_is_root_note[i]:
 				for j in range(0, self.number_of_lines_per_note):
-					self._grid_back_buffer[0][self.height - i * self.number_of_lines_per_note - j - 1] = self._skin.note_editor.note_marker
-					self._grid_back_buffer[1][self.height - i * self.number_of_lines_per_note - j - 1] = self._skin.note_editor.note_marker
-					self._grid_back_buffer[2][self.height - i * self.number_of_lines_per_note - j - 1] = self._skin.note_editor.note_marker
+					self._grid_back_buffer[0][self.height - i * self.number_of_lines_per_note - j - 1] = "StepSequencer.NoteEditor.NoteMarker"
+					self._grid_back_buffer[1][self.height - i * self.number_of_lines_per_note - j - 1] = "StepSequencer.NoteEditor.NoteMarker"
+					self._grid_back_buffer[2][self.height - i * self.number_of_lines_per_note - j - 1] = "StepSequencer.NoteEditor.NoteMarker"
 			elif self._key_index_is_in_scale[i]:
 				for j in range(0, self.number_of_lines_per_note):
-					self._grid_back_buffer[0][self.height - i * self.number_of_lines_per_note - j - 1] = self._skin.note_editor.note_marker
+					self._grid_back_buffer[0][self.height - i * self.number_of_lines_per_note - j - 1] = "StepSequencer.NoteEditor.NoteMarker"
 # MATRIX
 
-	def set_button_matrix(self, matrix):
-		assert isinstance(matrix, (ButtonMatrixElement, type(None)))
+	def set_matrix(self, matrix):
+		#assert isinstance(matrix, (ButtonMatrixElement, type(None)))
 		if (matrix != self._matrix):
 			if (self._matrix != None):
 				self._matrix.remove_value_listener(self._matrix_value)
 			self._matrix = matrix
 			if (self._matrix != None):
 				self._matrix.add_value_listener(self._matrix_value)
+				self._width = self._matrix.width()
+				#self._height = self._matrix.height()
+				self._grid_buffer = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]]
+				self._grid_back_buffer = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]]
+			
 
 	def _update_matrix(self):  # step grid LEDs are updated here
-		if self.is_enabled():
+		if self.is_enabled() and self._matrix!=None:
 			# clear back buffer
 			for x in range(self.width):
 				for y in range(self.height):
@@ -215,7 +216,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 				# add play positition in amber
 				if(self.display_metronome):
 					if self._clip.is_playing and self.song().is_playing:
-						self._grid_back_buffer[play_x_position][play_y_position] = self.metronome_color
+						self._grid_back_buffer[play_x_position][play_y_position] = "StepSequencer.NoteEditor.Metronome"
 
 				if(self._display_page):
 					self._display_selected_page()
@@ -240,7 +241,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 						try:
 							note_idx = self.key_indexes.index(note_key)
 						except ValueError:
-							note_idx = -1
+							note_idx = 0
 						note_grid_y_base = note_idx * self.number_of_lines_per_note
 						if(note_grid_y_base >= 0):
 							note_grid_y_base = (7 - note_grid_y_base) - (self.number_of_lines_per_note - 1)
@@ -291,12 +292,11 @@ class NoteEditorComponent(ControlSurfaceComponent):
 					self._display_selected_page()
 
 			# caching : compare back buffer to buffer and update grid. this should minimize midi traffic quite a bit.
-
 			for x in range(self.width):
 				for y in range(self.height):
 					if(self._grid_back_buffer[x][y] != self._grid_buffer[x][y] or self._force_update):
 						self._grid_buffer[x][y] = self._grid_back_buffer[x][y]
-						self._matrix.send_value(x, y, self._grid_buffer[x][y])
+						self._matrix.get_button(x, y).set_light(self._grid_buffer[x][y])
 			self._force_update = False
 
 	def request_display_page(self):
@@ -306,7 +306,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 	def _matrix_value(self, value, x, y, is_momentary):  # matrix buttons listener
 		if self.is_enabled() and y <= self.height:
 			if ((value != 0) or (not is_momentary)):
-				self._step_sequencer._was_velocity_shifted = False
+				self._stepsequencer._was_velocity_shifted = False
 				self._matrix_value_message([value, x, y, is_momentary])
 
 	def _matrix_value_message(self, values):  # value, x, y, is_momentary): #matrix buttons listener
@@ -322,7 +322,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		assert isinstance(is_momentary, type(False))
 
 		if self.is_enabled() and self._clip == None:
-			self._step_sequencer.create_clip()
+			self._stepsequencer.create_clip()
 
 		elif self.is_enabled() and self._clip != None and y < self.height:
 
@@ -382,15 +382,13 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		if self.is_enabled() and self._velocity_button != None:
 			if self._clip != None:
 				if self._is_velocity_shifted:
-					self._velocity_button.set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_THIRD)
+					self._velocity_button.set_on_off_values("StepSequencer.NoteEditor.VelocityShifted")
 					self._velocity_button.turn_on()
 				else:
-					self._velocity_button.set_on_off_values(self.velocity_color_map[self._velocity_index], self._skin.off)
-					self._velocity_button.turn_on()
+					self._velocity_button.set_light("StepSequencer.NoteEditor.Velocity"+str(self._velocity_index))
 			else:
-				self._velocity_button.set_on_off_values(self._skin.off, self._skin.off)
-				self._velocity_button.turn_off()
-
+				self._velocity_button.set_light("DefaultButton.Disabled")
+				
 	def set_velocity_button(self, button):
 		assert (isinstance(button, (ButtonElement, type(None))))
 		if (button != self._velocity_button):
@@ -410,19 +408,19 @@ class NoteEditorComponent(ControlSurfaceComponent):
 					# cycle thru velocities
 					self._velocity_index = (len(self.velocity_map) + self._velocity_index + 1) % len(self.velocity_map)
 					self._velocity = self.velocity_map[self._velocity_index]
-				self._step_sequencer._track_controller._implicit_arm = False
+				self._stepsequencer._track_controller._implicit_arm = False
 				if self._is_velocity_shifted:
-					self._step_sequencer._track_controller._do_implicit_arm(False)
+					self._stepsequencer._track_controller._do_implicit_arm(False)
 				self._is_velocity_shifted = False
 				self._update_velocity_button()
 			if ((value is not 0) or (not sender.is_momentary())):
 				# button pressed
 				self._velocity_notes_pressed = 0
 				self._is_velocity_shifted = True
-				self._step_sequencer._track_controller._implicit_arm = True
-				self._step_sequencer._track_controller._do_implicit_arm(True)
+				self._stepsequencer._track_controller._implicit_arm = True
+				self._stepsequencer._track_controller._do_implicit_arm(True)
 				self._velocity_last_press = time.time()
-			self._step_sequencer._note_selector.update()
+			self._stepsequencer._note_selector.update()
 
 	# MUTE SHIFT
 	# def _update_mute_shift_button(self):
@@ -434,8 +432,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 	# 				else:
 	# 					self._mute_shift_button.turn_off()
 	# 			else:
-	# 				self._mute_shift_button.set_on_off_values(self._skin.off, self._skin.off)
-	# 				self._mute_shift_button.turn_off()
+	# 				self._mute_shift_button.set_light("DefaultButton.Disabled")
 	# 
 	# 	def set_mute_shift_button(self, button):
 	# 		assert (isinstance(button, (ButtonElement, type(None))))

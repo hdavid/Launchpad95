@@ -1,64 +1,109 @@
-# -*- coding: utf-8 -*-
-
-from _Framework.ButtonElement import *  # noqa
-
+from _Framework.Skin import SkinColorMissingError
+from _Framework.ButtonElement import ButtonElement, ON_VALUE, OFF_VALUE, ButtonValue
 
 class ConfigurableButtonElement(ButtonElement):
+	"""
+	Special button class (adapted from Push script for LP Pro)
+	that can be configured with custom on- and off-values.
+	
+	A ConfigurableButtonElement can have states other than True or
+	False, which can be defined by setting the 'states' property.
+	Thus 'set_light' can take any state or skin color.
+	"""
+	default_states = {True: 'DefaultButton.On', False: 'DefaultButton.Disabled'}
+	send_depends_on_forwarding = False
 
-	""" Special button class that can be configured with custom on- and off-values """
+	def __init__(self, is_momentary, msg_type, channel, identifier, skin = None, default_states = None, control_surface = None, *a, **k):
+		self._control_surface = control_surface
+		super(ConfigurableButtonElement, self).__init__(is_momentary, msg_type, channel, identifier, skin = skin, **k)
+		if default_states is not None:
+			self.default_states = default_states
+		self.states = dict(self.default_states)
 
-	def __init__(self, is_momentary, msg_type, channel, identifier, off_value = 4):
-		ButtonElement.__init__(self, is_momentary, msg_type, channel, identifier)
-		self._on_value = 127
-		self._off_value = off_value
-		self._is_enabled = True
-		self._is_notifying = False
-		self._force_next_value = False
-		self._pending_listeners = []
+	@property
+	def _on_value(self):
+		return self.states[True]
 
-	def set_on_off_values(self, on_value, off_value):
-		assert (on_value in range(128))
-		assert (off_value in range(128))
-		self.clear_send_cache()
-		self._on_value = on_value
-		self._off_value = off_value
+	@property
+	def _off_value(self):
+		return self.states[False]
 
-	def set_force_next_value(self):
-		self._force_next_value = True
+	@property
+	def on_value(self):
+		return self._try_fetch_skin_value(self._on_value)
 
-	def set_enabled(self, enabled):
-		self._is_enabled = enabled
+	@property
+	def off_value(self):
+		return self._try_fetch_skin_value(self._off_value)
 
-	def turn_on(self):
-		self.send_value(self._on_value)
-
-	def turn_off(self):
-		self.send_value(self._off_value)
+	def _try_fetch_skin_value(self, value):
+		try:
+			return self._skin[value]
+		except SkinColorMissingError:
+			return value
 
 	def reset(self):
-		self.send_value(4)
+		self.set_light('DefaultButton.Disabled')
+		self.reset_state()
 
-	def add_value_listener(self, callback, identify_sender=False):
-		if not self._is_notifying:
-			ButtonElement.add_value_listener(self, callback, identify_sender)
+	def reset_state(self):
+		self.states = dict(self.default_states)
+		super(ConfigurableButtonElement, self).reset_state()
+		self.set_enabled(True)
+
+	def set_on_off_values(self, on_value, off_value = None):
+		if off_value == None:
+			self.states[True] = str(on_value)+".On"
+			self.states[False] = str(on_value)+".Off"
 		else:
-			self._pending_listeners.append((callback, identify_sender))
+			self.states[True] = on_value
+			self.states[False] = off_value
 
-	def receive_value(self, value):
-		self._is_notifying = True
-		ButtonElement.receive_value(self, value)
-		self._is_notifying = False
-		for listener in self._pending_listeners:
-			self.add_value_listener(listener[0], listener[1])
+	def set_enabled(self, enabled):
+		self.suppress_script_forwarding = not enabled
 
-		self._pending_listeners = []
+	def is_enabled(self):
+		return not self.suppress_script_forwarding
 
-	def send_value(self, value, force=False):
-		ButtonElement.send_value(self, value, force or self._force_next_value)
-		self._force_next_value = False
+	def set_light(self, value):
+		try:
+			self._draw_skin(value)
+		except SkinColorMissingError:
+			super(ButtonElement, self).set_light(value)
 
-	def install_connections(self, install_translation_callback, install_mapping_callback, install_forwarding_callback):
-		if self._is_enabled:
-			ButtonElement.install_connections(self, install_translation_callback, install_mapping_callback, install_forwarding_callback)
-		elif self._msg_channel != self._original_channel or self._msg_identifier != self._original_identifier:
-			install_translation_callback(self._msg_type, self._original_identifier, self._original_channel, self._msg_identifier, self._msg_channel)
+	def send_value(self, value, **k):
+		if value is ON_VALUE:
+			self._do_send_on_value(**k)
+		elif value is OFF_VALUE:
+			self._do_send_off_value(**k)
+		elif type(value) is int:
+			super(ConfigurableButtonElement, self).send_value(value, **k)
+		else:
+			self._draw_skin(value)
+ 	
+	def force_next_send(self):
+		"""
+		Enforces sending the next value regardless of wether the
+		control is mapped to the script.
+		"""
+		self._force_next_send = True
+		self.clear_send_cache()
+		
+		
+	def _do_send_on_value(self, **k):
+		if type(self._on_value) is int:
+			super(ConfigurableButtonElement, self).send_value(self._on_value, **k)
+		else:
+			self._draw_skin(self._on_value)
+
+	def _do_send_off_value(self, **k):
+		if type(self._off_value) is int:
+			super(ConfigurableButtonElement, self).send_value(self._off_value, **k)
+		else:
+			self._draw_skin(self._off_value)
+
+	def _draw_skin(self, value):
+		self._skin[value].draw(self)
+		
+	def script_wants_forwarding(self):
+		return not self.suppress_script_forwarding

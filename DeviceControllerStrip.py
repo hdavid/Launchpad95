@@ -6,7 +6,7 @@ from consts import *  # noqa
 import math
 
 SLIDER_MODE_OFF = 0
-SLIDER_MODE_ONOFF = 1
+SLIDER_MODE_TOGGLE = 1
 SLIDER_MODE_SLIDER = 2
 SLIDER_MODE_PRECISION_SLIDER = 3
 SLIDER_MODE_SMALL_ENUM = 4
@@ -22,12 +22,10 @@ class DeviceControllerStrip(ButtonSliderElement):
 	def __init__(self, buttons, control_surface, parent = None):
 		ButtonSliderElement.__init__(self, buttons)
 		self._control_surface = control_surface
-		self._skin = self._control_surface._skin
 		self._parent = parent
 		self._num_buttons = len(buttons)
 		self._value_map = tuple([float(index) / (self._num_buttons-1) for index in range(self._num_buttons)])
 		self._precision_mode = False
-	
 		self._enabled = True
 	
 	def set_enabled(self,enabled):
@@ -84,7 +82,7 @@ class DeviceControllerStrip(ButtonSliderElement):
 		if self._parameter_to_map_to != None:	
 			if self._is_quantized:
 			 	if self._range == 1:
-					return SLIDER_MODE_ONOFF
+					return SLIDER_MODE_TOGGLE
 				elif self._range<=self._num_buttons:
 					return SLIDER_MODE_SMALL_ENUM
 				else:
@@ -100,8 +98,8 @@ class DeviceControllerStrip(ButtonSliderElement):
 
 	def update(self):
 		if self._enabled:
-			if self._mode == SLIDER_MODE_ONOFF:
-				self._update_onoff()
+			if self._mode == SLIDER_MODE_TOGGLE:
+				self._update_toggle()
 			elif self._mode == SLIDER_MODE_SMALL_ENUM:
 				self._update_small_enum()
 			elif self._mode == SLIDER_MODE_BIG_ENUM:
@@ -122,57 +120,58 @@ class DeviceControllerStrip(ButtonSliderElement):
 			self.reset()
 			
 	def _update_off(self):
-		v =  [0 for index in range(len(self._buttons))]
+		v =  ["DefaultButton.Disabled" for index in range(len(self._buttons))]
 		self._update_buttons(tuple(v))
 	
-	def _update_onoff(self):
-		v =  [0 for index in range(len(self._buttons))]
+	def _update_toggle(self):
+		v =  ["DefaultButton.Disabled" for index in range(len(self._buttons))]
 		if self._value==self._max:
-		 	v[0]=self._skin.device.toggle_on
+		 	v[0]="Device.Toggle.On"
 		else:
-			v[0]=self._skin.device.toggle_off
+			v[0]="Device.Toggle.Off"
 		self._update_buttons(tuple(v))
 
 	def _update_small_enum(self):
-		v =  [0 for index in range(len(self._buttons))]
+		v =  ["DefaultButton.Disabled" for index in range(len(self._buttons))]
 		for index in range(int(self._range+1)):
 			if self._value==index+self._min:
-				v[index]=self._skin.device.list_on
+				v[index]="Device.Enum.On"
 			else:
-				v[index]=self._skin.device.list_off
+				v[index]="Device.Enum.Off"
 		self._update_buttons(tuple(v))
 
 	def _update_big_enum(self):
-		v =  [0 for index in range(len(self._buttons))]
+		v =  ["DefaultButton.Disabled" for index in range(len(self._buttons))]
 		if self._value>self._min:
-			v[3]=self._skin.device.list_on
+			v[3]="Device.BigEnum.On"
 		else:
-			v[3]=self._skin.device.list_off
+			v[3]="Device.BigEnum.Off"
 		if self._value<self._max:
-			v[4]=self._skin.device.list_on
+			v[4]="Device.BigEnum.On"
 		else:
-			v[4]=self._skin.device.list_off
+			v[4]="Device.BigEnum.Off"
 		self._update_buttons(tuple(v))
 	
 	def _update_slider(self):
-		v =  [0 for index in range(len(self._buttons))]
+		v =  ["DefaultButton.Disabled" for index in range(len(self._buttons))]
 		for index in range(len(self._buttons)):
 			if self._value >=self._value_map[index]*self._range+self._min:
-				v[index]=self._skin.device.slider_on
+				v[index]="Device.Slider.On"
 			else:
-				v[index]=self._skin.device.slider_off
+				v[index]="Device.Slider.Off"
 		self._update_buttons(tuple(v))
 		
 	def _update_precision_slider(self):
-		v =  [0 for index in range(len(self._buttons))]
+		v =  ["DefaultButton.Disabled" for index in range(len(self._buttons))]
 		if self._value>self._min:
-			v[3]=self._skin.device.slider_on
+			v[3]="Device.PrecisionSlider.On"
 		else:
-			v[3]=self._skin.device.slider_off
+			v[3]="Device.PrecisionSlider.Off"
+			
 		if self._value<self._max:
-			v[4]=self._skin.device.slider_on
+			v[4]="Device.PrecisionSlider.On"
 		else:
-			v[4]=self._skin.device.slider_off
+			v[4]="Device.PrecisionSlider.Off"
 		self._update_buttons(tuple(v))
 			
 	def _update_buttons(self, buttons):
@@ -192,7 +191,7 @@ class DeviceControllerStrip(ButtonSliderElement):
 		if (self._parameter_to_map_to != None and self._enabled and ((value != 0) or (not sender.is_momentary()))):
 			if (value != self._last_sent_value):
 				index_of_sender = list(self._buttons).index(sender)
-				if (self._mode == SLIDER_MODE_ONOFF) and index_of_sender==0:
+				if (self._mode == SLIDER_MODE_TOGGLE) and index_of_sender==0:
 					if self._value == self._max:
 						self._parameter_to_map_to.value = self._min
 					else:

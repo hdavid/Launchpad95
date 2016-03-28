@@ -3,8 +3,8 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>Launchpad95 : Ableton LIVE control surface remote scripts for Novation Launchpad</title>
-	<link rel="stylesheet" type="text/css" media="screen" href="/css/site.css" />
-	<script type="text/javascript" src="/js/site.js"></script>
+	<link rel="stylesheet" type="text/css" media="screen" href="http://motscousus.com/css/site.css" />
+	<script type="text/javascript" src="http://motscousus.com/js/site.js"></script>
 </head>
 <body>
 
@@ -55,15 +55,20 @@
 	<br/>
 	<p>
 		Comment, feedback and updates : please check this thread on Ableton forum <a href="http://forum.ableton.com/viewtopic.php?f=1&amp;t=168495">http://forum.ableton.com/viewtopic.php?f=1&amp;t=168495</a>
-	</a>
+	</p>
+	<p>
+		Willing to make a donation ? 
+		<a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_send-money&amp;nav=1&amp;email=hdavid@mail.com">paypal</a>
+		to my account <a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_send-money&amp;nav=1&amp;email=hdavid@mail.com">hdavid@mail.com</a>.
 	</p>
 
 	<section>
 	<h2>Installation</h2>
 	<p>
 		First, download the installation archive :<br/>
-		- live 9.2.+ : <strong><a href="Launchpad95.zip">Launchpad95.zip</a></strong><br/>
+		- live 9.2.+ : <strong><a href="Launchpad95.zip">Launchpad95.zip</a></strong> (all launchpads but PRO)<br/>
 		- live 8.4 : have a look at the documentation for <a href="launchpad85.html">Launchpad85</a><br/>
+		- for Launchpad PRO see <strong><a href="http://motscousus.com/stuff/2015-12_Novation_Launchpad_Pro_Ableton_Live_Scripts/">Launchpad Pro95</a></strong><br/>
 		Unzip the zip file and copy the folder Launchpad95 into the Ableton Live's "MIDI Remote Scripts" folder. (where is that folder ? look at <a href="#faq-3">faq 3</a>.
 	</p>
 	<p>
@@ -72,13 +77,7 @@
 		Select Launchpad95 as your control surface and select the launchpad Midi Port midi ports like so : <br/>
 		<img src="setup.png"/>
 	</p>
-	<p>
-		For Launchpad MK2 RGB, edit the file Settings.py, and uncomment (remove the leading "#") the line '#DEVICE = "launchpad mk2"'
-	</p>
-	<p>
-		For those adept of <a href="http://forum.ableton.com/viewtopic.php?f=2&amp;t=141471&amp;p=1245986">Launchpad Color</a>
-		I adapted this script to be compatible with Launchpad95. You can grab  <a href="Launchpad95Colour.zip">Launchpad95Colour here</a>! 
-	</p>
+	
 	</section>
 	
 	<section>
@@ -246,7 +245,6 @@
 			<td>user&nbsp;2 step</td>
 			<td>mixer mode</td>
 		</tr>
-
 		<tr>
 			<td class="amber" title="orientation">orient.</td>
 			<td class="amber">absolute root</td>
@@ -816,12 +814,6 @@
 
 	<section>
 	<h3>Device Controller Mode</h3>
-	<p>
-		Device Controller mode is a sub mode of User Mode 1. 
-		To activate Device Controller Mode, press User Mode 1 button once, 
-		the normal User Mode 1 is activated (mode button remains amber). 
-		Press User Mode 1 button once again, button turns green, activating the Device Controller. 
-	</p>
 	<h4>Navigation</h4>
 	<p>
 		Navigation among tracks and devices is done using the top left navigation buttons. 
@@ -850,112 +842,113 @@
 	<dl>
 	<h4>Locking to devices</h4>
 	<p>		
-		you can save up to 4 devices using the 4 bottom scene button. if not device is saved, the button will be amber.
+		You can save up to 4 devices using the 4 bottom scene button. if not device is saved, the button will be pink.
 		To save a device, first select the desired device, then press one of the 4 last scene buttons for more than half a second.
-		the button turn red ! your device is save. you can recall it at any time by a short press on the scene button.
-		to unsave a device, apply a long press again on the button.  
+		the button turn red ! your device is saved. You can recall it at any time by a short press on the scene button.
+		To unsave a device, apply a long press again on the button.  
 	</p>
+	<br/><br/>
 	<table class="launchpad">
-		<tr class="top">
-			<td class="green">prev device</td>
-			<td class="green">next device</td>
-			<td class="green">prev track</td>
-			<td class="green">next track</td>
-			<td>Session mode</td>
-			<td class="green">user&nbsp;1 device</td>
-			<td>user&nbsp;2 step</td>
-			<td>mixer mode</td>
-		</tr>
-
-		<tr>
-			<td>&nbsp;</td>
-			<td class="green">&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td class="side green"><div class="note">turns selected device on/off</div>on/off</td>
-		</tr>
-		<tr>
-			<td class="green">&nbsp;</td>
-			<td class="green">&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td class="side amber"><div class="note">select previous bank of 8 parameters</div>bnk dwn</td>
-		</tr>
-		<tr>
-			<td class="green">&nbsp;</td>
-			<td class="green">&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td class="side amber"><div class="note">select next bank of 8 parameters</div>bnk up</td>
-		</tr>
-		<tr>
-			<td class="green">&nbsp;</td>
-			<td class="green">&nbsp;</td>
-			<td class="green">&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td class="amber">&nbsp;</td>
-			<td class="amber">&nbsp;</td>
-			<td class="amber">&nbsp;</td>
-			<td class="side green" title="this mode allows to edit parameters with more precision. buttons close to the center are more precise. button further up or down give more amplitude"><div class="note">enable precision mode of sliders</div>precision</td>
-		</tr>
-		<tr>
-			<td class="green">&nbsp;</td>
-			<td class="green">&nbsp;</td>
-			<td class="green">&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td class="amber">&nbsp;</td>
-			<td class="amber">&nbsp;</td>
-			<td class="amber">&nbsp;</td>
-			<td class="side red"><div class="note">locks the control surface to device</div>lock 1</td>
-		</tr>
-		<tr>
-			<td class="green">&nbsp;</td>
-			<td class="green">&nbsp;</td>
-			<td class="green">&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td class="side red"><div class="note">locks the control surface to device</div>lock 2</td>
-		</tr>
-		<tr>
-			<td class="green">&nbsp;</td>
-			<td class="green">&nbsp;</td>
-			<td class="green">&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td class="side red"><div class="note">locks the control surface to device</div>lock 3</td>
-		</tr>
-			<td class="green">&nbsp;</td>
-			<td class="green">&nbsp;</td>
-			<td class="green">&nbsp;</td>
-			<td class="red">&nbsp;</td>
-			<td class="red">&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td class="side red"><div class="note">locks the control surface to device</div>lock 4</td>
-		</tr>
-	</table>
+			<tr class="top">
+				<td class="red">Device+</td>
+				<td class="red">Device-</td>
+				<td class="red">Track-</td>
+				<td class="red">Track+</td>
+				<td>Session mode</td>
+				<td class="red">user&nbsp;1 device</td>
+				<td><div class="noteTop" style="width:160px">cycle thru StepSequencers and User Moder 2</div>user&nbsp;2 step</td>
+				<td>mixer mode</td>
+			</tr>
+			<tr>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="side red">On/Off</td>
+			</tr>
+			<tr>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="side green">Bank+</td>
+			</tr>
+			<tr>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="side green">Bank-</td>
+			</tr>
+			<tr>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="side amber">Precision</td>
+			</tr>
+			<tr>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="side amber">Lock1</td>
+			</tr>
+			<tr>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="side amber">Lock2</td>
+			</tr>
+			<tr>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="side amber">Lock3</td>
+			</tr>
+				<td class="pad green">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="pad green ">&nbsp;</td>
+				<td class="side amber">Lock4</td>
+			</tr>
+		</table>
 	</section>
+	
 
 
 	<section>
@@ -1397,10 +1390,9 @@
 	<dl>
 		<dt id="faq-1">1. Which Launchpad flavours are supported</dt>
 		<dd>
-			Launchpad (old version with 3-colored buttons), Launchpad S, Launchpad Mini are supported<br/>
-			Launchpad Launchpad  Mini MK2 is supported<br/>
-			Launchpad Pro and Launchpad MK2 is supported, but no RGB support yet. 
-			Edit the file Settings.py, and uncomment (remove the leading "#") the line '#DEVICE = "launchpad mk2"'<br/>
+			Launchpad, Launchpad S, Mini, Mini MK2 and MK2 (RGB) are supported<br/>
+			Basically all Launchpad but the pro are supported by this script.<br/>
+			Launchpad Pro is supported by <a href="http://motscousus.com/stuff/2015-12_Novation_Launchpad_Pro_Ableton_Live_Scripts/">Launchpad Pro95</a>
 		</dd>
 
 		<dt id="faq-2">2. Which Ableton live versions are supported</dt>
@@ -1420,7 +1412,7 @@
 			<br/>
 			Inside this "MIDI&nbsp;Remote&nbsp;Scripts" folder, you should have a folder called "Launchpad95". inside this folder you should have a bunch of .py files, and a for each of them a .pyc file. (.pyc files are compiled version of the .py that live compiles as you start it.)<br/>
 			<br/>
-			As sometimes Sometimes a picture is worth 1000 words ! take a look at these screenshots.<br/>
+			Sometimes a picture is worth 1000 words. Take a look at these screenshots.<br/>
 			- On a mac it look like <a href="install_mac.png">this</a>.<br/>
 			- on a pc like <a href="install_windows.png">that</a><br/>
 			<br/>
@@ -1442,22 +1434,20 @@
 
 		<dt id="faq-5">5. It does not work, i installed everything, but Launchpad95 does not appears the dropdown in the preferences. what is wrong ? </dt>
 		<dd>
-			see <a href="#faq-4">question 4</a>.<br/>
+			See <a href="#faq-4">question 4</a>.<br/>
 			<br/>
 		</dd>
 
 		<dt id="faq-6">6. Note Feedback is not working in Instrument Controller</dt>
 		<dd>
-			make sure you activated the launchapd midi in/out as "track" in Live midi preferences.<br/>
+			Make sure you activated the launchapd midi in/out as "track" in Live midi preferences.<br/>
 			<br/>
 		</dd>
 
 		<dt id="faq-7">7. good work ! i wish to donate ! is there a way to donate somehow ?</dt>
 		<dd>
-			sure ! i am on flattr : <a href="http://flattr.com/thing/958327/Launchpad85-Ableton-LIVE-control-surface-remote-scripts-for-Novation-Launchpad-with-STEP-SEQUENCER">http://flattr.com/thing/958327/Launchpad85-Ableton-LIVE-control-surface-remote-scripts-for-Novation-Launchpad-with-STEP-SEQUENCERa</a><br/>
-			<br/>
-			Okay, but i am not flattr and i don't want to create an account ! : 
-			 you can also use <a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_send-money&amp;nav=1&amp;email=hdavid@mail.com">paypal</a> to my account hdavid@mail.com.
+			Sure ! Your donations allowed me to pay for the Launchpad Pro that is now supported ! thank you for this.<br/>
+			<a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_send-money&amp;nav=1&amp;email=hdavid@mail.com">paypal</a> to my account hdavid@mail.com.
 		</dd>
 
 
@@ -1474,6 +1464,7 @@
 	<section>
 	<h2>History</h2>
 	<ul>
+		<li>2016-03-28 - Launchpad MK2 RGB autodetect. better skinning. merging device mode from launchpad pro95</li>
 		<li>2016-03-02 - Launchpad MK2 RGB support.</li>
 		<li>2015-12-31 - code cleanup, partial and untested support for MK2 RGB, skinning</li>
 		<li>2015-04-03 <br/>

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from consts import *  # noqa
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.ButtonElement import ButtonElement
@@ -29,7 +27,6 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 	def __init__(self, step_sequencer, matrix, side_buttons, control_surface):
 		ControlSurfaceComponent.__init__(self)
 		self._control_surface = control_surface
-		self._skin = self._control_surface._skin
 		self.set_enabled(False)
 
 		self._step_sequencer = step_sequencer
@@ -40,17 +37,11 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		self._matrix = matrix
 		self._side_buttons = side_buttons
 
-		# metronome
-		self.metronome_color = self._skin.AMBER_FULL
-
-		# other colors
-		self.playing_note_color = self._skin.RED_FULL
-
 		# buttons
 		self._matrix = None
 
 		# matrix
-		self.set_button_matrix(matrix)
+		self.set_matrix(matrix)
 		self._grid_buffer = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], 
 		[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], 
 		[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]]
@@ -132,15 +123,16 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 
 	def set_mode(self, mode):
 		self._mode = mode
+		self._force_update = True
 		self.update()
 
 	def set_clip(self, clip):
-		if(self._clip != clip):
+		if self._clip != clip:
 			self._init_data()
 			self._clip = clip
 
 	def set_note_cache(self, note_cache):
-		if(self._note_cache != note_cache):
+		if self._note_cache != note_cache:
 			self._note_cache = note_cache
 			self._parse_notes()
 
@@ -159,9 +151,19 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		old_quantize = self._quantization
 		self._quantization = quantization
 		# update loop point
-		if(self._clip != None and old_quantize != self._quantization):
-			self._clip.loop_start = self._clip.loop_start * self._quantization / old_quantize
-			self._clip.loop_end = self._clip.loop_end * self._quantization / old_quantize
+		if self._clip != None and old_quantize != self._quantization:
+			self._loop_start = self._clip.loop_start * self._quantization / old_quantize
+			self._loop_end = self._clip.loop_end * self._quantization / old_quantize
+			if self._loop_start >= self._clip.loop_end:
+				self._clip.loop_end = self._loop_end
+				self._clip.loop_start = self._loop_start
+				self._clip.end_marker = self._loop_end
+				self._clip.start_marker = self._loop_start
+			else:
+				self._clip.loop_start = self._loop_start
+				self._clip.loop_end = self._loop_end
+				self._clip.start_marker = self._loop_start
+				self._clip.end_marker = self._loop_end
 		# update clip notes
 		self._update_clip_notes()
 
@@ -169,7 +171,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		self._diatonic = diatonic
 
 	def set_key_indexes(self, key_indexes):
-		if(self._key_indexes != key_indexes):
+		if self._key_indexes != key_indexes:
 			self._key_indexes = key_indexes
 			self._update_clip_notes()
 
@@ -272,17 +274,37 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 
 # MATRIX
 
-	def set_button_matrix(self, matrix):
+	def set_matrix(self, matrix):
 		assert isinstance(matrix, (ButtonMatrixElement, type(None)))
-		if (matrix != self._matrix):
-			if (self._matrix != None):
+		self._grid_buffer = [
+			[0, 0, 0, 0, 0, 0, 0, 0], 
+			[0, 0, 0, 0, 0, 0, 0, 0], 
+			[0, 0, 0, 0, 0, 0, 0, 0], 
+			[0, 0, 0, 0, 0, 0, 0, 0], 
+			[0, 0, 0, 0, 0, 0, 0, 0], 
+			[0, 0, 0, 0, 0, 0, 0, 0], 
+			[0, 0, 0, 0, 0, 0, 0, 0], 
+			[0, 0, 0, 0, 0, 0, 0, 0]
+		]
+		self._grid_back_buffer = [
+			[0, 0, 0, 0, 0, 0, 0, 0], 
+			[0, 0, 0, 0, 0, 0, 0, 0], 
+			[0, 0, 0, 0, 0, 0, 0, 0],
+		 	[0, 0, 0, 0, 0, 0, 0, 0], 
+			[0, 0, 0, 0, 0, 0, 0, 0], 
+			[0, 0, 0, 0, 0, 0, 0, 0], 
+			[0, 0, 0, 0, 0, 0, 0, 0], 
+			[0, 0, 0, 0, 0, 0, 0, 0]
+		]
+		if matrix != self._matrix:
+			if self._matrix != None:
 				self._matrix.remove_value_listener(self._matrix_value)
 			self._matrix = matrix
-			if (self._matrix != None):
+			if self._matrix != None:
 				self._matrix.add_value_listener(self._matrix_value)
 
 	def _update_matrix(self):  # step grid LEDs are updated here
-		if self.is_enabled():
+		if self.is_enabled() and self._matrix != None:
 			# clear back buffer
 			for x in range(8):
 				for y in range(8):
@@ -290,7 +312,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 
 			# update back buffer
 			if self._clip != None:
-
+				
 				for x in range(8):
 					has_note = False
 					for y in range(7):
@@ -300,45 +322,45 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 					for y in range(7):
 						if self._mode == STEPSEQ_MODE_NOTES:
 							if self._notes_pitches[(x + 8 * self._page) * 7 + 6 - y] == 1:
-								self._grid_back_buffer[x][y] = self._skin.GREEN_FULL
+								self._grid_back_buffer[x][y] = "StepSequencer2.Pitch.On"
 							else:
-								self._grid_back_buffer[x][y] = self._skin.off
+								self._grid_back_buffer[x][y] = "StepSequencer2.Pitch.Off"
 
 						elif self._mode == STEPSEQ_MODE_NOTES_OCTAVES:
 							if(has_note):
 								if self._notes_octaves[x + 8 * self._page] == 6 - y:
-									self._grid_back_buffer[x][y] = self._skin.RED_HALF
+									self._grid_back_buffer[x][y] = "StepSequencer2.Octave.On"
 								else:
-									self._grid_back_buffer[x][y] = self._skin.off
+									self._grid_back_buffer[x][y] = "StepSequencer2.Octave.Off"
 							else:
 								if self._notes_octaves[x + 8 * self._page] == 6 - y:
-									self._grid_back_buffer[x][y] = self._skin.RED_THIRD
+									self._grid_back_buffer[x][y] = "StepSequencer2.Octave.Dim"
 								else:
-									self._grid_back_buffer[x][y] = self._skin.off
+									self._grid_back_buffer[x][y] = "StepSequencer2.Octave.Off"
 
 						elif self._mode == STEPSEQ_MODE_NOTES_VELOCITIES:
 							if(has_note):
 								if self._notes_velocities[x + 8 * self._page] >= 6 - y:
-									self._grid_back_buffer[x][y] = self._skin.RED_HALF
+									self._grid_back_buffer[x][y] = "StepSequencer2.Velocity.On"
 								else:
-									self._grid_back_buffer[x][y] = self._skin.off
+									self._grid_back_buffer[x][y] = "StepSequencer2.Velocity.Off"
 							else:
 								if self._notes_velocities[x + 8 * self._page] >= 6 - y:
-									self._grid_back_buffer[x][y] = self._skin.RED_THIRD
+									self._grid_back_buffer[x][y] = "StepSequencer2.Velocity.Dim"
 								else:
-									self._grid_back_buffer[x][y] = self._skin.off
+									self._grid_back_buffer[x][y] = "StepSequencer2.Velocity.Off"
 
 						elif self._mode == STEPSEQ_MODE_NOTES_LENGTHS:
-							if(has_note):
+							if has_note:
 								if self._notes_lengths[x + 8 * self._page] >= 6 - y:
-									self._grid_back_buffer[x][y] = self._skin.AMBER_FULL
+									self._grid_back_buffer[x][y] = "StepSequencer2.Length.On"
 								else:
-									self._grid_back_buffer[x][y] = self._skin.off
+									self._grid_back_buffer[x][y] = "StepSequencer2.Length.Off"
 							else:
 								if self._notes_lengths[x + 8 * self._page] >= 6 - y:
-									self._grid_back_buffer[x][y] = self._skin.AMBER_THIRD
+									self._grid_back_buffer[x][y] = "StepSequencer2.Length.Dim"
 								else:
-									self._grid_back_buffer[x][y] = self._skin.off
+									self._grid_back_buffer[x][y] = "StepSequencer2.Length.Off"
 				# metronome
 				if self._playhead != None:
 					play_position = int(self._playhead / self.quantization)
@@ -346,40 +368,41 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 					page = int(self._playhead / self.quantization / 8)
 					if self._mode == STEPSEQ_MODE_NOTES_LENGTHS:
 						if page == self._page:
-							self.metronome_color = self._skin.RED_FULL
+							metronome_color = "StepSequencer2.NoteEditor.MetronomeInPage"
 						else:
-							self.metronome_color = self._skin.RED_THIRD
+							metronome_color = "StepSequencer2.NoteEditor.MetronomeInOtherPage"
 					else:
 						if page == self._page:
-							self.metronome_color = self._skin.AMBER_FULL
+							metronome_color = "StepSequencer2.NoteEditor.MetronomeInPage"
 						else:
-							self.metronome_color = self._skin.AMBER_THIRD
-					self._grid_back_buffer[play_x_position][6] = self.metronome_color
+							metronome_color = "StepSequencer2.NoteEditor.MetronomeInOtherPage"
+					self._grid_back_buffer[play_x_position][6] = metronome_color
 
 					# playing notes
 					if self._mode == STEPSEQ_MODE_NOTES:
 						for y in range(7):
 							if self._notes_pitches[play_position * 7 + 6 - y] == 1:
 								if page == self._page:
-									self._grid_back_buffer[play_x_position][y] = self._skin.RED_FULL
+									self._grid_back_buffer[play_x_position][y] = "StepSequencer2.NoteEditor.PlayInPage"
 								else:
-									self._grid_back_buffer[play_x_position][y] = self._skin.RED_THIRD
+									self._grid_back_buffer[play_x_position][y] = "StepSequencer2.NoteEditor.PlayInOtherPage"
 
 			else:
 				for x in range(8):
 					for y in range(7):
-						self._grid_back_buffer[x][y] = self._skin.off
+						self._grid_back_buffer[x][y] = "DefaultButton.Disabled"
 
 			# caching : compare back buffer to buffer and update grid. this should minimize midi traffic quite a bit.
 			for x in range(8):
 				for y in range(7):
-					if(self._grid_back_buffer[x][y] != self._grid_buffer[x][y] or self._force_update):
+					if self._grid_back_buffer[x][y] != self._grid_buffer[x][y] or self._force_update:
 						self._grid_buffer[x][y] = self._grid_back_buffer[x][y]
-						self._matrix.send_value(x, y, self._grid_buffer[x][y])
+						self._matrix.get_button(x,y).set_light(self._grid_buffer[x][y])
+						
 			self._force_update = False
 
 	def _matrix_value(self, value, x, y, is_momentary):  # matrix buttons listener
-		if self.is_enabled():
+		if self.is_enabled() and self._matrix!=None:
 			if self._clip == None:
 				self._step_sequencer.create_clip()
 			else:
@@ -457,12 +480,11 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		if self.is_enabled():
 			if (self._random_button != None):
 				if self._clip != None:
-					self._random_button.set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_THIRD)
+					self._random_button.set_on_off_values("StepSequencer2.Random.On", "StepSequencer2.Random.Off")
 					self._random_button.turn_off()
 				else:
-					self._random_button.set_on_off_values(self._skin.off, self._skin.off)
-					self._random_button.turn_off()
-
+					self._random_button.set_light("DefaultButton.Disabled")
+					
 	def set_random_button(self, button):
 		assert (isinstance(button, (ButtonElement, type(None))))
 		if (self._random_button != button):
@@ -477,9 +499,10 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		assert (self._random_button != None)
 		assert (value in range(128))
 		if self.is_enabled() and self._clip != None:
-			self._random_button.set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_THIRD)
+			self._random_button.set_on_off_values("StepSequencer2.Random.On", "StepSequencer2.Random.Off")
 			if ((value is 0) and (sender.is_momentary())):
 				self._random_button.turn_off()
+				self._control_surface.show_message("randomise")
 				self._randomise()
 			else:
 				self._random_button.turn_on()
@@ -516,13 +539,13 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		if self.is_enabled():
 			if (self._mode_notes_pitches_button != None):
 				if self._clip != None:
-					self._mode_notes_pitches_button.set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_THIRD)
+					self._mode_notes_pitches_button.set_on_off_values("StepSequencer2.Pitch.On", "StepSequencer2.Pitch.Dim")
 					if self._mode == STEPSEQ_MODE_NOTES:
 						self._mode_notes_pitches_button.turn_on()
 					else:
 						self._mode_notes_pitches_button.turn_off()
 				else:
-					self._mode_notes_pitches_button.set_on_off_values(self._skin.off, self._skin.off)
+					self._mode_notes_pitches_button.set_on_off_values("DefaultButton.Disabled", "DefaultButton.Disabled")
 					self._mode_notes_pitches_button.turn_off()
 
 	def set_mode_notes_pitches_button(self, button):
@@ -550,6 +573,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 					self._step_sequencer._update_OSD()
 				else:
 					self.set_mode(STEPSEQ_MODE_NOTES)
+					self._control_surface.show_message("pitch")
 					self.update()
 					self._step_sequencer._update_OSD()
 				self._last_notes_pitches_button_press = time.time()
@@ -564,14 +588,13 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		if self.is_enabled():
 			if (self._mode_notes_octaves_button != None):
 				if self._clip != None:
-					self._mode_notes_octaves_button.set_on_off_values(self._skin.RED_FULL, self._skin.RED_THIRD)
+					self._mode_notes_octaves_button.set_on_off_values("StepSequencer2.Octave.On", "StepSequencer2.Octave.Dim")
 					if self._mode == STEPSEQ_MODE_NOTES_OCTAVES:
 						self._mode_notes_octaves_button.turn_on()
 					else:
 						self._mode_notes_octaves_button.turn_off()
 				else:
-					self._mode_notes_octaves_button.set_on_off_values(self._skin.off, self._skin.off)
-					self._mode_notes_octaves_button.turn_off()
+					self._mode_notes_octaves_button.set_light("DefaultButton.Disabled")
 
 	def set_mode_notes_octaves_button(self, button):
 		assert (isinstance(button, (ButtonElement, type(None))))
@@ -590,6 +613,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 			if ((value is 0) and (sender.is_momentary())):
 				self._is_notes_octaves_shifted = False
 				self.set_mode(STEPSEQ_MODE_NOTES_OCTAVES)
+				self._control_surface.show_message("octave")
 				self.update()
 				self._step_sequencer._update_OSD()
 			else:
@@ -600,15 +624,14 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		if self.is_enabled():
 			if (self._mode_notes_velocities_button != None):
 				if self._clip != None:
-					self._mode_notes_velocities_button.set_on_off_values(self._skin.RED_FULL, self._skin.RED_THIRD)
+					self._mode_notes_velocities_button.set_on_off_values("StepSequencer2.Velocity.On", "StepSequencer2.Velocity.Dim")
 					if self._mode == STEPSEQ_MODE_NOTES_VELOCITIES:
 						self._mode_notes_velocities_button.turn_on()
 					else:
 						self._mode_notes_velocities_button.turn_off()
 				else:
-					self._mode_notes_velocities_button.set_on_off_values(self._skin.off, self._skin.off)
-					self._mode_notes_velocities_button.turn_off()
-
+					self._mode_notes_velocities_button.set_light("DefaultButton.Disabled")
+					
 	def set_mode_notes_velocities_button(self, button):
 		assert (isinstance(button, (ButtonElement, type(None))))
 		if (self._mode_notes_velocities_button != button):
@@ -627,6 +650,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 				self._is_mute_shifted = False
 				self._is_notes_velocities_shifted = False
 				self.set_mode(STEPSEQ_MODE_NOTES_VELOCITIES)
+				self._control_surface.show_message("velocity")
 				self.update()
 				self._step_sequencer._update_OSD()
 			else:
@@ -639,14 +663,14 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		if self.is_enabled():
 			if (self._mode_notes_lengths_button != None):
 				if self._clip != None:
-					self._mode_notes_lengths_button.set_on_off_values(self._skin.AMBER_FULL, self._skin.AMBER_THIRD)
+					self._mode_notes_lengths_button.set_on_off_values("StepSequencer2.Length.On", "StepSequencer2.Length.Dim")
 					if self._mode == STEPSEQ_MODE_NOTES_LENGTHS:
 						self._mode_notes_lengths_button.turn_on()
 					else:
 						self._mode_notes_lengths_button.turn_off()
 				else:
-					self._mode_notes_lengths_button.set_on_off_values(self._skin.off, self._skin.off)
-					self._mode_notes_lengths_button.turn_off()
+					self._mode_notes_lengths_button.set_light("DefaultButton.Disabled")
+			
 
 	def set_mode_notes_lengths_button(self, button):
 		assert (isinstance(button, (ButtonElement, type(None))))
@@ -666,6 +690,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 				self._is_notes_lengths_shifted = False
 				self.set_mode(STEPSEQ_MODE_NOTES_LENGTHS)
 				self.update()
+				self._control_surface.show_message("length")
 				self._step_sequencer._update_OSD()
 			else:
 				self._is_notes_lengths_shifted = True
@@ -681,7 +706,8 @@ class StepSequencerComponent2(StepSequencerComponent):
 		
 	def _set_scale_selector(self):
 		super(StepSequencerComponent2, self)._set_scale_selector()
-		self._scale_selector.set_diatonic()
+		self._scale_selector._mode = "diatonic"
+		self._scale_selector._drumrack = False
 
 	def _set_track_controller(self):
 		self._track_controller = self.register_component(TrackControllerComponent(self._control_surface))
@@ -723,11 +749,11 @@ class StepSequencerComponent2(StepSequencerComponent):
 		if self._osd != None:
 			self._osd.set_mode('Melodic Step Sequencer')
 			if self._clip != None:
-				self._osd.attributes[0] = MUSICAL_MODES[self._scale_selector._selected_modus * 2]
+				self._osd.attributes[0] = MUSICAL_MODES[self._scale_selector._modus * 2]
 				self._osd.attribute_names[0] = "Scale"
-				self._osd.attributes[1] = KEY_NAMES[self._scale_selector._selected_key % 12]
+				self._osd.attributes[1] = KEY_NAMES[self._scale_selector._key % 12]
 				self._osd.attribute_names[1] = "Root Note"
-				self._osd.attributes[2] = self._scale_selector._octave_index
+				self._osd.attributes[2] = self._scale_selector._octave
 				self._osd.attribute_names[2] = "Octave"
 				self._osd.attributes[3] = QUANTIZATION_NAMES[self._quantization_index]
 				self._osd.attribute_names[3] = "Quantisation"
@@ -791,8 +817,7 @@ class StepSequencerComponent2(StepSequencerComponent):
 	def _update_mode_button(self):
 		if self.is_enabled():
 			if (self._mode_button != None):
-				self._mode_button.set_on_off_values(self._skin.off, self._skin.off)
-				self._mode_button.turn_off()
+				self._mode_button.set_on_off_values("DefaultButton.Disaled")
 
 	def _mode_button_value(self, value, sender):
 		pass

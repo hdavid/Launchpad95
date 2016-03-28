@@ -15,9 +15,7 @@ class TrackControllerComponent(MixerComponent):
 			enable/disable session_record
 	"""
 
-	def __init__(self, control_surface):
-		self._control_surface = control_surface
-		self._skin = self._control_surface._skin
+	def __init__(self, control_surface = None, implicit_arm = False, skin_name = "Session", enabled = False):
 		self._prev_track_button = None
 		self._next_track_button = None
 		self._prev_scene_button = None
@@ -29,9 +27,11 @@ class TrackControllerComponent(MixerComponent):
 		self._solo_button = None
 		self._undo_button = None
 		self._arm_button = None
-		self._implicit_arm = True
+		self._control_surface = control_surface
+		self._implicit_arm = implicit_arm
+		self._skin_name = skin_name
 		MixerComponent.__init__(self, 1)
-		self.set_enabled(False)
+		self.set_enabled(enabled)
 
 		now = int(round(time.time() * 1000))
 		self._last_arm_button_press = now
@@ -156,18 +156,16 @@ class TrackControllerComponent(MixerComponent):
 		# tracks
 		if self.is_enabled():
 			if self._prev_track_button != None:
+				self._prev_track_button.set_on_off_values("Mode."+self._skin_name)
 				if self.selected_track_idx > 0:
-					self._prev_track_button.set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_FULL)
 					self._prev_track_button.turn_on()
 				else:
-					self._prev_track_button.set_on_off_values(self._skin.GREEN_THIRD, self._skin.GREEN_THIRD)
 					self._prev_track_button.turn_off()
 			if self._next_track_button != None :
+				self._next_track_button.set_on_off_values("Mode."+self._skin_name)
 				if self.selected_track_idx < len(self.song().tracks) - 1:
-					self._next_track_button.set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_FULL)
 					self._next_track_button.turn_on()
 				else:
-					self._next_track_button.set_on_off_values(self._skin.GREEN_THIRD, self._skin.GREEN_THIRD)
 					self._next_track_button.turn_off()
 
 	def set_next_track_button(self, button):
@@ -212,14 +210,14 @@ class TrackControllerComponent(MixerComponent):
 		# tracks
 		if self.is_enabled():
 			if self._prev_scene_button != None:
-				self._prev_scene_button.set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_THIRD)
+				self._prev_scene_button.set_on_off_values("Mode."+self._skin_name)
 				if self.selected_scene_idx > 0:
 					self._prev_scene_button.turn_on()
 				else:
 					self._prev_scene_button.turn_off()
 
 			if self._next_scene_button != None:
-				self._next_scene_button.set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_THIRD)
+				self._next_scene_button.set_on_off_values("Mode."+self._skin_name)
 				if self.selected_scene_idx < len(self.song().scenes) - 1:
 					self._next_scene_button.turn_on()
 				else:
@@ -398,38 +396,36 @@ class TrackControllerComponent(MixerComponent):
 
 			if self._session_record_button != None:
 				if self._implicit_arm:
-					self._session_record_button.set_on_off_values(self._skin.RED_FULL, self._skin.RED_THIRD)
+					self._session_record_button.set_on_off_values("TrackController.ImplicitRecording")
 				else:
-					self._session_record_button.set_on_off_values(self._skin.AMBER_FULL, self._skin.AMBER_THIRD)
+					self._session_record_button.set_on_off_values("TrackController.Recording")
 				if(self.song().session_record):
 					self._session_record_button.turn_on()
 				else:
 					self._session_record_button.turn_off()
 
 			if self._play_button != None:
-				self._play_button.set_on_off_values(self._skin.RED_FULL, self._skin.RED_THIRD)
-				self._play_button.turn_off()
-
+				self._play_button.set_light("TrackController.Play.Off")
+				
 			if self._stop_button != None:
-				self._stop_button.set_on_off_values(self._skin.RED_FULL, self._skin.RED_THIRD)
-				self._stop_button.turn_off()
-
+				self._stop_button.set_light("TrackController.Stop.Off")
+		
 			if self._mute_button != None:
-				self._mute_button.set_on_off_values(self._skin.AMBER_FULL, self._skin.AMBER_THIRD)
+				self._mute_button.set_on_off_values("TrackController.Mute")
 				if(self.selected_track.mute):
 					self._mute_button.turn_off()
 				else:
 					self._mute_button.turn_on()
 
 			if self._undo_button != None:
-				self._undo_button.set_on_off_values(self._skin.AMBER_FULL, self._skin.AMBER_THIRD)
+				self._undo_button.set_on_off_values("TrackController.Undo")
 				if self.song().can_undo:
 					self._undo_button.turn_on()
 				else:
 					self._undo_button.turn_off()
 
 			if self._solo_button != None:
-				self._solo_button.set_on_off_values(self._skin.AMBER_FULL, self._skin.AMBER_THIRD)
+				self._solo_button.set_on_off_values("TrackController.Solo")
 				if self.selected_track.solo:
 					self._solo_button.turn_on()
 				else:
@@ -437,9 +433,9 @@ class TrackControllerComponent(MixerComponent):
 
 			if self._arm_button != None:
 				if self._implicit_arm:
-					self._arm_button.set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_THIRD)
+					self._arm_button.set_on_off_values("TrackController.ImplicitRecording")
 				else:
-					self._arm_button.set_on_off_values(self._skin.RED_FULL, self._skin.RED_THIRD)
+					self._arm_button.set_on_off_values("TrackController.Recording")
 
 				if(self.selected_track.can_be_armed and self.selected_track.arm):
 					self._arm_button.turn_on()
@@ -451,17 +447,17 @@ class TrackControllerComponent(MixerComponent):
 	def can_implicit_arm_track(self, track):
 		return track.can_be_armed and track.has_midi_input
 
-	def _do_implicit_arm(self, arm=True):
-		if self._is_enabled:
+	def _do_implicit_arm(self, arm = True):
+		if self.is_enabled():
 			if self._implicit_arm:
 				self._control_surface.set_controlled_track(self.selected_track)
 			else:
 				self._control_surface.release_controlled_track()
-
 			for track in self.song().tracks:
 				if self.can_implicit_arm_track(track):
-					track.implicit_arm = arm and self._implicit_arm and self.selected_track == track
+					track.implicit_arm = self._implicit_arm and arm and self.selected_track == track
 
+		
 	def on_selected_track_changed(self):
 		self._do_implicit_arm()
 		self.update()
@@ -475,12 +471,12 @@ class TrackControllerComponent(MixerComponent):
 
 	@property
 	def selected_track_idx(self):
-		return self.tuple_idx(self.song().tracks, self.song().view.selected_track)
+		return list(self.song().tracks).index(self.song().view.selected_track)
 
 	@property
 	def selected_scene_idx(self):
-		return self.tuple_idx(self.song().scenes, self.song().view.selected_scene)
-			
+		return list(self.song().scenes).index(self.song().view.selected_scene)
+		
 	@property
 	def selected_scene(self):
 		return self.song().view.selected_scene
@@ -493,9 +489,3 @@ class TrackControllerComponent(MixerComponent):
 		else:
 			return None
 
-
-	def tuple_idx(self, tuple, obj):
-		for i in xrange(0, len(tuple)):
-			if (tuple[i] == obj):
-				return i
-		return(False)

@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 
 from consts import *  # noqa
-from _Framework.DeviceComponent import DeviceComponent
+from _Framework.DeviceComponent import DeviceComponent as LiveDeviceComponent
 from _Framework.ButtonElement import ButtonElement
 from DeviceControllerStrip import DeviceControllerStrip
 import time
 import Live
 
 
-class DeviceControllerComponent(DeviceComponent):
+class DeviceComponent(LiveDeviceComponent):
 	__module__ = __name__
 	__doc__ = ''
 
-	def __init__(self, matrix, side_buttons, top_buttons, control_surface):
+	def __init__(self, control_surface = None, name = "device_component", is_enabled = False, matrix = None, side_buttons = None, top_buttons = None):
 		self._control_surface = control_surface
-		self._skin = self._control_surface._skin
+		self.name = name
 		self._matrix = matrix
 		self._prev_track_button = None
 		self._next_track_button = None
@@ -34,45 +34,66 @@ class DeviceControllerComponent(DeviceComponent):
 		self._force = True
 		self._osd = None
 
-		DeviceComponent.__init__(self)
+		LiveDeviceComponent.__init__(self)
 
 		# Sliders
 		self._sliders = []
-		self.set_enabled(False)
+		self.set_enabled(is_enabled)
 
-		for column in range(self._matrix.width()):
-			slider = DeviceControllerStrip(tuple([self._matrix.get_button(column, (self._matrix.height() - 1 - row)) for row in range(self._matrix.height())]),self._control_surface, self)
-			self._sliders.append(slider)
-		self._sliders = tuple(self._sliders)
-		self.set_parameter_controls(self._sliders)
 		self._selected_track = None
-
-		# device selection buttons
-		self.set_prev_device_button(top_buttons[0])
-		self.set_next_device_button(top_buttons[1])
-		# track selection buttons
-		self.set_prev_track_button(top_buttons[2])
-		self.set_next_track_button(top_buttons[3])
-
-		# on/off button
-		self.set_on_off_button(side_buttons[0])
-
-		# bank nav buttons
-		self.set_bank_nav_buttons(side_buttons[1], side_buttons[2])
-		self._prev_bank_button = side_buttons[1]
-		self._next_bank_button = side_buttons[2]
-		# precision
-		self.set_precision_button(side_buttons[3])
 		
-		# lock buttons
-		self.set_lock_buttons([side_buttons[4],side_buttons[5],side_buttons[6],side_buttons[7]])
+		self._lock_buttons = [None for index in range(4)]
+		self._locked_device_bank = [0 for index in range(4)]
+		self._lock_button_press = [0 for index in range(4)]
+		self._locked_devices = [None for index in range(4)]
+
+		if top_buttons != None:
+			# device selection buttons
+			self.set_prev_device_button(top_buttons[0])
+			self.set_next_device_button(top_buttons[1])
+			# track selection buttons
+			self.set_prev_track_button(top_buttons[2])
+			self.set_next_track_button(top_buttons[3])
+
+		if side_buttons != None:
+			# on/off button
+			self.set_on_off_button(side_buttons[0])
+
+			# bank nav buttons
+			self.set_bank_nav_buttons(side_buttons[1], side_buttons[2])
+			self._prev_bank_button = side_buttons[1]
+			self._next_bank_button = side_buttons[2]
+			# precision
+			self.set_precision_button(side_buttons[3])
+		
+			# lock buttons
+			self.set_lock_button1(side_buttons[4])
+			self.set_lock_button2(side_buttons[5])
+			self.set_lock_button3(side_buttons[6])
+			self.set_lock_button4(side_buttons[7])
+		
+		if matrix != None:
+			self.set_matrix(matrix)
+		
 		
 		# selected device listener
 		self.song().add_appointed_device_listener(self._on_device_changed)
 
+	def set_matrix(self, matrix):
+		self._matrix = matrix
+		if self._matrix:
+			self._sliders = []
+			for column in range(self._matrix.width()):
+				slider = DeviceControllerStrip(tuple([self._matrix.get_button(column, (self._matrix.height() - 1 - row)) for row in range(self._matrix.height())]),self._control_surface)
+				self._sliders.append(slider)
+			self._sliders = tuple(self._sliders)
+			self.set_parameter_controls(self._sliders)
+		else:
+			self.sliders = []
+		
 	def disconnect(self):
 		self.song().remove_appointed_device_listener(self._on_device_changed)
-		# DeviceComponent.disconnect(self)
+		# LiveDeviceComponent.disconnect(self)
 		self._prev_track_button = None
 		self._next_track_button = None
 		self._prev_device_button = None
@@ -95,7 +116,8 @@ class DeviceControllerComponent(DeviceComponent):
 		# disable matrix.
 		for slider in self._sliders:
 			slider.set_enabled(active)
-		DeviceComponent.set_enabled(self, active)
+		# ping parent
+		LiveDeviceComponent.set_enabled(self, active)
 
 	def set_osd(self, osd):
 		self._osd = osd
@@ -160,9 +182,7 @@ class DeviceControllerComponent(DeviceComponent):
 			if self._number_of_parameter_banks() <= self._bank_index:
 				self._bank_index = 0
 			self._device = device
-			DeviceComponent.set_device(self, device)
-	
-
+			LiveDeviceComponent.set_device(self, device)
 
 
 # UPDATE
@@ -178,24 +198,32 @@ class DeviceControllerComponent(DeviceComponent):
 						self.application().view.show_view('Detail/DeviceChain')
 			# update bank buttons colors
 			if self._device != None:
-				if(self._prev_bank_button != None):
-					self._prev_bank_button.set_on_off_values(self._skin.AMBER_FULL, self._skin.AMBER_THIRD)
-				if(self._next_bank_button != None):
-					self._next_bank_button.set_on_off_values(self._skin.AMBER_FULL, self._skin.AMBER_THIRD)
+				if self._prev_bank_button != None:
+					self._prev_bank_button.set_on_off_values("Device.Bank.On", "Device.Bank.Off")
+				if self._next_bank_button != None:
+					self._next_bank_button.set_on_off_values("Device.Bank.On", "Device.Bank.Off")
 			else:
-				self._prev_bank_button.set_on_off_values(self._skin.off, self._skin.off)
-				self._next_bank_button.set_on_off_values(self._skin.off, self._skin.off)
-
-			for x in range(self._matrix.width()):
-				for y in range(self._matrix.height()):
-					#if self._force:
-					if(self._device == None):
-						self._matrix.get_button(x, y).set_on_off_values(self._skin.off, self._skin.off)
-						self._matrix.get_button(x, y).turn_off()
+				if self._prev_bank_button != None:
+					self._prev_bank_button.set_on_off_values("DefaultButton.Disabled","DefaultButton.Disabled")
+				if self._next_bank_button != None:
+					self._next_bank_button.set_on_off_values("DefaultButton.Disabled","DefaultButton.Disabled")
+			if self._matrix != None:
+				for x in range(self._matrix.width()):
+					for y in range(self._matrix.height()):
+						self._matrix.get_button(x, y).set_enabled(True)
 						
-			DeviceComponent.update(self)
-			for slider in self._sliders:
-				slider.reset_if_no_parameter()
+			if self._device == None and self._matrix != None:
+				for x in range(self._matrix.width()):
+					for y in range(self._matrix.height()):
+						if self._force:
+							self._matrix.get_button(x, y).set_on_off_values("DefaulyButton.Disabled","DefaultButton.Disabled")
+							self._matrix.get_button(x, y).turn_off()
+						
+			# update parent
+			LiveDeviceComponent.update(self)
+			if self._sliders != None:
+				for slider in self._sliders:
+					slider.reset_if_no_parameter()
 			# additional updates :
 			self.update_track_buttons()
 			self.update_device_buttons()
@@ -205,37 +233,49 @@ class DeviceControllerComponent(DeviceComponent):
 			self._update_OSD()
 			self._force = False
 
-
+	def set_prev_bank_button(self, button):
+		self._prev_bank_button = button
+		if self._prev_bank_button !=None and self._next_bank_button != None or self._prev_bank_button ==None and self._next_bank_button == None:
+			self.set_bank_nav_buttons(self._prev_bank_button, self._next_bank_button)
+		
+	def set_next_bank_button(self, button):
+		self._next_bank_button = button
+		if self._prev_bank_button !=None and self._next_bank_button != None or self._prev_bank_button ==None and self._next_bank_button == None:
+			self.set_bank_nav_buttons(self._prev_bank_button, self._next_bank_button)
 
 # LOCK button
 	def update_lock_buttons(self):
 		# lock button
 		if self.is_enabled():
 			for index in range(len(self._locked_devices)):
-				if self._locked_devices[index] != None:
-					self._lock_buttons[index].set_on_off_values(self._skin.RED_FULL, self._skin.RED_THIRD)
-				else:
-					self._lock_buttons[index].set_on_off_values(self._skin.AMBER_THIRD, self._skin.AMBER_THIRD) #LED_OFF
-				if self._locked_device_index==index:
-					self._lock_buttons[index].turn_on()
-				else:
-					self._lock_buttons[index].turn_off()
+				if self._lock_buttons[index] != None:
+					if self._locked_devices[index] != None:
+						self._lock_buttons[index].set_on_off_values("Device.Lock.Locked", "Device.Lock.Set")
+					else:
+						self._lock_buttons[index].set_on_off_values("Device.Lock.Empty", "Device.Lock.Empty") #LED_OFF
+					if self._locked_device_index==index:
+						self._lock_buttons[index].turn_on()
+					else:
+						self._lock_buttons[index].turn_off()
 			
-
-	def set_lock_buttons(self, buttons):
-		self._lock_buttons = [None for index in range(len(buttons))]
-		self._locked_device_bank = [0 for index in range(len(buttons))]
-		self._lock_button_press = [0 for index in range(len(buttons))]
-		self._locked_devices = [None for index in range(len(buttons))]
-		for index in range(len(buttons)):
-			if (self._lock_buttons[index] != None):
-				self._lock_buttons[index].remove_value_listener(self._lock_value)
-			self._lock_buttons[index] = buttons[index]
-			if (self._lock_buttons[index] != None):
-				assert isinstance(self._lock_buttons[index], ButtonElement)
-				self._lock_buttons[index].add_value_listener(self._lock_value, identify_sender=True)
+	def set_lock_button1(self, button):
+		self.set_lock_button(button,1)
+	def set_lock_button2(self, button):
+		self.set_lock_button(button,2)
+	def set_lock_button3(self, button):
+		self.set_lock_button(button,3)
+	def set_lock_button4(self, button):
+		self.set_lock_button(button,4)
 		
-		self.update_lock_buttons()
+	def set_lock_button(self, button, index):
+		if len(self._lock_buttons)>=index:
+			if self._lock_buttons[index-1] != None:
+				self._lock_buttons[index-1].remove_value_listener(self._lock_value)
+			self._lock_buttons[index-1] = button
+			if self._lock_buttons[index-1] != None:
+				assert isinstance(self._lock_buttons[index-1], ButtonElement)
+				self._lock_buttons[index-1].add_value_listener(self._lock_value, identify_sender=True)
+		#self.update_lock_buttons()
 
 	def _lock_value(self, value, sender):
 		if self.is_enabled():
@@ -243,7 +283,6 @@ class DeviceControllerComponent(DeviceComponent):
 			for i in range(len(self._lock_buttons)):
 				if self._lock_buttons[i] == sender:
 					index = i
-					
 			if value != 0:
 				self._lock_button_press[index] = time.time()
 			else:
@@ -268,10 +307,10 @@ class DeviceControllerComponent(DeviceComponent):
 									
 					else:
 						#remove saved device
-						self._locked_devices[index] = None
-						self._locked_device_index = None
-						if self._device != None:
-							self._control_surface.show_message("removing '"+self.get_device_track_name(self._locked_devices[index])+" - "+str(self._device.name)+"' from block button "+ str(index+1) )
+						if self._locked_devices[index] != None:
+							self._control_surface.show_message("removing '"+self.get_device_track_name(self._locked_devices[index])+" - "+str(self._locked_devices[index].name)+"' from block button "+ str(index+1) )
+							self._locked_devices[index] = None
+							self._locked_device_index = None
 				else:
 					#use selected device
 					if self._locked_device_index == index:
@@ -288,7 +327,7 @@ class DeviceControllerComponent(DeviceComponent):
 			self.update_track_buttons()
 			self.update_device_buttons()
 			self._update_OSD()
-			if(self._locked_to_device2):
+			if self._locked_to_device2:
 				self.on_selected_track_changed()		
 			self.update_lock_buttons()
 				
@@ -303,16 +342,16 @@ class DeviceControllerComponent(DeviceComponent):
 
 # Precision button
 	def update_precision_button(self):
-		if (self._precision_button != None and self.is_enabled()):
-			if (self._precision_button != None):
+		if self._precision_button != None and self.is_enabled():
+			if self._precision_button != None:
 				if self._device != None:
-					self._precision_button.set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_THIRD)
+					self._precision_button.set_on_off_values("Device.PrecisionSlider.On", "Device.PrecisionSlider.Off")
 					if self._precision_mode:
 						self._precision_button.turn_on()
 					else:
 						self._precision_button.turn_off()
 				else:
-					self._precision_button.set_on_off_values(self._skin.off, self._skin.off)
+					self._precision_button.set_on_off_values("DefaultButton.Disabled","DefaultButton.Disabled")
 					self._precision_button.turn_off()
 
 	def _precision_value(self, value, sender):
@@ -325,11 +364,11 @@ class DeviceControllerComponent(DeviceComponent):
 
 	def set_precision_button(self, button):
 		assert (isinstance(button, (ButtonElement, type(None))))
-		if (self._precision_button != button):
-			if (self._precision_button != None):
+		if self._precision_button != button:
+			if self._precision_button != None:
 				self._precision_button.remove_value_listener(self._precision_value)
 			self._precision_button = button
-			if (self._precision_button != None):
+			if self._precision_button != None:
 				assert isinstance(button, ButtonElement)
 				self._precision_button.add_value_listener(self._precision_value, identify_sender=True)
 				self.update()
@@ -338,32 +377,32 @@ class DeviceControllerComponent(DeviceComponent):
 # ON OFF button
 	def update_on_off_button(self):
 		# on/off button
-		if (self._on_off_button != None and self.is_enabled()):
-			if (self._on_off_button != None):
+		if self._on_off_button != None and self.is_enabled():
+			if self._on_off_button != None:
 				parameter = self._on_off_parameter()
 				if parameter != None:
-					self._on_off_button.set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_THIRD)
+					self._on_off_button.set_on_off_values("Mode.Device.On", "Mode.Device.Off")
 					if parameter.is_enabled and parameter.value > 0:
 						self._on_off_button.turn_on()
 					else:
 						self._on_off_button.turn_off()
 				else:
-					self._on_off_button.set_on_off_values(self._skin.off, self._skin.off)
+					self._on_off_button.set_on_off_values("DefaultButton.Disabled", "DefaultButton.Disabled")
 					self._on_off_button.turn_off()
 
 	def _on_off_value(self, value):
-		if (self._on_off_button != None and self.is_enabled()):
-			DeviceComponent._on_off_value(self, value)
+		if self._on_off_button != None and self.is_enabled():
+			LiveDeviceComponent._on_off_value(self, value)
 			self.update_on_off_button()
 
 
 	def set_on_off_button(self, button):
 		assert (isinstance(button, (ButtonElement, type(None))))
-		if (self._on_off_button != button):
-			if (self._on_off_button != None):
+		if self._on_off_button != button:
+			if self._on_off_button != None:
 				self._on_off_button.remove_value_listener(self._on_off_value)
 			self._on_off_button = button
-			if (self._on_off_button != None):
+			if self._on_off_button != None:
 				assert isinstance(button, ButtonElement)
 				self._on_off_button.add_value_listener(self._on_off_value)
 
@@ -372,15 +411,15 @@ class DeviceControllerComponent(DeviceComponent):
 		# tracks
 		if self.is_enabled():
 			if(self._prev_track_button != None):
-				self._prev_track_button.set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_THIRD)
-				if(self.selected_track_idx() > 0 and not self._locked_to_device2):
+				self._prev_track_button.set_on_off_values("Mode.Device.On", "Mode.Device.Off")
+				if(self.selected_track_idx > 0 and not self._locked_to_device2):
 					self._prev_track_button.turn_on()
 				else:
 					self._prev_track_button.turn_off()
 
 			if(self._next_track_button != None):
-				self._next_track_button.set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_THIRD)
-				if(self.selected_track_idx() < len(self.song().tracks) - 1 and not self._locked_to_device2):
+				self._next_track_button.set_on_off_values("Mode.Device.On", "Mode.Device.Off")
+				if(self.selected_track_idx < len(self.song().tracks) - 1 and not self._locked_to_device2):
 					self._next_track_button.turn_on()
 				else:
 					self._next_track_button.turn_off()
@@ -398,10 +437,10 @@ class DeviceControllerComponent(DeviceComponent):
 	def _next_track_value(self, value, sender):
 		assert (self._next_track_button != None)
 		assert (value in range(128))
-		if self.is_enabled() and self._is_active:
+		if self.is_enabled():
 			if ((not sender.is_momentary()) or (value is not 0)):
-				if(self.selected_track_idx() < len(self.song().tracks) - 1 and not self._locked_to_device2):
-					self.song().view.selected_track = self.song().tracks[self.selected_track_idx() + 1]
+				if(self.selected_track_idx < len(self.song().tracks) - 1 and not self._locked_to_device2):
+					self.song().view.selected_track = self.song().tracks[self.selected_track_idx + 1]
 
 	def set_prev_track_button(self, button):
 		assert (isinstance(button, (ButtonElement, type(None))))
@@ -409,39 +448,37 @@ class DeviceControllerComponent(DeviceComponent):
 			if (self._prev_track_button != None):
 				self._prev_track_button.remove_value_listener(self._prev_track_value)
 			self._prev_track_button = button
-			self._prev_track_button.set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_THIRD)
 			if (self._prev_track_button != None):
 				assert isinstance(button, ButtonElement)
+				self._prev_track_button.set_on_off_values("Mode.Device.On", "Mode.Device.Off")
 				self._prev_track_button.add_value_listener(self._prev_track_value, identify_sender=True)
 
 	def _prev_track_value(self, value, sender):
 		assert (self._prev_track_button != None)
 		assert (value in range(128))
 		if ((not sender.is_momentary()) or (value is not 0)):
-			if self.is_enabled() and self._is_active:
-				if(self.selected_track_idx() > 0 and not self._locked_to_device2):
-					self.song().view.selected_track = self.song().tracks[self.selected_track_idx() - 1]
+			if self.is_enabled():
+				if(self.selected_track_idx > 0 and not self._locked_to_device2):
+					self.song().view.selected_track = self.song().tracks[self.selected_track_idx - 1]
 					self.update()
 
 	def selected_track(self):
 		return self.song().view.selected_track
 
-	def selected_track_idx(self):
-		return self.tuple_idx(self.song().tracks, self.song().view.selected_track)
-
+	
 
 # DEVICES
 	def update_device_buttons(self):
 		if self.is_enabled():
 			if(self._prev_device_button != None):
-				self._prev_device_button.set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_THIRD)
-				if(self.selected_device_idx() > 0 and not self._locked_to_device2 and len(self.selected_track().devices) > 0):
+				self._prev_device_button.set_on_off_values("Mode.Device.On", "Mode.Device.Off")
+				if(len(self.selected_track().devices) > 0 and self.selected_device_idx > 0 and not self._locked_to_device2):
 					self._prev_device_button.turn_on()
 				else:
 					self._prev_device_button.turn_off()
 			if(self._next_device_button != None):
-				self._next_device_button.set_on_off_values(self._skin.GREEN_FULL, self._skin.GREEN_THIRD)
-				if(self.selected_device_idx() < len(self.selected_track().devices) - 1 and not self._locked_to_device2 and len(self.selected_track().devices) > 0):
+				self._next_device_button.set_on_off_values("Mode.Device.On", "Mode.Device.Off")
+				if(len(self.selected_track().devices) > 0 and self.selected_device_idx < len(self.selected_track().devices) - 1 and not self._locked_to_device2 ):
 					self._next_device_button.turn_on()
 				else:
 					self._next_device_button.turn_off()
@@ -459,11 +496,11 @@ class DeviceControllerComponent(DeviceComponent):
 	def _next_device_value(self, value, sender):
 		assert (self._next_device_button != None)
 		assert (value in range(128))
-		if self.is_enabled() and self._is_active:
+		if self.is_enabled():
 			if ((not sender.is_momentary()) or (value is not 0)):
 				if self.selected_track() != None and len(self.selected_track().devices) > 0:
-					if(self.selected_device_idx() < len(self.selected_track().devices) - 1 and not self._locked_to_device2):
-						self.song().view.select_device(self.selected_track().devices[self.selected_device_idx() + 1])
+					if(self.selected_device_idx < len(self.selected_track().devices) - 1 and not self._locked_to_device2):
+						self.song().view.select_device(self.selected_track().devices[self.selected_device_idx + 1])
 
 	def set_prev_device_button(self, button):
 		assert (isinstance(button, (ButtonElement, type(None))))
@@ -478,19 +515,28 @@ class DeviceControllerComponent(DeviceComponent):
 	def _prev_device_value(self, value, sender):
 		assert (self._prev_device_button != None)
 		assert (value in range(128))
-		if self.is_enabled() and self._is_active:
+		if self.is_enabled():
 			if ((not sender.is_momentary()) or (value is not 0)):
 				if self.selected_track() != None and len(self.selected_track().devices) > 0:
-					if(self.selected_device_idx() > 0 and not self._locked_to_device2):
-						self.song().view.select_device(self.selected_track().devices[self.selected_device_idx() - 1])
+					if(self.selected_device_idx > 0 and not self._locked_to_device2):
+						self.song().view.select_device(self.selected_track().devices[self.selected_device_idx - 1])
 
+	@property
 	def selected_device_idx(self):
-		return self.tuple_idx(self.song().view.selected_track.devices, self._device)
+		devices = list(self.song().view.selected_track.devices)
+		return devices.index(self._device) if self._device in devices else None
+		#return self.tuple_idx(self.song().view.selected_track.devices, self._device)
+
+	@property
+	def selected_track_idx(self):
+		tracks = list(self.song().tracks)
+		return tracks.index(self.song().view.selected_track) if self.song().view.selected_track in tracks else None
+		#return self.tuple_idx(self.song().tracks, self.song().view.selected_track)
 
 	# utils
 
-	def tuple_idx(self, tuple, obj):
-		for i in xrange(0, len(tuple)):
-			if (tuple[i] == obj):
-				return i
-		return(False)
+	#def tuple_idx(self, tuple, obj):
+	#	for i in xrange(0, len(tuple)):
+	#		if (tuple[i] == obj):
+	#			return i
+	#	return(False)
