@@ -1,4 +1,4 @@
-#from __future__ import with_statement
+from __future__ import with_statement
 import Live
 from _Framework.ControlSurface import ControlSurface
 from _Framework.InputControlElement import *  # noqa
