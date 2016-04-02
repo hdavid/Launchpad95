@@ -29,23 +29,37 @@ class ClipSlotMK2(ClipSlotComponent):
 			ret["channel"] = 0
 			track = self._clip_slot.canonical_parent
 			slot_or_clip = self._clip_slot.clip if self.has_clip() else self._clip_slot
-			if slot_or_clip.color != None:
-				ret["value"] = self._color_value(slot_or_clip.color)
-				if slot_or_clip.is_triggered:
-					#ret["channel"] = 1 # blink me
-					ret["value"]= self._triggered_to_play_value
-				elif slot_or_clip.is_playing:
-					ret["channel"] = 2 # pulse me
-					#ret["value"] = self._started_value
-			elif slot_or_clip.is_triggered and slot_or_clip.will_record_on_start:
-				ret["value"] = self._triggered_to_record_value
-			elif slot_or_clip.is_playing and slot_or_clip.is_recording:
-				ret["value"] = self._recording_value
-				
-		
-					
+	
 			if getattr(slot_or_clip, 'controls_other_clips', True) and self._stopped_value != None:
 				ret["value"] = self._stopped_value
 			if self._track_is_armed(track) and self._clip_slot.has_stop_button and self._record_button_value != None:
 				ret["value"] = self._record_button_value
+				
+			if slot_or_clip.color != None:
+				ret["value"] = self._color_value(slot_or_clip.color)
+				if slot_or_clip.is_triggered:
+					#ret["channel"] = 1 # blink me
+					if slot_or_clip.will_record_on_start:
+						ret["value"] = self._triggered_to_record_value
+					else:
+						ret["value"]= self._triggered_to_play_value
+						#ret["channel"] = 1 # blink me
+				elif slot_or_clip.is_playing:
+					if slot_or_clip.is_recording:
+						ret["value"] = self._recording_value
+					else:	
+						ret["value"] = self._started_value
+						#ret["channel"] = 2 # pulse me
+			else:
+				if slot_or_clip.is_triggered:
+					if slot_or_clip.will_record_on_start:
+						ret["value"] = self._triggered_to_record_value
+					else:
+						ret["value"]= self._triggered_to_play_value	
+				elif slot_or_clip.is_playing:
+					if slot_or_clip.is_recording:
+						ret["value"] = self._recording_value
+					else:	
+						ret["value"] = self._started_value
+					
 			return ret
