@@ -193,7 +193,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 			# clear back buffer
 			for x in range(self.width):
 				for y in range(self.height):
-					self._grid_back_buffer[x][y] = 0
+					self._grid_back_buffer[x][y] = "DefaultButton.Disabled"
 
 			# update back buffer
 			if self._clip != None and self._note_cache != None:
@@ -249,7 +249,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 							note_grid_y_base = -1
 
 						note_grid_y_offset = int(note_position / self.quantization / self.width) % self.number_of_lines_per_note
-						# self._control_surface.log_message("index:"+str(index _of(self.key_indexes,note_key))+" note_grid_y_base:"+str(note_grid_y_base)+" note_grid_y_offset:"+ str(note_grid_y_offset))
+				
 					else:
 						idx = 1
 						try:
@@ -294,7 +294,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 			# caching : compare back buffer to buffer and update grid. this should minimize midi traffic quite a bit.
 			for x in range(self.width):
 				for y in range(self.height):
-					if(self._grid_back_buffer[x][y] != self._grid_buffer[x][y] or self._force_update):
+					if self._grid_back_buffer[x][y] != self._grid_buffer[x][y] or self._force_update:
 						self._grid_buffer[x][y] = self._grid_back_buffer[x][y]
 						self._matrix.get_button(x, y).set_light(self._grid_buffer[x][y])
 			self._force_update = False
@@ -325,11 +325,6 @@ class NoteEditorComponent(ControlSurfaceComponent):
 			self._stepsequencer.create_clip()
 
 		elif self.is_enabled() and self._clip != None and y < self.height:
-
-			# self._control_surface.log_message("got: x:"+ str(x)+" y:"+str(y))
-			# self._control_surface.log_message("clip:"+ str(self._clip))
-			# self._control_surface.log_message("h:"+ str(self.height))
-
 			if value != 0 or not is_momentary:
 				if(self._is_velocity_shifted):
 					self._velocity_notes_pressed = self._velocity_notes_pressed + 1

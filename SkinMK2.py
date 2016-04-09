@@ -163,8 +163,8 @@ class Colors:
 				Off = Rgb.PURPLE_THIRD
 		class LoopSelector:
 			SelectedPlaying = Rgb.PURPLE
-			Playing = Rgb.PURPLE_THIRD
-			Selected = Rgb.AMBER
+			Playing = Rgb.PURPLE_HALF
+			Selected = Rgb.BLUE
 			InLoop = Rgb.BLUE_THIRD
 		class Quantization:
 			One=Rgb.BLACK
@@ -175,7 +175,7 @@ class Colors:
 			class Octave:
 				On = Rgb.GREEN
 				Off = Rgb.GREEN_THIRD
-			Selected = Rgb.AMBER
+			Selected = Rgb.GREEN
 			Playing = Rgb.RED
 		class NoteEditor:
 			class VelocityShifted:
@@ -274,9 +274,9 @@ class Colors:
 			Off = Rgb.AMBER_THIRD
 		class Pads:
 			Root = Rgb.BLUE
-			InScale = Rgb.LIGHT_BLUE_THIRD
+			InScale = Rgb.LIGHT_BLUE_HALF
 			Highlight = Rgb.LIGHT_BLUE
-			OutOfScale = Rgb.BLACK
+			OutOfScale = Rgb.DARK_GREY
 			Invalid = Rgb.BLACK
 					
 	class Scale:#scale edition
@@ -307,8 +307,8 @@ class Colors:
 			Off = Rgb.AMBER_THIRD
 		class Major: # quick scale while in major mode
 			class Key:
-				On = Rgb.AMBER
-				Off = Rgb.AMBER_THIRD
+				On = Rgb.GREEN
+				Off = Rgb.GREEN_THIRD
 			CircleOfFifths = Rgb.RED
 			RelativeScale = Rgb.RED
 			Mode = Rgb.GREEN
@@ -321,8 +321,8 @@ class Colors:
 			Mode = Rgb.GREEN
 		class Other:
 			class Key:
-				On = Rgb.GREEN
-				Off = Rgb.GREEN_THIRD
+				On = Rgb.AMBER
+				Off = Rgb.AMBER_THIRD
 			CircleOfFifths = Rgb.RED
 			RelativeScale = Rgb.RED
 			Mode = Rgb.GREEN

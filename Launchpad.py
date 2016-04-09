@@ -49,7 +49,8 @@ class Launchpad(ControlSurface):
 			from SkinMK2 import make_skin
 			self._skin = make_skin()
 			self._side_notes = (89, 79, 69, 59, 49, 39, 29, 19)
-			self._drum_notes = (20, 30, 31, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126)
+			#self._drum_notes = (20, 30, 31, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126)
+			self._drum_notes = (20, 30, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126)
 		else:
 			from SkinMK1 import make_skin
 			self._skin = make_skin()
@@ -202,7 +203,7 @@ class Launchpad(ControlSurface):
 	def build_midi_map(self, midi_map_handle):
 		ControlSurface.build_midi_map(self, midi_map_handle)
 		if self._selector!=None:
-			if self._selector._main_mode_index==2 or self._selector._main_mode_index==1:
+			#if self._selector._main_mode_index==2 or self._selector._main_mode_index==1:
 				mode = Settings.USER_MODES[ (self._selector._main_mode_index-1) * 3 + self._selector._sub_mode_index[self._selector._main_mode_index] ] 
 				#self._selector.mode_index == 1:
 				#if self._selector._sub_mode_index[self._selector._mode_index] > 0:  # disable midi map rebuild for instrument mode to prevent light feedback errors

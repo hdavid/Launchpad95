@@ -543,7 +543,7 @@ class InstrumentControllerComponent(CompoundComponent):
 								button.set_light("Note.Pads.Highlight")
 							elif note_info.in_scale:
 								button.set_light("Note.Pads.InScale")
-							elif not note_info.valid:
+							elif note_info.valid:
 								button.set_light("Note.Pads.OutOfScale")
 							else:
 								button.set_light("Note.Pads.Invalid")
