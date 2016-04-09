@@ -203,7 +203,7 @@ class Launchpad(ControlSurface):
 	def build_midi_map(self, midi_map_handle):
 		ControlSurface.build_midi_map(self, midi_map_handle)
 		if self._selector!=None:
-			#if self._selector._main_mode_index==2 or self._selector._main_mode_index==1:
+			if self._selector._main_mode_index==2 or self._selector._main_mode_index==1:
 				mode = Settings.USER_MODES[ (self._selector._main_mode_index-1) * 3 + self._selector._sub_mode_index[self._selector._main_mode_index] ] 
 				#self._selector.mode_index == 1:
 				#if self._selector._sub_mode_index[self._selector._mode_index] > 0:  # disable midi map rebuild for instrument mode to prevent light feedback errors
