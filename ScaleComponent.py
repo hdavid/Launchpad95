@@ -1,6 +1,4 @@
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
-from _Framework.ToggleComponent import ToggleComponent
-#from _Framework.Control import PlayableControl, ButtonControl, ToggleButtonControl, control_matrix
 
 KEY_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 CIRCLE_OF_FIFTHS = [7 * k % 12 for k in range(12)]
@@ -206,7 +204,7 @@ class ScaleComponent(ControlSurfaceComponent):
 							if self._key == self._white_notes_index[col]+1:
 								button.set_light("Scale.Key.On")
 							else:
-								 button.set_light("Scale.Key.Off")
+								button.set_light("Scale.Key.Off")
 						elif col==2:
 							button.set_light("Scale.RelativeScale")
 						elif col==6:
@@ -224,7 +222,7 @@ class ScaleComponent(ControlSurfaceComponent):
 							if self._key == self._white_notes_index[col]:
 								button.set_light("Scale.Key.On")
 							else:
-								 button.set_light("Scale.Key.Off")
+								button.set_light("Scale.Key.Off")
 						else:
 							button.set_light("Scale.CircleOfFifths")
 				elif row==3:
@@ -274,7 +272,7 @@ class ScaleComponent(ControlSurfaceComponent):
 	#@matrix.pressed
 	def _matrix_pressed(self, value, x, y, is_momentary):
 		if self.is_enabled() and value>0:
-		 	#y, x = pad.coordinate
+			#y, x = pad.coordinate
 			# modes
 			if y == 0:
 				if not self.is_drumrack:
@@ -537,7 +535,7 @@ class MelodicPattern(object):
 	def note(self, x, y):
 		octave, note = self._octave_and_note(x, y)
 		index = self.base_note + 12 * octave + note 
-	 	root = note == self.scale[0]
+		root = note == self.scale[0]
 		highlight =  note == self.scale[2] or note == self.scale[4]
 		in_scale = note in self.scale
 		valid = index in self.valid_notes

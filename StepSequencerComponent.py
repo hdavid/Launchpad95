@@ -221,7 +221,7 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 							self._offset_buttons[i].set_on_off_values("DrumGroup.PadSelected", "DrumGroup.PadEmpty")
 					else:
 						if self._scale != None:
-						 	if i % 12 == self._scale[0]:
+							if i % 12 == self._scale[0]:
 								self._offset_buttons[i].set_on_off_values("StepSequencer.NoteSelector.Selected", "Note.Pads.Root")
 							elif i % 12 == self._scale[2] or i % 12 == self._scale[4]:
 								self._offset_buttons[i].set_on_off_values("StepSequencer.NoteSelector.Selected", "Note.Pads.Highlight")
@@ -324,30 +324,30 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 		if self.can_move(steps):
 			if self.is_diatonic:
 				# find the next note in scale in that direction
-				oct = 0
+				octave = 0
 				if steps > 0:
 					while self._offset + steps >= 12:
 						steps = steps - 12
-						oct = oct + 1
+						octave = octave + 1
 					while steps != 0 and self._offset + steps not in self._scale:
 						steps = steps + 1
 						while self._offset + steps > 12:
 							steps = steps - 12
-							oct = oct + 1
+							octave = octave + 1
 				elif steps < 0:
 					while self._offset + steps < 0:
 						steps = steps + 12
-						oct = oct - 1
+						octave = octave - 1
 					while steps != 0 and self._offset + steps not in self._scale:
 						steps = steps - 1
 						if self._offset + steps < 0:
 							steps = steps + 12
-							oct = oct - 1
+							octave = octave - 1
 				try:
 					idx = self._scale.index(self._offset + steps)
 				except ValueError:
 					idx = -1
-				self.set_selected_note(self._root_note + oct * 12 + self._scale[idx])
+				self.set_selected_note(self._root_note + octave * 12 + self._scale[idx])
 			else:
 				self.set_selected_note(self._root_note + self._offset + steps)
 
@@ -364,25 +364,6 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 	def set_key(self, key):
 		self._key = key
 
-	def note_is_available(self, key):
-		if self.is_drumrack:
-			if self._drum_group_device.drum_pads[key].chains:
-				return True
-			else:
-				return False
-		else:
-			for note in scale:
-				if key % 12 == (self.root_note + note) % 12:
-					return True
-				else:
-					return False
-
-	def note_is_used(self, key):
-		if clip != None:
-			for note in self._clip_notes:
-				if note[0] == key:  # key: 0-127 MIDI note #
-					return True
-		return False
 
 	@property
 	def selected_note(self):
@@ -848,9 +829,9 @@ class StepSequencerComponent(CompoundComponent):
 	def _is_velocity_shifted(self):
 		return self._note_editor._is_velocity_shifted
 
-	def index_of(self, list, elt):
-		for i in range(0, len(list)):
-			if (list[i] == elt):
+	def index_of(self, aList, elt):
+		for i in range(0, len(aList)):
+			if (aList[i] == elt):
 				return i
 		return(-1)
 
@@ -1291,15 +1272,15 @@ class StepSequencerComponent(CompoundComponent):
 
 	
 	def _update_mute_shift_button(self):
-	 		if self.is_enabled() and self._mute_shift_button != None:
-	 			if self._clip != None and self._clip.is_midi_clip:
-	 				self._mute_shift_button.set_on_off_values("StepSequencer.Mute")
-	 				if self._is_mute_shifted:
-	 					self._mute_shift_button.turn_on()
-	 				else:
-	 					self._mute_shift_button.turn_off()
-	 			else:
-	 				self._mute_shift_button.set_light("DefaultButton.Disabled")
+			if self.is_enabled() and self._mute_shift_button != None:
+				if self._clip != None and self._clip.is_midi_clip:
+					self._mute_shift_button.set_on_off_values("StepSequencer.Mute")
+					if self._is_mute_shifted:
+						self._mute_shift_button.turn_on()
+					else:
+						self._mute_shift_button.turn_off()
+				else:
+					self._mute_shift_button.set_light("DefaultButton.Disabled")
 	
 	def _mute_shift_button_value(self, value, sender):
 		assert (self._mute_shift_button != None)

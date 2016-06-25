@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import Live
 from _Framework.CompoundComponent import CompoundComponent
 from _Framework.SubjectSlot import subject_slot
@@ -7,9 +5,7 @@ from _Framework.ButtonElement import ButtonElement
 from _Framework.Util import find_if
 from itertools import imap
 from TrackControllerComponent import TrackControllerComponent
-from ScaleComponent import *  # noqa
-from StepSequencerComponent import StepSequencerComponent
-from consts import *  # noqa
+from ScaleComponent import *
 import Settings
 
 class InstrumentControllerComponent(CompoundComponent):

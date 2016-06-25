@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
-
 
 class M4LInterface(ControlSurfaceComponent):
 

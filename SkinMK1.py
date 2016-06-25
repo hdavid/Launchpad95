@@ -1,6 +1,5 @@
 from _Framework.Skin import Skin
 from .ColorsMK1 import Rgb
-from _Framework.ButtonElement import Color
 
 class Colors:
 	

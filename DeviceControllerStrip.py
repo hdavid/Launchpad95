@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
 
 from _Framework.ButtonSliderElement import ButtonSliderElement
-from _Framework.InputControlElement import *  # noqa
-from consts import *  # noqa
-import math
 
 SLIDER_MODE_OFF = 0
 SLIDER_MODE_TOGGLE = 1
@@ -75,13 +71,13 @@ class DeviceControllerStrip(ButtonSliderElement):
 		if self._parameter_to_map_to != None:	
 			return self._parameter_to_map_to.is_quantized
 		else:
-			return false
+			return False
 					
 	@property
 	def _mode(self):
 		if self._parameter_to_map_to != None:	
 			if self._is_quantized:
-			 	if self._range == 1:
+				if self._range == 1:
 					return SLIDER_MODE_TOGGLE
 				elif self._range<=self._num_buttons:
 					return SLIDER_MODE_SMALL_ENUM
@@ -126,7 +122,7 @@ class DeviceControllerStrip(ButtonSliderElement):
 	def _update_toggle(self):
 		v =  ["DefaultButton.Disabled" for index in range(len(self._buttons))]
 		if self._value==self._max:
-		 	v[0]="Device.Toggle.On"
+			v[0]="Device.Toggle.On"
 		else:
 			v[0]="Device.Toggle.Off"
 		self._update_buttons(tuple(v))

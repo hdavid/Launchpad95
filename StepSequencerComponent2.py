@@ -1,9 +1,9 @@
-from consts import *  # noqa
+from consts import *
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
-from StepSequencerComponent import *  # noqa
-from ScaleComponent import *  # noqa
+from StepSequencerComponent import *
+from ScaleComponent import *
 from TrackControllerComponent import TrackControllerComponent
 from random import randrange
 import time

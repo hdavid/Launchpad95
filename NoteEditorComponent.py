@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 
-from consts import *  # noqa
+from consts import *
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.ButtonElement import ButtonElement
-from _Framework.ButtonMatrixElement import ButtonMatrixElement
 import time
 
 
@@ -22,7 +20,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		self.display_metronome = True
 		self.metronome_color = "StepSequencer.NoteEditor.Metronome"
 
-		# Velocity colour map. this must remain of lengh 3.
+		# Velocity colour map. this must remain of length 3.
 		self.velocity_map = [70, 90, 110]
 		self.velocity_color_map = ["StepSequencer.NoteEditor.Velocity0", "StepSequencer.NoteEditor.Velocity1", "StepSequencer.NoteEditor.Velocity2"]
 		# other colors

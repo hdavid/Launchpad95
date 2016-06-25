@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# import Live
 from _Framework.MixerComponent import MixerComponent
 from DefChannelStripComponent import DefChannelStripComponent
 from _Framework.ButtonElement import ButtonElement

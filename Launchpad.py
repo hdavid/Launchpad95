@@ -1,7 +1,7 @@
 from __future__ import with_statement
 import Live
 from _Framework.ControlSurface import ControlSurface
-from _Framework.InputControlElement import *  # noqa
+from _Framework.InputControlElement import *
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
 from ConfigurableButtonElement import ConfigurableButtonElement
@@ -26,7 +26,6 @@ class Launchpad(ControlSurface):
 		with self.component_guard():
 			self._suppress_send_midi = True
 			self._suppress_session_highlight = True
-			is_momentary = True
 			self._suggested_input_port = ("Launchpad", "Launchpad Mini", "Launchpad S", "Launchpad MK2")
 			self._suggested_output_port = ("Launchpad", "Launchpad Mini", "Launchpad S", "Launchpad MK2")				
 			self._control_is_with_automap = False
@@ -72,7 +71,7 @@ class Launchpad(ControlSurface):
 				for column in range(8):
 					if self._mk2_rgb:
 						# for mk2 buttons are assigned "top to bottom"
- 						midi_note = (81 - (10 * row)) + column
+						midi_note = (81 - (10 * row)) + column
 					else:
 						midi_note = row * 16 + column
 					button = ConfigurableButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, midi_note, skin = self._skin, control_surface = self)

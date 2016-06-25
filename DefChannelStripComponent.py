@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import Live
 from _Framework.ChannelStripComponent import ChannelStripComponent
 from ConfigurableButtonElement import ConfigurableButtonElement

@@ -3,15 +3,14 @@
 from _Framework.ModeSelectorComponent import ModeSelectorComponent
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
-from _Framework.SessionZoomingComponent import * # noqa
+from _Framework.SessionZoomingComponent import *
 from DeviceComponent import DeviceComponent
 from SpecialSessionComponent import SpecialSessionComponent
 from InstrumentControllerComponent import InstrumentControllerComponent
-from SubSelectorComponent import *  # noqa
+from SubSelectorComponent import *
 from StepSequencerComponent import StepSequencerComponent
 from StepSequencerComponent2 import StepSequencerComponent2
 import Settings
-import traceback
 
 class MainSelectorComponent(ModeSelectorComponent):
 
