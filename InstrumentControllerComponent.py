@@ -567,7 +567,7 @@ class InstrumentControllerComponent(CompoundComponent):
 				button.set_enabled(True)
 				button.force_next_send()
 
-			#self._control_surface._config_button.send_value(32)
+			#self._control_surface._config_button.send_value(32)#Send enable flashing led config message to LP
 
 	
 	def tuple_idx(self, tuple, obj):
