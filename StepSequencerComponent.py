@@ -20,11 +20,6 @@ STEPSEQ_MODE_SCALE_EDIT = 10
 
 LONG_BUTTON_PRESS = 1.0
 
-note_sel_log_enabled = True
-loop_log_enabled = False
-loop_value_log_enabled = False
-seq_log_enabled = True
-
 #Allows to note selection and navigation through note groups and pages
 class NoteSelectorComponent(ControlSurfaceComponent):
 
@@ -192,8 +187,6 @@ class NoteSelectorComponent(ControlSurfaceComponent):
     # Note Selector grid buttons listener (Normal Mode) and set view to the drum pad
     # Mute all the entries for a note (a lane)
     def note_offset_button_value(self, value, sender):
-        if(note_sel_log_enabled):
-            Live.Base.log("LOG: NoteSelectorComponent.note_offset_button_value start - value=" + str(value) + ", sender=" + str(sender))    
         if self.is_enabled() and value > 0 and self._enable_offset_button: # Is NoteON and Normal Mode
             if self._is_mute_shifted:
                 try:
@@ -210,8 +203,6 @@ class NoteSelectorComponent(ControlSurfaceComponent):
                     self._drum_group_device.view.selected_drum_pad = self._drum_group_device.drum_pads[self.selected_note]
 
                 self._step_sequencer._scale_updated()
-        if(note_sel_log_enabled):
-            Live.Base.log("LOG: NoteSelectorComponent.note_offset_button_value end")
 
     def update(self):
         if self.is_enabled():
@@ -346,8 +337,6 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 
     # Shifts the note selector up and down (12 if melodic instrument/16 if drumrack)
     def move(self, steps):
-        if(note_sel_log_enabled):
-            Live.Base.log("LOG: NoteSelectorComponent.move start - steps=" + str(steps))        
         if self.can_move(steps):
             if self.is_diatonic:
                 # find the next note in scale in that direction
@@ -377,12 +366,8 @@ class NoteSelectorComponent(ControlSurfaceComponent):
                 self.set_selected_note(self._root_note + octave * 12 + self._scale[idx])
             else:
                 self.set_selected_note(self._root_note + self._offset + steps)
-        if(note_sel_log_enabled):
-            Live.Base.log("LOG: NoteSelectorComponent.move end")    
 
     def set_selected_note(self, selected_note):
-        if(note_sel_log_enabled):
-            Live.Base.log("LOG: NoteSelectorComponent.set_selected_note start - selected_note=" + str(selected_note))            
         if self.is_drumrack:
             self._root_note = ((selected_note + 12) / 16 - 1) * 16 + 4
             self._offset = (selected_note - self._root_note + 16) % 16
@@ -391,8 +376,6 @@ class NoteSelectorComponent(ControlSurfaceComponent):
             self._offset = (selected_note + 12 - self._root_note) % 12
         
         self._step_sequencer._scale_updated()
-        if(note_sel_log_enabled):
-            Live.Base.log("LOG: NoteSelectorComponent.set_selected_note end")            
 
     def set_key(self, key):
         self._key = key
@@ -426,8 +409,6 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 class LoopSelectorComponent(ControlSurfaceComponent):
 
     def __init__(self, step_sequencer, buttons, control_surface):
-        if(loop_log_enabled):
-            Live.Base.log("LOG: LoopSelectorComponent.__init__ start")
         ControlSurfaceComponent.__init__(self)
         self._control_surface = control_surface
         self.set_enabled(False)
@@ -457,8 +438,6 @@ class LoopSelectorComponent(ControlSurfaceComponent):
             assert isinstance(button, ButtonElement)
             button.remove_value_listener(self._loop_button_value)
             button.add_value_listener(self._loop_button_value, identify_sender=True)
-        if(loop_log_enabled):
-            Live.Base.log("LOG: LoopSelectorComponent.__init__ end")
             
     def disconnect(self):
         self._top_buttons = None
@@ -518,8 +497,6 @@ class LoopSelectorComponent(ControlSurfaceComponent):
 
     # Write LoopSelector Values to Live's Clip loop values (loop and marker) OK
     def set_clip_loop(self, start, end): 
-        if(loop_log_enabled):
-            Live.Base.log("LOG: LoopSelectorComponent.set_clip_loop start - start=" + str(start) + ", end=" + str(end))
         if self._clip != None:
             self._loop_end = end
             self._loop_start = start
@@ -528,16 +505,12 @@ class LoopSelectorComponent(ControlSurfaceComponent):
             self._clip.start_marker = self._loop_start
             self._clip.end_marker = self._loop_end
             self.update()
-        if(loop_log_enabled):
-            Live.Base.log("LOG: LoopSelectorComponent.set_clip_loop end")    
 
     #LoopSelector listener OK
     def _loop_button_value(self, value, sender): #Allows to make selection by hold and pressing marker buttons
         # Selects simple page by double click on region button
         # Allows to mute and delete notes in a range
         # Allows to duplicate a range forwards (to empty regions)
-        if(loop_value_log_enabled):
-            Live.Base.log("LOG: LoopSelectorComponent._loop_button_value start - value=" + str(value) + ", sender=" + str(sender))
         if self.is_enabled():
             idx = self._buttons.index(sender)
             if value > 0:#This allow to setup loop range by pressing two buttons at a time [Start,End]
@@ -579,13 +552,9 @@ class LoopSelectorComponent(ControlSurfaceComponent):
                     self.update()
                 self._last_button_time = time.time()
                 self._last_button_idx = idx
-        if(loop_value_log_enabled):
-            Live.Base.log("LOG: LoopSelectorComponent._loop_button_value end")        
 
     #Index check for page boundaries scroll OK
     def can_scroll(self, blocks):
-        if(loop_log_enabled):
-            Live.Base.log("LOG: LoopSelectorComponent.can_scroll start - blocks=" + str(blocks))
         if self._clip != None:
             if (blocks + self._block) < 0:
                 return False
@@ -651,9 +620,6 @@ class LoopSelectorComponent(ControlSurfaceComponent):
 
     #Make a copy of the current loop to the next N empty blocks OK
     def _extend_clip_content(self, new_loop_start, new_loop_end, old_loop_start, old_loop_end):
-        if(loop_log_enabled):
-            Live.Base.log("LOG: LoopSelectorComponent._extend_clip_content start - new_loop_start=" 
-                        + str(new_loop_start) + ", new_loop_end=" + str(new_loop_end)+ ", old_loop_start=" + str(old_loop_start) + ", old_loop_end=" + str(old_loop_end))
         begin = 0
         finish = 0
 
@@ -690,8 +656,6 @@ class LoopSelectorComponent(ControlSurfaceComponent):
 
         self._extend_clip_forward(old_loop_end, new_loop_end)
 
-        if(loop_log_enabled):
-            Live.Base.log("LOG: LoopSelectorComponent._extend_clip_content end")
 
     #Does the actual loop cloning OK
     def _extend_clip_forward(self, old_loop_end, new_loop_end):
@@ -711,8 +675,6 @@ class LoopSelectorComponent(ControlSurfaceComponent):
             
     #Does the note by note copy OK        
     def _copy_notes_in_range(self, start, end, new_start):
-        if(loop_log_enabled):
-            Live.Base.log("LOG: LoopSelectorComponent._copy_notes_in_range start - start=" + str(start) + ", end=" + str(end)+ ", new_start=" + str(new_start))
         new_notes = list(self._note_cache)
         # for i in range()
         for note in new_notes:
@@ -720,40 +682,25 @@ class LoopSelectorComponent(ControlSurfaceComponent):
                 new_notes.append([note[0], note[1] + new_start - start, note[2], note[3], note[4]])
         self._clip.select_all_notes()
         self._clip.replace_selected_notes(tuple(new_notes))
-        if(loop_log_enabled):
-            Live.Base.log("LOG: LoopSelectorComponent._copy_notes_in_range end")            
 
     #Checks if a range is empty OK
     def _exist_notes_in_range(self, start, end, or_before, or_after):
-        if(loop_log_enabled):
-            Live.Base.log("LOG: LoopSelectorComponent._exist_notes_in_range start - start=" 
-                        + str(start) + ", end=" + str(end)+ ", or_before=" + str(or_before)+ ", or_after=" + str(or_after))
         for note in list(self._note_cache):
             if (note[1] >= start or or_before) and (note[1] < end or or_after):
-                if(loop_log_enabled):
-                    Live.Base.log("LOG: LoopSelectorComponent._exist_notes_in_range end returning True")
                 return(True)
-        if(loop_log_enabled):
-            Live.Base.log("LOG: LoopSelectorComponent._exist_notes_in_range end returning False")
         return(False)
 
     #Deletes a block of notes OK
     def _delete_notes_in_range(self, start, end):
-        if(loop_log_enabled):
-            Live.Base.log("LOG: LoopSelectorComponent._delete_notes_in_range start - start=" + str(start) + ", end=" + str(end))
         new_notes = list()
         for note in list(self._note_cache):
             if note[1] < start or note[1] >= end:
                 new_notes.append(note)
         self._clip.select_all_notes()
         self._clip.replace_selected_notes(tuple(new_notes))
-        if(loop_log_enabled):
-            Live.Base.log("LOG: LoopSelectorComponent._delete_notes_in_range end")
 
     #Mutes a block of notes OK
     def _mute_notes_in_range(self, start, end):
-        if(loop_log_enabled):
-            Live.Base.log("LOG: LoopSelectorComponent._mute_notes_in_range start - start=" + str(start) + ", end=" + str(end))
         new_notes = list()
         for note in list(self._note_cache): #Note -> tuple containing pitch, time, duration, velocity, and mute
             if note[1] < start or note[1] >= end: #Note time
@@ -762,15 +709,11 @@ class LoopSelectorComponent(ControlSurfaceComponent):
                 new_notes.append([note[0], note[1], note[2], note[3], not note[4]]) # Negate mute state
         self._clip.select_all_notes()
         self._clip.replace_selected_notes(tuple(new_notes))
-        if(loop_log_enabled):
-            Live.Base.log("LOG: LoopSelectorComponent._mute_notes_in_range end")
 
 
 class StepSequencerComponent(CompoundComponent):
 
     def __init__(self, matrix, side_buttons, top_buttons, control_surface):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.__init__ start")
         self._osd = None
         self._control_surface = control_surface
         self._number_of_lines_per_note = 1
@@ -812,14 +755,10 @@ class StepSequencerComponent(CompoundComponent):
         self._set_lock_function()
         self._set_mode_function()
         self._scale_updated()
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.__init__ end")
         # TODO: maybe clean this... this should be done on enable.
         # self.on_clip_slot_changed()
 
     def disconnect(self):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.disconnect start")
         self._clip = None
 
         self._lock_button = None
@@ -834,23 +773,15 @@ class StepSequencerComponent(CompoundComponent):
         self._note_selector = None
         self._scale_selector = None
         self._track_controller = None
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.disconnect end")
 
 # SET FUNCTIONS
     def _set_mode_function(self): #Change the resolution of the sequencer
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._set_mode_function start")
         self._mode_button = None
         self.set_mode_button(self._side_buttons[3]) #SndB
         self._last_mode_button_press = time.time()
         self._number_of_lines_per_note = 1
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._set_mode_function end")
 
     def _set_lock_function(self): #?????
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._set_lock_function start")
         self._is_locked = False
         self._lock_to_track = False
         self._last_lock_button_press = time.time()
@@ -858,34 +789,22 @@ class StepSequencerComponent(CompoundComponent):
         self._lock_button = None
         self.set_lock_button(self._side_buttons[1])#Pan
         self._selected_track = None
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._set_lock_function end")
             
     def _set_mute_shift_function(self): #Allow to mute notes in the grid or all notes if selecting on Note Selector #FIX bad behavior
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._set_mute_shift_function start")
         self._mute_shift_button = None
         self._last_mute_shift_button_press = time.time()
         self.set_mute_shift_button(self._side_buttons[7])#Arm
         self._is_mute_shifted = False
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._set_mute_shift_function end")
 
     def _set_quantization_function(self):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._set_quantization_function start")        
         self._quantization_index = 2
         self.set_quantization(QUANTIZATION_MAP[self._quantization_index])
         self._quantization_button = None
         self._last_quantize_button_press = time.time()
         self.set_quantization_button(self._side_buttons[2])#SndA
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._set_quantization_function end")    
 
     # Set 4x4 lower right matrix section that manages the loop range OK
     def _set_loop_selector(self):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._set_loop_selector start")    # Relevated            
         self._loop_selector = self.register_component(LoopSelectorComponent(self, [
             self._matrix.get_button(4, 4), self._matrix.get_button(5, 4), self._matrix.get_button(6, 4), self._matrix.get_button(7, 4),
             self._matrix.get_button(4, 5), self._matrix.get_button(5, 5), self._matrix.get_button(6, 5), self._matrix.get_button(7, 5),
@@ -893,24 +812,16 @@ class StepSequencerComponent(CompoundComponent):
             self._matrix.get_button(4, 7), self._matrix.get_button(5, 7), self._matrix.get_button(6, 7), self._matrix.get_button(7, 7)],
             self._control_surface)
             )
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._set_loop_selector end")    
             
     #Allow to manipulate the LP grid and Live's Clip notes (add/del, velocity, mute, etc)
     #In charge of refreshing the notes LED matrix
     #Display page indicator for multinote mode    
     def _set_note_editor(self): 
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._set_note_editor start")            
         self._note_editor = self.register_component(NoteEditorComponent(self, self._matrix, self._control_surface))
         self._note_editor.set_velocity_button(self._side_buttons[6])#Solo 
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._set_note_editor end")    
 
     #Set 4x4 lower left matrix section that allows note selection in Normal Mode
     def _set_note_selector(self):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._set_note_selector start")                
         self._note_selector = self.register_component(NoteSelectorComponent(self, [
             self._matrix.get_button(0, 7), self._matrix.get_button(1, 7), self._matrix.get_button(2, 7), self._matrix.get_button(3, 7),
             self._matrix.get_button(0, 6), self._matrix.get_button(1, 6), self._matrix.get_button(2, 6), self._matrix.get_button(3, 6),
@@ -920,24 +831,16 @@ class StepSequencerComponent(CompoundComponent):
             )
         self._note_selector.set_up_button(self._side_buttons[4])#Stop
         self._note_selector.set_down_button(self._side_buttons[5])#Trk On
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._set_note_selector end")        
 
     def _set_track_controller(self):#Navigation buttons
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._set_track_controller start")        
         self._track_controller = self.register_component(TrackControllerComponent(self._control_surface))
         self._track_controller.set_prev_scene_button(self._top_buttons[0])
         self._track_controller.set_next_scene_button(self._top_buttons[1])
         self._track_controller.set_prev_track_button(self._top_buttons[2])
         self._track_controller.set_next_track_button(self._top_buttons[3])
         self._track_controller._implicit_arm = False
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._set_track_controller end")    
 
     def _set_scale_selector(self):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._set_scale_selector start")            
         self._scale_selector = self.register_component(ScaleComponent(self._control_surface))
         self._scale_selector.set_osd(self._osd)
         self._scale_selector.set_enabled(False)
@@ -946,16 +849,12 @@ class StepSequencerComponent(CompoundComponent):
         self._scale_selector._drumrack = False
         self._scale_selector_button = None
         self.set_scale_selector_button(self._side_buttons[0]) 
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._set_scale_selector end")        
             
     def set_osd(self, osd):
         self._osd = osd
         self._scale_selector.set_osd(osd)
 
     def _update_OSD(self):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._update_OSD start")            
         if self._osd != None:
             if self._mode == STEPSEQ_MODE_MULTINOTE:
                 self._osd.set_mode('Drum Step Sequencer (multinote)')
@@ -1015,8 +914,6 @@ class StepSequencerComponent(CompoundComponent):
             else:
                 self._osd.info[1] = "no clip selected"
             self._osd.update()
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._update_OSD end")        
 
     @property
     def _is_velocity_shifted(self):
@@ -1030,8 +927,6 @@ class StepSequencerComponent(CompoundComponent):
 
 # enabled
     def set_enabled(self, enabled):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_enabled start - enabled=" + str(enabled))                
         if enabled:
             if self._mode == STEPSEQ_MODE_SCALE_EDIT:
                 self.set_mode(self._mode_backup)
@@ -1071,12 +966,8 @@ class StepSequencerComponent(CompoundComponent):
             self._note_selector.set_enabled(enabled)
             self._note_editor.set_enabled(enabled)
             CompoundComponent.set_enabled(self, enabled)
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_enabled end")    
 
     def set_mode(self, mode, number_of_lines_per_note=1):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_mode start - mode=" + str(mode) + ",  number_of_lines_per_note=" + str(number_of_lines_per_note))    
         if self._mode != mode or number_of_lines_per_note != self._number_of_lines_per_note:
             self._number_of_lines_per_note = number_of_lines_per_note
             self._note_editor.set_multinote(mode == STEPSEQ_MODE_MULTINOTE, number_of_lines_per_note)
@@ -1099,23 +990,15 @@ class StepSequencerComponent(CompoundComponent):
             self._mode = mode
             self._note_editor._force_update = True
             self.update()
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_mode end")    
 
 
     def set_page(self, block):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_page start - block=" + str(block))    
         self._note_editor.set_page(block)
         self._note_editor.update()
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_page end")    
         
 
 # SCALE
     def _scale_updated(self):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._scale_updated start")    
         keys = [0, 0, 0, 0, 0, 0, 0, 0]
         key_is_root_note = [False, False, False, False, False, False, False, False]
         key_is_in_scale = [False, False, False, False, False, False, False, False]
@@ -1150,8 +1033,6 @@ class StepSequencerComponent(CompoundComponent):
         self._note_editor.set_key_index_is_root_note(key_is_root_note)
         self._update_note_editor()
         self._update_note_selector()
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._scale_updated end")    
 
 # UPDATE
     def update(self):
@@ -1235,8 +1116,6 @@ class StepSequencerComponent(CompoundComponent):
         self.update()
 
     def on_clip_slot_changed(self, scheduled=False):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.on_clip_slot_changed start - scheduled=" + str(scheduled))    
         # get old reference to clipslot
         clip_slot = self._clip_slot
 
@@ -1351,12 +1230,8 @@ class StepSequencerComponent(CompoundComponent):
             # publish
             self._clip = None
             self._clip_changed()
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.on_clip_slot_changed end")    
 
     def _clip_changed(self):  # triggered by _on_clip_slot_changed() or manually on enable.
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._clip_changed start")    
         self._note_editor.set_clip(self._clip)
         self._note_selector.set_clip(self._clip)
         self._loop_selector.set_clip(self._clip)
@@ -1366,12 +1241,8 @@ class StepSequencerComponent(CompoundComponent):
 
         # reload notes
         self._on_notes_changed()
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._clip_changed end")
             
     def _on_notes_changed(self):  # trigger by callback on clip or via _clip_changed.
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._on_notes_changed start")    
         if self.is_enabled():
             # get notes
             if self._clip == None:
@@ -1388,23 +1259,16 @@ class StepSequencerComponent(CompoundComponent):
                 self._note_selector.set_note_cache(self._note_cache)
                 self._loop_selector.set_note_cache(self._note_cache)
                 self._note_editor.update()
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._on_notes_changed end")
 
 # PLAY POSITION
     def _on_playing_status_changed(self):  # playing status changed listener
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._on_playing_status_changed start")    
         if self.is_enabled():
             self._on_playing_position_changed()
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._on_playing_status_changed end")    
 
     def _on_playing_position_changed(self):  # playing position changed listener
         if self.is_enabled():
             if self._clip != None and self._clip.is_playing and self.song().is_playing:
                 self._playhead = self._clip.playing_position
-                Live.Base.log("LOG: StepSequencerComponent._playhead" + str(self._playhead))  
             else:
                 self._playhead = None
             self._loop_selector.set_playhead(self._playhead)
@@ -1414,8 +1278,6 @@ class StepSequencerComponent(CompoundComponent):
 
 # DRUM_GROUP_DEVICE
     def _update_drum_group_device(self):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._update_drum_group_device start")    
         if self.song().view.selected_track != None:
             track = self.song().view.selected_track
             if(track.devices != None and len(track.devices) > 0):
@@ -1429,21 +1291,13 @@ class StepSequencerComponent(CompoundComponent):
                 self._drum_group_device = None
         else:
             self._drum_group_device = None
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._update_drum_group_device end")    
 
     def _detect_scale_mode(self):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._detect_scale_mode start")    
         if not self._is_locked:
             self._update_drum_group_device()
             self._scale_selector.set_drumrack(self._drum_group_device != None)
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._detect_scale_mode end")    
     
     def find_drum_group_device(self, track):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.find_drum_group_device start - track=" + str(track))    
         device = find_if(lambda d: d.type == Live.Device.DeviceType.instrument, track.devices)#find track's Instrument device
         if device:
             if device.can_have_drum_pads:#device is a drum rack??
@@ -1452,8 +1306,6 @@ class StepSequencerComponent(CompoundComponent):
                 return find_if(bool, imap(self.find_drum_group_device, device.chains))#recursive->returns the first drum rack item of the chain
         else:
             return None
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.find_drum_group_device end")    
             
 # SCALE Selector Button
     def _update_scale_selector_button(self):
@@ -1470,9 +1322,7 @@ class StepSequencerComponent(CompoundComponent):
                     self._scale_selector_button.turn_off()
 
     def set_scale_selector_button(self, button): #remove old scale button listener and adds new one 
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_scale_selector_button start - button=" + str(button))    
-            assert (isinstance(button, (ButtonElement, type(None))))
+        assert (isinstance(button, (ButtonElement, type(None))))
         if (self._scale_selector_button != button):
             if (self._scale_selector_button != None):
                 self._scale_selector_button.remove_value_listener(self._scale_selector_button_value)
@@ -1480,12 +1330,8 @@ class StepSequencerComponent(CompoundComponent):
             if (self._scale_selector_button != None):
                 assert isinstance(button, ButtonElement)
                 self._scale_selector_button.add_value_listener(self._scale_selector_button_value)
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_scale_selector_button end")
 
     def _scale_selector_button_value(self, value):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._scale_selector_button_value start - value=" + str(value))    
         assert (value in range(128))
         if self.is_enabled():
 
@@ -1504,13 +1350,9 @@ class StepSequencerComponent(CompoundComponent):
                     if Settings.STEPSEQ__SAVE_SCALE != None and Settings.STEPSEQ__SAVE_SCALE == "clip":  
                         self._scale_selector.update_object_name(self._clip)
                 self.set_mode(self._mode_backup)
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._scale_selector_button_value end")    
 
 # MUTE SHIFT Button
     def set_mute_shift_button(self, button):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_mute_shift_button start - button=" + str(button))    
         assert (isinstance(button, (ButtonElement, type(None))))
         if (self._mute_shift_button != button):
             if (self._mute_shift_button != None):
@@ -1519,12 +1361,8 @@ class StepSequencerComponent(CompoundComponent):
             if (self._mute_shift_button != None):
                 assert isinstance(button, ButtonElement)
                 self._mute_shift_button.add_value_listener(self._mute_shift_button_value, identify_sender=True)
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_mute_shift_button end")
     
     def _update_mute_shift_button(self):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._update_mute_shift_button start")    
         if self.is_enabled() and self._mute_shift_button != None:
             if self._clip != None and self._clip.is_midi_clip:
                 self._mute_shift_button.set_on_off_values("StepSequencer.Mute")
@@ -1534,12 +1372,8 @@ class StepSequencerComponent(CompoundComponent):
                     self._mute_shift_button.turn_off()
             else:
                 self._mute_shift_button.set_light("DefaultButton.Disabled")
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._update_mute_shift_button end")    
     
     def _mute_shift_button_value(self, value, sender):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._mute_shift_button_value start - value=" + str(value) +", sender=" + str(sender))    
         assert (self._mute_shift_button != None)
         assert (value in range(128))
         if self.is_enabled() and self._clip != None:
@@ -1553,8 +1387,6 @@ class StepSequencerComponent(CompoundComponent):
                 
             self._note_editor._is_mute_shifted = self._is_mute_shifted
             self._update_mute_shift_button()
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._mute_shift_button_value end")    
             
 
 
@@ -1574,8 +1406,6 @@ class StepSequencerComponent(CompoundComponent):
                     self._mode_button.set_light("DefaultButton.Disabled")
 
     def set_mode_button(self, button):#remove old mode button listener and adds new one 
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_mode_button start - button=" + str(button))    
         assert (isinstance(button, (ButtonElement, type(None))))
         if (self._mode_button != button):
             if (self._mode_button != None):
@@ -1584,12 +1414,8 @@ class StepSequencerComponent(CompoundComponent):
             if (self._mode_button != None):
                 assert isinstance(button, ButtonElement)
                 self._mode_button.add_value_listener(self._mode_button_value, identify_sender=True)
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_mode_button end")    
 
     def _mode_button_value(self, value, sender):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._mode_button_value start - value=" + str(value) +", sender=" + str(sender))    
         assert (self._mode_button != None)
         assert (value in range(128))
         if self.is_enabled() and self._clip != None:
@@ -1608,8 +1434,6 @@ class StepSequencerComponent(CompoundComponent):
 
                 else:
                     self.set_mode(STEPSEQ_MODE_NORMAL, self._number_of_lines_per_note)
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._mode_button_value end")    
 
 # QUANTIZE
 
@@ -1663,8 +1487,6 @@ class StepSequencerComponent(CompoundComponent):
 
 
     def set_quantization(self, quantization):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_quantization start - quantization=" + str(quantization))    
         self._quantization = quantization
         if self._note_editor != None:
             self._note_editor.set_quantization(self._quantization)
@@ -1675,9 +1497,6 @@ class StepSequencerComponent(CompoundComponent):
         if self._note_editor != None:
             self._update_note_editor()
         self._update_OSD()
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_quantization end")    
-
 
 # LOCK Button
     def _update_lock_button(self):
@@ -1696,8 +1515,6 @@ class StepSequencerComponent(CompoundComponent):
                     self._lock_button.set_light("DefaultButton.Disable")
 
     def set_lock_button(self, button):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_lock_button start - button=" + str(button))    
         assert (isinstance(button, (ButtonElement, type(None))))
         if (button != self._lock_button):
             if (self._lock_button != None):
@@ -1706,12 +1523,8 @@ class StepSequencerComponent(CompoundComponent):
             if (self._lock_button != None):
                 assert isinstance(button, ButtonElement)                
                 self._lock_button.add_value_listener(self._lock_value, identify_sender=True)
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_lock_button end")    
 
     def _lock_value(self, value, sender):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._lock_value start - value=" + str(value) +", sender=" + str(sender))    
         assert (self._lock_button != None)
         assert (value in range(128))
         if self.is_enabled() and self._clip != None:
@@ -1731,8 +1544,6 @@ class StepSequencerComponent(CompoundComponent):
                         self._control_surface.show_message("stepseq : locked to clip '"+str(self._clip.name)+"'")
                     self._update_lock_button()
                     self._update_OSD()
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._lock_value end")    
 
 
 # RIGHT Button
@@ -1749,8 +1560,6 @@ class StepSequencerComponent(CompoundComponent):
                     self._right_button.set_light("DefaultButton.Disabled")
 
     def set_right_button(self, button):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_right_button start - button=" + str(button))    
         assert (isinstance(button, (ButtonElement, type(None))))
         if (button != self._right_button):
             if (self._right_button != None):
@@ -1758,13 +1567,9 @@ class StepSequencerComponent(CompoundComponent):
             self._right_button = button
             if (self._right_button != None):
                 self._right_button.add_value_listener(self._right_value, identify_sender=True)
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_right_button end")    
 
 
     def _right_value(self, value, sender):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._right_value start - value=" + str(value) +", sender=" + str(sender))    
         assert (self._right_button != None)
         assert (value in range(128))
         if self.is_enabled() and self._clip != None:
@@ -1772,8 +1577,6 @@ class StepSequencerComponent(CompoundComponent):
                 self._loop_selector.scroll(1)
                 self._note_editor.request_display_page()
                 self.update()
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._right_value end")    
 
 
 # LEFT Button
@@ -1790,8 +1593,6 @@ class StepSequencerComponent(CompoundComponent):
                     self._left_button.set_light("DefaultButton.Disabled")
 
     def set_left_button(self, button):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_left_button start - button=" + str(button))    
         assert (isinstance(button, (ButtonElement, type(None))))
         if (button != self._left_button):
             if (self._left_button != None):
@@ -1799,13 +1600,9 @@ class StepSequencerComponent(CompoundComponent):
             self._left_button = button
             if (self._left_button != None):
                 self._left_button.add_value_listener(self._left_value, identify_sender=True)
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.set_left_button end")    
 
 
     def _left_value(self, value, sender):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._left_value start - value=" + str(value) +", sender=" + str(sender))    
         assert (self._right_button != None)
         assert (value in range(128))
         if self.is_enabled() and self._clip != None:
@@ -1813,15 +1610,11 @@ class StepSequencerComponent(CompoundComponent):
                 self._loop_selector.scroll(-1)
                 self._note_editor.request_display_page()
                 self.update()
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent._left_value end")    
 
 
 # UTILS
 
     def create_clip(self):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.create_clip start")    
         if self.song().view.highlighted_clip_slot != None:
             clip_slot = self.song().view.highlighted_clip_slot
             if not clip_slot.has_clip:
@@ -1833,13 +1626,9 @@ class StepSequencerComponent(CompoundComponent):
                 clip_slot.fire()
                 self.on_clip_slot_changed()
                 self.update()
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.create_clip end")    
 
 
     def duplicate_clip(self):
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.duplicate_clip start")    
         if self._clip_slot and self._clip_slot.has_clip:
             try:
                 if not self._is_locked or self._lock_to_track:
@@ -1854,5 +1643,3 @@ class StepSequencerComponent(CompoundComponent):
                 pass
             except RuntimeError:
                 pass
-        if(seq_log_enabled):
-            Live.Base.log("LOG: StepSequencerComponent.duplicate_clip end")    
