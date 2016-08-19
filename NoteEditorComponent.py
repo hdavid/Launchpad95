@@ -3,7 +3,7 @@ from _Framework.ButtonElement import ButtonElement
 import Live
 import time
 
-log_enabled = True
+log_enabled = False
 class NoteEditorComponent(ControlSurfaceComponent):
 
 	def __init__(self, stepsequencer = None, matrix = None, control_surface = None):
@@ -20,6 +20,9 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		# playback step indicator
 		self.display_metronome = True
 		self.metronome_color = "StepSequencer.NoteEditor.Metronome"
+		
+		# playback page indicator
+		self._current_page = -1
 
 		# Velocity colour map. this must remain of lengh 3. WHY???
 		self.velocity_map = [20, 50, 80, 105, 127]
@@ -313,10 +316,9 @@ class NoteEditorComponent(ControlSurfaceComponent):
 
 				# play back position
 				if self._playhead != None:
-					play_position = self._playhead  # position in beats (1/4 notes in 4/4 time)
+					play_position = self._playhead  # position in beats (integer = number of beats, decimal subdivisions)
 					play_page = int(play_position / self.quantization / self.width / self.number_of_lines_per_note)
 					play_row = int(play_position / self.quantization / self.width) % self.number_of_lines_per_note
-
 					play_x_position = int(play_position / self.quantization) % self.width
 					play_y_position = int(play_position / self.quantization / self.width) % self.height
 				else:
@@ -325,7 +327,6 @@ class NoteEditorComponent(ControlSurfaceComponent):
 					play_row = -1
 					play_x_position = -1
 					play_y_position = -1
-
 				# add play positition in amber
 				if(self.display_metronome):
 					if self._clip.is_playing and self.song().is_playing:
@@ -336,14 +337,20 @@ class NoteEditorComponent(ControlSurfaceComponent):
 					self._display_selected_page()
 					if self._display_page_time + 0.25 < time.time():
 						self._display_page = False
+						
+
 
 				# Display the notes in the 1st left column 
 				if self.is_multinote:
 					self._display_note_markers()
+					# Display the current played page
+					if(self._current_page !=play_page):
+						self._current_page=play_page
+						self._display_current_page()
 
 				# display clip notes
 				for note in self._note_cache:
-					note_position = note[1] # decimal value of a beat (1=beat, 4=measure, 0.25=16th)
+					note_position = note[1] # decimal value of a beat (1=beat, same as playhead)
 					note_key = note[0]  # key: 0-127 MIDI note #
 					note_velocity = note[3] # velocity: 0-127 value #
 					note_muted = note[4]#Boolean
@@ -357,7 +364,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 						try:
 							note_idx = self.key_indexes.index(note_key)
 						except ValueError:
-							note_idx = 0
+							note_idx = -1
 						note_grid_y_base = note_idx * self.number_of_lines_per_note
 						if(note_grid_y_base >= 0):
 							note_grid_y_base = (7 - note_grid_y_base) - (self.number_of_lines_per_note - 1)
@@ -365,7 +372,6 @@ class NoteEditorComponent(ControlSurfaceComponent):
 							note_grid_y_base = -1
 
 						note_grid_y_offset = int(note_position / self.quantization / self.width) % self.number_of_lines_per_note
-				
 					else:
 						idx = 1
 						try:
@@ -384,9 +390,9 @@ class NoteEditorComponent(ControlSurfaceComponent):
 					else:
 						note_grid_x_position = -1
 						note_grid_y_position = -1
-
+				
 					#Set note color
-					if note_grid_x_position >= 0:
+					if (note_grid_x_position >= 0):
 						# compute colors
 						velocity_color = self.velocity_color_map[0]
 						for index in range(len(self.velocity_map)):
@@ -419,12 +425,16 @@ class NoteEditorComponent(ControlSurfaceComponent):
 			
 	# Display the third amber column to show the current page in multinote mode OK
 	def _display_selected_page(self): # OK
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent._display_selected_page start")
 		for i in range(0, self._height):
 			self._grid_back_buffer[self._page % self.width][i] = "StepSequencer.NoteEditor.PageMarker"
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent._display_selected_page end")			
+			
+	# Display the third red column to show the current page in multinote mode each time that the metronome goes to new pageOK
+	def _display_current_page(self): # OK
+		for i in range(0, self._height):
+			if(self._page==self._current_page):
+				self._grid_back_buffer[self._current_page % self.width][i] = "StepSequencer.NoteEditor.CurrentPageMarkerPlay"
+			else:
+				self._grid_back_buffer[self._current_page % self.width][i] = "StepSequencer.NoteEditor.CurrentPageMarker"
 	
 	# Displays 3 buttons for the root of the scale and 1 for the in scale notes 	
 	def _display_note_markers(self):# (out of scale notes buttons are dark) OK

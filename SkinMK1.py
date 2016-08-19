@@ -195,9 +195,11 @@ class Colors:
             Velocity4 = Rgb.MANDARIN_FULL
             Muted = Rgb.RED_THIRD
             Playing = Rgb.RED
-            Metronome = Rgb.AMBER
+            Metronome = Rgb.YELLOW_FULL
             NoteMarker = Rgb.AMBER
             PageMarker = Rgb.AMBER_THIRD
+            CurrentPageMarker = Rgb.RED_THIRD
+            CurrentPageMarkerPlay = Rgb.GREEN_THIRD
                 
     class StepSequencer2:
         class Pitch:
