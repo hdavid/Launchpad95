@@ -1,14 +1,10 @@
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.ButtonElement import ButtonElement
-import Live
 import time
 
-log_enabled = False
 class NoteEditorComponent(ControlSurfaceComponent):
 
 	def __init__(self, stepsequencer = None, matrix = None, control_surface = None):
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent.__init__ start")
 		ControlSurfaceComponent.__init__(self)
 		self.set_enabled(False)
 		self._stepsequencer = stepsequencer
@@ -75,29 +71,19 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		# matrix
 		if matrix != None:
 			self.set_matrix(matrix)
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent.__init__ end")
 
 	def disconnect(self):
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent.disconnect start")
 		self._matrix = None
 		self._velocity_button = None
 		self._clip = None
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent.disconnect end")
 			
 	@property
 	def is_multinote(self):
 		return self._is_mutlinote
 
 	def set_multinote(self, is_mutlinote, number_of_lines_per_note):
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent.set_multinote start - is_mutlinote=" + str(is_mutlinote) + ", number_of_lines_per_note=" + str(number_of_lines_per_note))
 		self._is_mutlinote = is_mutlinote
 		self._number_of_lines_per_note = number_of_lines_per_note
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent.set_multinote end")
 
 	@property
 	def quantization(self):
@@ -144,14 +130,10 @@ class NoteEditorComponent(ControlSurfaceComponent):
 			return self.height
 
 	def set_page(self, page):
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent.set_page start - page=" + str(page))		
 		if self.is_multinote:
 			self._page = page
 		else:
 			self._page = page / 4  # 4 lines per note (32 steps seq)
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent.set_page end")				
 
 	def set_clip(self, clip):
 		self._clip = clip
@@ -164,8 +146,6 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		self._update_matrix()
 
 	def update_notes(self): # Deprecated ???
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent.update_notes start")
 		if self._clip != None:
 			self._clip.select_all_notes()
 			note_cache = self._clip.get_selected_notes()
@@ -175,15 +155,11 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		self._update_matrix()
 
 	def update(self, force=False):
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent.update start")		
 		if self.is_enabled():
 			if force:
 				self._force_update = True
 			self._update_velocity_button()
 			self._update_matrix()
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent.update end")	
 
 	def request_display_page(self): # Reset page column display timer
 		self._display_page = True
@@ -194,8 +170,6 @@ class NoteEditorComponent(ControlSurfaceComponent):
 	
 	#Add listener and initialize note buffers OK
 	def set_matrix(self, matrix): 
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent.set_matrix start - matrix=" + str(matrix))	
 		if (matrix != self._matrix):
 			if (self._matrix != None):
 				self._matrix.remove_value_listener(self._matrix_value)
@@ -220,24 +194,16 @@ class NoteEditorComponent(ControlSurfaceComponent):
 											[0, 0, 0, 0, 0, 0, 0, 0], 
 											[0, 0, 0, 0, 0, 0, 0, 0], 
 											[0, 0, 0, 0, 0, 0, 0, 0]]
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent.set_matrix end")			
 
 	# matrix buttons listener OK
 	def _matrix_value(self, value, x, y, is_momentary): 
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent._matrix_value start - value=" + str(value) + ", y=" + str(y) + ", x=" + str(x) + ", is_momentary=" + str(is_momentary))
 		if self.is_enabled() and y < self.height: #Height value can be 8 (MULTINOTE/SCALE_EDIT) or 4 (STEPSEQ_MODE_NORMAL)
 			if ((value != 0) or (not is_momentary)): #if NOTE_ON or button is toggle
 				self._stepsequencer._was_velocity_shifted = False # Some previous state logic INVESTIGATE
 				self._matrix_value_message([value, x, y, is_momentary])
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent._matrix_value end")
 
 	#Add/Delete/Mute notes in the cache for PL light management and in the Live's Clip OK
 	def _matrix_value_message(self, values):  # (value=127/0, x=idx, y=idx, is_momentary=True) 
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent._matrix_value_message start - values=" + str(values))
 		value = values[0]
 		x = values[1]
 		y = values[2]
@@ -299,8 +265,6 @@ class NoteEditorComponent(ControlSurfaceComponent):
 				note_cache = self._clip.get_selected_notes()
 				if self._note_cache != note_cache:
 					self._note_cache = note_cache
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent._matrix_value_message end")
 
 	# Updates the LP LEDs OK
 	def _update_matrix(self):  
@@ -463,8 +427,6 @@ class NoteEditorComponent(ControlSurfaceComponent):
 			
 	# Handle button shifted and velocity selection OK			
 	def _velocity_value(self, value, sender): 
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent._velocity_value start - value=" + str(value) + ", sender=" + str(sender))		
 		assert (self._velocity_button != None)
 		assert (value in range(128))
 		if self.is_enabled():
@@ -489,8 +451,6 @@ class NoteEditorComponent(ControlSurfaceComponent):
 				self._velocity_last_press = time.time()
 				self._update_velocity_button()
 			self._stepsequencer._note_selector.update()
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent._velocity_value end")
 			
 	# Updates the velocity button light OK			
 	def _update_velocity_button(self): 
@@ -509,8 +469,6 @@ class NoteEditorComponent(ControlSurfaceComponent):
 
 	# Mute all entries for a given MIDI note OK
 	def mute_lane(self, pitch_to_mute):
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent.mute_lane start - pitch_to_mute=" + str(pitch_to_mute))		
 		if self.is_enabled() and self._clip != None:
 			self._clip.select_all_notes()
 			note_cache = self._clip.get_selected_notes()
@@ -529,5 +487,3 @@ class NoteEditorComponent(ControlSurfaceComponent):
 				self._clip.replace_selected_notes(tuple(note_cache))
 				note_cache = self._clip.get_selected_notes()
 			self.update()
-		if(log_enabled):
-			Live.Base.log("LOG: NoteEditorComponent.mute_lane end")
