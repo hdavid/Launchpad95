@@ -9,8 +9,6 @@ from MainSelectorComponent import MainSelectorComponent
 from M4LInterface import M4LInterface
 import Settings
 
-log_enabled = False
-send_midi_log_enabled = False
 DO_COMBINE = Live.Application.combine_apcs()  # requires 8.2 & higher
 
 class Launchpad(ControlSurface):
@@ -19,8 +17,6 @@ class Launchpad(ControlSurface):
     
     def __init__(self, c_instance):
         ControlSurface.__init__(self, c_instance)
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95.__init__ start")
         live = Live.Application.get_application()
         self._live_major_version = live.get_major_version()
         self._live_minor_version = live.get_minor_version()
@@ -30,7 +26,6 @@ class Launchpad(ControlSurface):
         with self.component_guard():
             self._suppress_send_midi = True
             self._suppress_session_highlight = True
-            is_momentary = True
             self._suggested_input_port = ("Launchpad", "Launchpad Mini", "Launchpad S", "Launchpad MK2")
             self._suggested_output_port = ("Launchpad", "Launchpad Mini", "Launchpad S", "Launchpad MK2")                
             self._control_is_with_automap = False
@@ -39,18 +34,12 @@ class Launchpad(ControlSurface):
             self._wrote_user_byte = False
             self._challenge = Live.Application.get_random_int(0, 400000000) & 2139062143
             self._init_done = False
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95.__init__ end")
         # caller will send challenge and we will continue as challenge is received.
         
             
     def init(self):
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95.init start")
         #skip init if already done.
         if self._init_done:
-            if(log_enabled):
-                Live.Base.log("LOG: Launchpad95.init end cause _init_done")
             return
         self._init_done = True
         
@@ -62,7 +51,7 @@ class Launchpad(ControlSurface):
             # self._drum_notes = (20, 30, 31, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126)
             self._drum_notes = (20, 30, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126)
         else:
-            from SkinMK1 import make_skin
+            from SkinMK1 import make_skin  # @Reimport
             self._skin = make_skin()
             self._side_notes = (8, 24, 40, 56, 72, 88, 104, 120)
             self._drum_notes = (41, 42, 43, 44, 45, 46, 47, 57, 58, 59, 60, 61, 62, 63, 73, 74, 75, 76, 77, 78, 79, 89, 90, 91, 92, 93, 94, 95, 105, 106, 107)
@@ -127,12 +116,8 @@ class Launchpad(ControlSurface):
                 self.log_message("LaunchPad95 (mk2) Loaded !")
             else:
                 self.log_message("LaunchPad95 Loaded !")
-            if(log_enabled):
-                Live.Base.log("LOG: LaunchPad95 Loaded !")
                 
     def disconnect(self):
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95.disconnect start")
         self._suppress_send_midi = True
         for control in self.controls:
             if isinstance(control, ConfigurableButtonElement):
@@ -152,12 +137,8 @@ class Launchpad(ControlSurface):
             self._config_button = None
         self._user_byte_write_button.send_value(0)
         self._user_byte_write_button = None
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95.disconnect end")
 
     def _combine_active_instances():
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95._combine_active_instances start")
         support_devices = False
         for instance in Launchpad._active_instances:
             support_devices |= (instance._device_component != None)
@@ -165,33 +146,21 @@ class Launchpad(ControlSurface):
         for instance in Launchpad._active_instances:
             instance._activate_combination_mode(offset, support_devices)
             offset += instance._selector._session.width()
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95._combine_active_instances end")
 
     _combine_active_instances = staticmethod(_combine_active_instances)
 
     def _activate_combination_mode(self, track_offset, support_devices):
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95._activate_combination_mode start - track_offset=" + str(track_offset) + ", " + str(support_devices))
         if(Settings.STEPSEQ__LINK_WITH_SESSION):
             self._selector._stepseq.link_with_step_offset(track_offset)
         if(Settings.SESSION__LINK):
             self._selector._session.link_with_track_offset(track_offset)
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95._activate_combination_mode end")
 
     def _do_combine(self):
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95._do_combine start")
         if (DO_COMBINE and (self not in Launchpad._active_instances)):
             Launchpad._active_instances.append(self)
             Launchpad._combine_active_instances()
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95._do_combine end")
 
     def _do_uncombine(self):
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95._do_uncombine start")
         if self in Launchpad._active_instances:
             Launchpad._active_instances.remove(self)
             if(Settings.SESSION__LINK):
@@ -199,20 +168,12 @@ class Launchpad(ControlSurface):
             if(Settings.STEPSEQ__LINK_WITH_SESSION):
                 self._selector._stepseq.unlink()
             Launchpad._combine_active_instances()
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95._do_uncombine end")
 
     def refresh_state(self):
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95.refresh_state start")
         ControlSurface.refresh_state(self)
         self.schedule_message(5, self._update_hardware)
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95.refresh_state end")
 
     def handle_sysex(self, midi_bytes):
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95.handle_sysex start - midi_bytes=" + str(midi_bytes))
         # MK2 has different challenge and params
         if len(midi_bytes) == 10 and midi_bytes[:7] == (240, 0, 32, 41, 2, 24, 64):
                     response = long(midi_bytes[7])
@@ -236,13 +197,9 @@ class Launchpad(ControlSurface):
                         self.set_enabled(True)
         else:
             ControlSurface.handle_sysex(self,midi_bytes)
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95.handle_sysex end")
         
 
     def build_midi_map(self, midi_map_handle):
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95.build_midi_map start - midi_map_handle=" + str(midi_map_handle))
         ControlSurface.build_midi_map(self, midi_map_handle)
         if self._selector != None:
             if self._selector._main_mode_index == 2 or self._selector._main_mode_index == 1:
@@ -253,22 +210,14 @@ class Launchpad(ControlSurface):
                     new_channel = self._selector.channel_for_current_mode()
                     for note in self._drum_notes:
                         self._translate_message(MIDI_NOTE_TYPE, note, 0, note, new_channel)
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95.build_midi_map end")
 
     def _send_midi(self, midi_bytes, optimized=None):
-        if(send_midi_log_enabled):
-            Live.Base.log("LOG: Launchpad95._send_midi start - midi_bytes=" + str(midi_bytes) + ", optimized=" + str(optimized))
         sent_successfully = False
         if not self._suppress_send_midi:
             sent_successfully = ControlSurface._send_midi(self, midi_bytes, optimized=optimized)
-        if(send_midi_log_enabled):
-            Live.Base.log("LOG: Launchpad95._send_midi end - returning=" + str(sent_successfully))
         return sent_successfully
 
     def _update_hardware(self):
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95._update_hardware start")
         self._suppress_send_midi = False
         if self._user_byte_write_button != None:
             self._user_byte_write_button.send_value(1)
@@ -277,12 +226,8 @@ class Launchpad(ControlSurface):
         self.set_enabled(False)
         self._suppress_send_midi = False
         self._send_challenge()
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95._update_hardware end")
         
     def _send_challenge(self):
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95._send_challenge start")
         # send challenge for all models to allow to detect which one is actually plugged
         # mk2
         challenge_bytes = tuple([ self._challenge >> 8 * index & 127 for index in xrange(4) ])
@@ -291,12 +236,8 @@ class Launchpad(ControlSurface):
         for index in range(4):
             challenge_byte = self._challenge >> 8 * index & 127
             self._send_midi((176, 17 + index, challenge_byte))
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95._send_challenge end")
 
     def _user_byte_value(self, value):
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95._user_byte_value start - value=" + str(value))
         assert (value in range(128))
         if not self._wrote_user_byte:
             enabled = (value == 1)
@@ -312,8 +253,6 @@ class Launchpad(ControlSurface):
             self._suppress_send_midi = False
         else:
             self._wrote_user_byte = False
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95._user_byte_value end")
 
     def _button_value(self, value):
         assert value in range(128)
@@ -322,9 +261,5 @@ class Launchpad(ControlSurface):
         assert value in range(128)
 
     def _set_session_highlight(self, track_offset, scene_offset, width, height, include_return_tracks):
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95._set_session_highlight - track_offset=" + str(track_offset) + " scene_offset=" + str(scene_offset) + " width=" + str(width) + " height=" + str(height) + " include_return_tracks=" + str(include_return_tracks))     
         if not self._suppress_session_highlight:
             ControlSurface._set_session_highlight(self, track_offset, scene_offset, width, height, include_return_tracks)
-        if(log_enabled):
-            Live.Base.log("LOG: Launchpad95._set_session_highlight end")
