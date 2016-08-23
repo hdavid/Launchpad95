@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-
-from consts import *  # noqa
 from _Framework.MixerComponent import MixerComponent
 from _Framework.ButtonElement import ButtonElement
 import time
@@ -198,6 +196,7 @@ class TrackControllerComponent(MixerComponent):
 				self._prev_track_button.add_value_listener(self._prev_track_value, identify_sender=True)
 
 	def _prev_track_value(self, value, sender):
+		assert (self._next_track_button != None)    
 		assert (self._prev_track_button != None)
 		assert (value in range(128))
 		if (not sender.is_momentary()) or (value is not 0):
@@ -206,8 +205,9 @@ class TrackControllerComponent(MixerComponent):
 					self.song().view.selected_track = self.song().tracks[self.selected_track_idx - 1]
 					self._do_implicit_arm()
 
+# SCENE BUTTONS
 	def update_scene_buttons(self):
-		# tracks
+		# scenes
 		if self.is_enabled():
 			if self._prev_scene_button != None:
 				self._prev_scene_button.set_on_off_values("Mode."+self._skin_name)
@@ -271,7 +271,7 @@ class TrackControllerComponent(MixerComponent):
 							self._control_surface.show_message("session record : off")
 					else:
 						if self.selected_track.can_be_armed:
-							self.selected_track.arm = not self._selected_track.arm
+							self.selected_track.arm = not self.selected_track.arm
 							if self.selected_track.arm :
 								self._control_surface.show_message("track "+str(self.selected_track.name)+" armed")
 							else:
@@ -325,7 +325,7 @@ class TrackControllerComponent(MixerComponent):
 					self._control_surface.show_message("track "+str(self.selected_track.name)+" muted")
 				else:
 					self._control_surface.show_message("track "+str(self.selected_track.name)+" unmuted")
-				self.update()
+			self.update()
 
 	def _solo_value(self, value):
 		assert (self._solo_button != None)
@@ -340,13 +340,17 @@ class TrackControllerComponent(MixerComponent):
 				self._solo_button.turn_off()
 				if now - self._last_solo_button_press > self._long_press:
 					self.selected_track.mute = not self.selected_track.mute
+					if self.selected_track.mute:
+						self._control_surface.show_message("track "+str(self.selected_track.name)+" mute")
+					else:
+						self._control_surface.show_message("track "+str(self.selected_track.name)+" unmute")
 				else:
 					self.selected_track.solo = not self.selected_track.solo
-					if self._selected_track.solo :
+					if self.selected_track.solo:
 						self._control_surface.show_message("track "+str(self.selected_track.name)+" solo")
 					else:
 						self._control_surface.show_message("track "+str(self.selected_track.name)+" unsolo")
-					self.update()
+			self.update()
 
 	def _undo_value(self, value):
 		if self.is_enabled():
@@ -387,7 +391,7 @@ class TrackControllerComponent(MixerComponent):
 							self._control_surface.show_message("track "+str(self.selected_track.name)+" armed")
 						else:
 							self._control_surface.show_message("track "+str(self.selected_track.name)+" unarmed")
-				self.update()
+			self.update()
 
 	def update(self):
 		if self.is_enabled():
