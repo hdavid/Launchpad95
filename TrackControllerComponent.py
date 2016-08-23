@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
+
+from consts import *  # noqa
 from _Framework.MixerComponent import MixerComponent
 from _Framework.ButtonElement import ButtonElement
 import time
+
+
 class TrackControllerComponent(MixerComponent):
 
 	""" provide a one strip control on the current track  : arm,solo,mute
@@ -59,11 +63,30 @@ class TrackControllerComponent(MixerComponent):
 				if self.selected_track.can_be_armed:
 					self.selected_track.implicit_arm = False
 		MixerComponent.set_enabled(self, enabled)
+
 	#def _do_select_scene(self, scene):
 	#	view = self.song().view
 	#	if view.selected_scene != self.selected_scene:
 	#		view.selected_scene = self._scene
 
+
+	def set_prev_scene_button(self, prev_scene=None):
+		assert isinstance(prev_scene, (ButtonElement, type(None)))
+		if self._prev_scene_button != None:
+			self._prev_scene_button.remove_value_listener(self._prev_scene_value)
+		self._prev_scene_button = prev_scene
+		if self._prev_scene_button != None:
+			self._prev_scene_button.add_value_listener(self._prev_scene_value, identify_sender=True)
+			self._prev_scene_button.turn_off()
+
+	def set_next_scene_button(self, next_scene=None):
+		assert isinstance(next_scene, (ButtonElement, type(None)))
+		if self._next_scene_button != None:
+			self._next_scene_button.remove_value_listener(self._next_scene_value)
+		self._next_scene_button = next_scene
+		if self._next_scene_button != None:
+			self._next_scene_button.add_value_listener(self._next_scene_value, identify_sender=True)
+			self._next_scene_button.turn_off()
 
 	def set_session_record_button(self, session_record=None):
 		assert isinstance(session_record, (ButtonElement, type(None)))
@@ -128,44 +151,6 @@ class TrackControllerComponent(MixerComponent):
 			self._undo_button.add_value_listener(self._undo_value)
 			self._undo_button.turn_off()
 
-	def set_prev_scene_button(self, prev_scene=None):
-		assert isinstance(prev_scene, (ButtonElement, type(None)))
-		if self._prev_scene_button != None:
-			self._prev_scene_button.remove_value_listener(self._prev_scene_value)
-		self._prev_scene_button = prev_scene
-		if self._prev_scene_button != None:
-			self._prev_scene_button.add_value_listener(self._prev_scene_value, identify_sender=True)
-			self._prev_scene_button.turn_off()
-
-	def set_next_scene_button(self, next_scene=None):
-		assert isinstance(next_scene, (ButtonElement, type(None)))
-		if self._next_scene_button != None:
-			self._next_scene_button.remove_value_listener(self._next_scene_value)
-		self._next_scene_button = next_scene
-		if self._next_scene_button != None:
-			self._next_scene_button.add_value_listener(self._next_scene_value, identify_sender=True)
-			self._next_scene_button.turn_off()
-			
-	def set_next_track_button(self, button):
-		assert (isinstance(button, (ButtonElement, type(None))))
-		if  self._next_track_button != button:
-			if self._next_track_button != None:
-				self._next_track_button.remove_value_listener(self._next_track_value)
-			self._next_track_button = button
-			if self._next_track_button != None:
-				assert isinstance(button, ButtonElement)
-				self._next_track_button.add_value_listener(self._next_track_value, identify_sender=True)
-
-	def set_prev_track_button(self, button):
-		assert (isinstance(button, (ButtonElement, type(None))))
-		if self._prev_track_button != button:
-			if self._prev_track_button != None:
-				self._prev_track_button.remove_value_listener(self._prev_track_value)
-			self._prev_track_button = button
-			if self._prev_track_button != None:
-				assert isinstance(button, ButtonElement)
-				self._prev_track_button.add_value_listener(self._prev_track_value, identify_sender=True)			
-
 # TRACKS Buttons
 	def update_track_buttons(self):
 		# tracks
@@ -183,6 +168,16 @@ class TrackControllerComponent(MixerComponent):
 				else:
 					self._next_track_button.turn_off()
 
+	def set_next_track_button(self, button):
+		assert (isinstance(button, (ButtonElement, type(None))))
+		if  self._next_track_button != button:
+			if self._next_track_button != None:
+				self._next_track_button.remove_value_listener(self._next_track_value)
+			self._next_track_button = button
+			if self._next_track_button != None:
+				assert isinstance(button, ButtonElement)
+				self._next_track_button.add_value_listener(self._next_track_value, identify_sender=True)
+
 	def _next_track_value(self, value, sender):
 		assert (self._next_track_button != None)
 		assert (value in range(128))
@@ -192,8 +187,17 @@ class TrackControllerComponent(MixerComponent):
 					self.song().view.selected_track = self.song().tracks[self.selected_track_idx + 1]
 					self._do_implicit_arm()
 
+	def set_prev_track_button(self, button):
+		assert (isinstance(button, (ButtonElement, type(None))))
+		if self._prev_track_button != button:
+			if self._prev_track_button != None:
+				self._prev_track_button.remove_value_listener(self._prev_track_value)
+			self._prev_track_button = button
+			if self._prev_track_button != None:
+				assert isinstance(button, ButtonElement)
+				self._prev_track_button.add_value_listener(self._prev_track_value, identify_sender=True)
+
 	def _prev_track_value(self, value, sender):
-		assert (self._next_track_button != None)    
 		assert (self._prev_track_button != None)
 		assert (value in range(128))
 		if (not sender.is_momentary()) or (value is not 0):
@@ -202,9 +206,8 @@ class TrackControllerComponent(MixerComponent):
 					self.song().view.selected_track = self.song().tracks[self.selected_track_idx - 1]
 					self._do_implicit_arm()
 
-# SCENE BUTTONS
 	def update_scene_buttons(self):
-		# scenes
+		# tracks
 		if self.is_enabled():
 			if self._prev_scene_button != None:
 				self._prev_scene_button.set_on_off_values("Mode."+self._skin_name)
@@ -218,7 +221,7 @@ class TrackControllerComponent(MixerComponent):
 				if self.selected_scene_idx < len(self.song().scenes) - 1:
 					self._next_scene_button.turn_on()
 				else:
-					self._next_scene_button.turn_off()    
+					self._next_scene_button.turn_off()
 
 	def _prev_scene_value(self, value, sender):
 		assert (self._prev_scene_button != None)
@@ -268,7 +271,7 @@ class TrackControllerComponent(MixerComponent):
 							self._control_surface.show_message("session record : off")
 					else:
 						if self.selected_track.can_be_armed:
-							self.selected_track.arm = not self.selected_track.arm
+							self.selected_track.arm = not self._selected_track.arm
 							if self.selected_track.arm :
 								self._control_surface.show_message("track "+str(self.selected_track.name)+" armed")
 							else:
@@ -322,7 +325,7 @@ class TrackControllerComponent(MixerComponent):
 					self._control_surface.show_message("track "+str(self.selected_track.name)+" muted")
 				else:
 					self._control_surface.show_message("track "+str(self.selected_track.name)+" unmuted")
-			self.update()
+				self.update()
 
 	def _solo_value(self, value):
 		assert (self._solo_button != None)
@@ -337,17 +340,13 @@ class TrackControllerComponent(MixerComponent):
 				self._solo_button.turn_off()
 				if now - self._last_solo_button_press > self._long_press:
 					self.selected_track.mute = not self.selected_track.mute
-					if self.selected_track.mute:
-						self._control_surface.show_message("track "+str(self.selected_track.name)+" mute")
-					else:
-						self._control_surface.show_message("track "+str(self.selected_track.name)+" unmute")
 				else:
 					self.selected_track.solo = not self.selected_track.solo
-					if self.selected_track.solo:
+					if self._selected_track.solo :
 						self._control_surface.show_message("track "+str(self.selected_track.name)+" solo")
 					else:
 						self._control_surface.show_message("track "+str(self.selected_track.name)+" unsolo")
-			self.update()
+					self.update()
 
 	def _undo_value(self, value):
 		if self.is_enabled():
@@ -388,7 +387,7 @@ class TrackControllerComponent(MixerComponent):
 							self._control_surface.show_message("track "+str(self.selected_track.name)+" armed")
 						else:
 							self._control_surface.show_message("track "+str(self.selected_track.name)+" unarmed")
-			self.update()
+				self.update()
 
 	def update(self):
 		if self.is_enabled():
@@ -458,6 +457,7 @@ class TrackControllerComponent(MixerComponent):
 				if self.can_implicit_arm_track(track):
 					track.implicit_arm = self._implicit_arm and arm and self.selected_track == track
 
+		
 	def on_selected_track_changed(self):
 		self._do_implicit_arm()
 		self.update()
