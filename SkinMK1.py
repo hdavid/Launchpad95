@@ -1,6 +1,7 @@
+from _Framework.ButtonElement import Color
 from _Framework.Skin import Skin
 from .ColorsMK1 import Rgb
-from _Framework.ButtonElement import Color
+
 
 class Colors:
 	
@@ -167,10 +168,15 @@ class Colors:
 			Selected = Rgb.GREEN
 			InLoop = Rgb.AMBER_THIRD
 		class Quantization:
-			One=Rgb.BLACK
-			Two=Rgb.GREEN_HALF
-			Three=Rgb.GREEN_THIRD
-			Four=Rgb.GREEN
+            One=Rgb.GREEN_FULL
+            Two=Rgb.YELLOW_FULL
+            Three=Rgb.AMBER_FULL
+            Four=Rgb.RED_FULL
+        class QuantizationLow:
+            One=Rgb.GREEN_HALF
+            Two=Rgb.YELLOW_HALF
+            Three=Rgb.AMBER_HALF
+            Four=Rgb.RED_HALF
 		class NoteSelector:
 			class Octave:
 				On = Rgb.GREEN
@@ -184,12 +190,15 @@ class Colors:
 			Velocity0 = Rgb.GREEN_THIRD
 			Velocity1 = Rgb.GREEN_HALF
 			Velocity2 = Rgb.GREEN
-			Velocity3 = Rgb.GREEN_THIRD
+            Velocity3 = Rgb.ORANGE_FULL
+            Velocity4 = Rgb.MANDARIN_FULL
 			Muted = Rgb.RED_THIRD
 			Playing = Rgb.RED
-			Metronome = Rgb.AMBER
+                        Metronome = Rgb.YELLOW_FULL
 			NoteMarker = Rgb.AMBER
 			PageMarker = Rgb.AMBER_THIRD
+                        CurrentPageMarker = Rgb.RED_THIRD
+                        CurrentPageMarkerPlay = Rgb.GREEN_THIRD
 				
 	class StepSequencer2:
 		class Pitch:
@@ -280,10 +289,13 @@ class Colors:
 			Invalid = Rgb.BLACK
 					
 	class Scale:#scale edition
+                class Horizontal:
+                        On = Rgb.AMBER
+                        Off = Rgb.AMBER_THIRD
 		class AbsoluteRoot:
-			On = Rgb.RED
-			Off = Rgb.RED_THIRD
-		class Mode:
+                        On = Rgb.AMBER
+                        Off = Rgb.AMBER_THIRD
+                class Mode:
 			On = Rgb.RED
 			Off = Rgb.RED_THIRD
 		class Key:		
