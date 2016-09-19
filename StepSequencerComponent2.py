@@ -1,9 +1,7 @@
-from consts import *  # noqa
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
-from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
-from StepSequencerComponent import *  # noqa
-from ScaleComponent import *  # noqa
+from StepSequencerComponent import StepSequencerComponent, ButtonElement, NoteSelectorComponent, LoopSelectorComponent, QUANTIZATION_NAMES
+from ScaleComponent import MUSICAL_MODES, KEY_NAMES
 from TrackControllerComponent import TrackControllerComponent
 from random import randrange
 import time
@@ -710,12 +708,11 @@ class StepSequencerComponent2(StepSequencerComponent):
 		self._scale_selector._drumrack = False
 
 	def _set_track_controller(self):
-		self._track_controller = self.register_component(TrackControllerComponent(self._control_surface))
+		self._track_controller = self.register_component(TrackControllerComponent(self._control_surface, implicit_arm = False))
 		self._track_controller.set_prev_scene_button(self._top_buttons[0])
 		self._track_controller.set_next_scene_button(self._top_buttons[1])
 		self._track_controller.set_prev_track_button(self._top_buttons[2])
 		self._track_controller.set_next_track_button(self._top_buttons[3])
-		self._track_controller._implicit_arm = False
 
 	def _set_note_editor(self):
 		self._note_editor = self.register_component(MelodicNoteEditorComponent(self, self._matrix, self._side_buttons, self._control_surface))

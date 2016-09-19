@@ -402,6 +402,9 @@ class NoteSelectorComponent(ControlSurfaceComponent):
     def selected_note(self):
         return self._root_note + self._offset
 
+    def should_scroll(self):
+        return not self._is_mute_shifted and not self._enable_offset_button or self._is_mute_shifted and self._enable_offset_button    
+
 #Used in Normal mode (Not Multinote) to delete/copy/mute/change loops regions
 #Scrolls the regions in Multinote Mode 
 class LoopSelectorComponent(ControlSurfaceComponent):
@@ -831,12 +834,12 @@ class StepSequencerComponent(CompoundComponent):
         self._note_selector.set_down_button(self._side_buttons[5])#Trk On
 
     def _set_track_controller(self):#Navigation buttons
-        self._track_controller = self.register_component(TrackControllerComponent(self._control_surface))
+        self._track_controller = self.register_component(TrackControllerComponent(self._control_surface, implicit_arm = False))
+        self._track_controller.set_enabled(False)
         self._track_controller.set_prev_scene_button(self._top_buttons[0])
         self._track_controller.set_next_scene_button(self._top_buttons[1])
         self._track_controller.set_prev_track_button(self._top_buttons[2])
         self._track_controller.set_next_track_button(self._top_buttons[3])
-        self._track_controller._implicit_arm = False
 
     def _set_scale_selector(self):
         self._scale_selector = self.register_component(ScaleComponent(self._control_surface))
@@ -1047,8 +1050,8 @@ class StepSequencerComponent(CompoundComponent):
                     self.application().view.show_view('Detail/Clip')
 
     def _update_track_controller(self):
-        self._track_controller.set_enabled(self.is_enabled())
-        self._track_controller.update()
+        if self._track_controller != None:
+            self._track_controller.set_enabled(True)
 
     def _update_scale_selector(self):
         self._scale_selector.set_enabled(self._mode == STEPSEQ_MODE_SCALE_EDIT)
@@ -1427,6 +1430,7 @@ class StepSequencerComponent(CompoundComponent):
 
                 else:
                     self.set_mode(STEPSEQ_MODE_NORMAL, self._number_of_lines_per_note)
+                self._scale_updated()
 
 # QUANTIZE
     def _update_quantization_button(self):
@@ -1628,6 +1632,4 @@ class StepSequencerComponent(CompoundComponent):
             except RuntimeError:
                 pass
 
-    def should_scroll(self):
-        return not self._is_mute_shifted and not self._enable_offset_button or self._is_mute_shifted and self._enable_offset_button
     

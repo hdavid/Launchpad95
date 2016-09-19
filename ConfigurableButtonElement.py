@@ -1,5 +1,5 @@
 from _Framework.Skin import SkinColorMissingError
-from _Framework.ButtonElement import ButtonElement, ON_VALUE, OFF_VALUE, ButtonValue
+from _Framework.ButtonElement import ButtonElement, ON_VALUE, OFF_VALUE
 
 class ConfigurableButtonElement(ButtonElement):
 	"""
@@ -80,7 +80,7 @@ class ConfigurableButtonElement(ButtonElement):
 			super(ConfigurableButtonElement, self).send_value(value, **k)
 		else:
 			self._draw_skin(value)
- 	
+
 	def force_next_send(self):
 		"""
 		Enforces sending the next value regardless of wether the

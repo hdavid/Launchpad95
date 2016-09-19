@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from _Framework.ButtonSliderElement import ButtonSliderElement
-from _Framework.InputControlElement import *  # noqa
 SLIDER_MODE_SINGLE = 0
 SLIDER_MODE_VOLUME = 1
 SLIDER_MODE_PAN = 2
@@ -25,10 +24,10 @@ class PreciseButtonSliderElement(ButtonSliderElement):
 		if (mode != self._mode):
 			self._mode = mode
 
-	def set_value_map(self, map):
-		assert isinstance(map, (tuple, type(None)))
-		assert len(map) == len(self._buttons)
-		self._value_map = map
+	def set_value_map(self, value_map):
+		assert isinstance(value_map, (tuple, type(None)))
+		assert len(value_map) == len(self._buttons)
+		self._value_map = value_map
 
 	def send_value(self, value):
 		if (not self._disabled):

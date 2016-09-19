@@ -1,5 +1,4 @@
 from _Framework.SessionComponent import SessionComponent
-from consts import *
 from ClipSlotMK2 import ClipSlotMK2
 from _Framework.SceneComponent import SceneComponent
 
