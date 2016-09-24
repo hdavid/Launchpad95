@@ -1,6 +1,7 @@
 from _Framework.Skin import Skin
 from .ColorsMK1 import Rgb
 
+
 class Colors:
 	
 	class DefaultButton:
@@ -8,7 +9,7 @@ class Colors:
 		Off = Rgb.GREEN_THIRD
 		Disabled = Rgb.BLACK
 
-	class Mode: #mode buttons colour
+	class Mode:  # mode buttons colour
 		class Session:
 			On = Rgb.AMBER
 			Off = Rgb.AMBER_THIRD
@@ -38,26 +39,26 @@ class Colors:
 			Off = Rgb.AMBER_THIRD
 	
 	class Session:
-		#scene
+		# scene
 		SceneTriggered = Rgb.AMBER_BLINK
 		Scene = Rgb.AMBER_THIRD
 		NoScene = Rgb.BLACK
-		#clip states
+		# clip states
 		ClipStarted = Rgb.GREEN
 		ClipStopped = Rgb.AMBER
 		ClipRecording = Rgb.RED
 		ClipEmpty = Rgb.BLACK
-		#trigs
+		# trigs
 		ClipTriggeredPlay = Rgb.GREEN_BLINK
 		ClipTriggeredRecord = Rgb.RED_BLINK
 		RecordButton = Rgb.RED_THIRD
-		#stop button
+		# stop button
 		StopClip = Rgb.RED
 		StopClipTriggered = Rgb.RED_BLINK
-		#Enabled = Rgb.GREEN
-		#Off = Rgb.GREEN_THIRD
+		# Enabled = Rgb.GREEN
+		# Off = Rgb.GREEN_THIRD
 
-	class Zooming:#session zoomin
+	class Zooming:  # session zoomin
 		Selected = Rgb.AMBER
 		Stopped = Rgb.RED
 		Playing = Rgb.GREEN
@@ -98,7 +99,7 @@ class Colors:
 			On = Rgb.AMBER
 			Off = Rgb.BLACK
 
-	class Sends:#not used yet on legacy launchpad
+	class Sends:  # not used yet on legacy launchpad
 		A = Rgb.RED
 		AAvail = Rgb.RED_THIRD
 		B = Rgb.RED
@@ -116,7 +117,7 @@ class Colors:
 		H = Rgb.RED
 		HAvail = Rgb.RED_THIRD
 
-	class Device:#device mode colours
+	class Device:  # device mode colours
 		class Bank:
 			On = Rgb.GREEN
 			Off = Rgb.GREEN_THIRD
@@ -156,9 +157,9 @@ class Colors:
 		class Lock:
 			class ToTrack:
 				On = Rgb.RED
-				Off =  Rgb.RED_THIRD
+				Off = Rgb.RED_THIRD
 			class ToClip:
-				On =  Rgb.AMBER
+				On = Rgb.AMBER
 				Off = Rgb.AMBER_THIRD
 		class LoopSelector:
 			SelectedPlaying = Rgb.RED
@@ -166,10 +167,15 @@ class Colors:
 			Selected = Rgb.GREEN
 			InLoop = Rgb.AMBER_THIRD
 		class Quantization:
-			One=Rgb.BLACK
-			Two=Rgb.GREEN_HALF
-			Three=Rgb.GREEN_THIRD
-			Four=Rgb.GREEN
+			One = Rgb.GREEN_FULL
+			Two = Rgb.YELLOW_FULL
+			Three = Rgb.AMBER_FULL
+			Four = Rgb.RED_FULL
+		class QuantizationLow:
+			One = Rgb.GREEN_HALF
+			Two = Rgb.YELLOW_HALF
+			Three = Rgb.AMBER_HALF
+			Four = Rgb.RED_HALF
 		class NoteSelector:
 			class Octave:
 				On = Rgb.GREEN
@@ -183,12 +189,15 @@ class Colors:
 			Velocity0 = Rgb.GREEN_THIRD
 			Velocity1 = Rgb.GREEN_HALF
 			Velocity2 = Rgb.GREEN
-			Velocity3 = Rgb.GREEN_THIRD
+			Velocity3 = Rgb.ORANGE_FULL
+			Velocity4 = Rgb.MANDARIN_FULL
 			Muted = Rgb.RED_THIRD
 			Playing = Rgb.RED
-			Metronome = Rgb.AMBER
+			Metronome = Rgb.YELLOW_FULL
 			NoteMarker = Rgb.AMBER
 			PageMarker = Rgb.AMBER_THIRD
+			CurrentPageMarker = Rgb.RED_THIRD
+			CurrentPageMarkerPlay = Rgb.GREEN_THIRD
 				
 	class StepSequencer2:
 		class Pitch:
@@ -278,10 +287,13 @@ class Colors:
 			OutOfScale = Rgb.BLACK
 			Invalid = Rgb.BLACK
 					
-	class Scale:#scale edition
+	class Scale:  # scale edition
+		class Horizontal:
+			On = Rgb.AMBER
+			Off = Rgb.AMBER_THIRD
 		class AbsoluteRoot:
-			On = Rgb.RED
-			Off = Rgb.RED_THIRD
+			On = Rgb.AMBER
+			Off = Rgb.AMBER_THIRD
 		class Mode:
 			On = Rgb.RED
 			Off = Rgb.RED_THIRD
@@ -300,11 +312,11 @@ class Colors:
 			On = Rgb.AMBER
 			Off = Rgb.AMBER_THIRD
 		
-	class QuickScale:#quick scale on top of instrument mode
+	class QuickScale:  # quick scale on top of instrument mode
 		class Modus:
 			On = Rgb.AMBER
 			Off = Rgb.AMBER_THIRD
-		class Major: # quick scale while in major mode
+		class Major:  # quick scale while in major mode
 			class Key:
 				On = Rgb.AMBER
 				Off = Rgb.AMBER_THIRD

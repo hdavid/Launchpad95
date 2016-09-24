@@ -2,7 +2,6 @@ from _Framework.DeviceComponent import DeviceComponent as LiveDeviceComponent
 from _Framework.ButtonElement import ButtonElement
 from DeviceControllerStrip import DeviceControllerStrip
 import time
-import Live
 
 
 class DeviceComponent(LiveDeviceComponent):
@@ -39,10 +38,10 @@ class DeviceComponent(LiveDeviceComponent):
 
 		self._selected_track = None
 		
-		self._lock_buttons = [None for index in range(4)]
-		self._locked_device_bank = [0 for index in range(4)]
-		self._lock_button_press = [0 for index in range(4)]
-		self._locked_devices = [None for index in range(4)]
+		self._lock_buttons = [None,None,None,None]
+		self._locked_device_bank = [0,0,0,0]
+		self._lock_button_press = [0,0,0,0]
+		self._locked_devices = [None,None,None,None]
 
 		if top_buttons != None:
 			# device selection buttons

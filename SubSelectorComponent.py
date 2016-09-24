@@ -3,8 +3,7 @@ from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
 from _Framework.SessionComponent import SessionComponent
 from SpecialMixerComponent import SpecialMixerComponent
-from PreciseButtonSliderElement import *
-from consts import *
+from PreciseButtonSliderElement import PreciseButtonSliderElement, SLIDER_MODE_VOLUME, SLIDER_MODE_PAN
 PAN_VALUE_MAP = (-1.0, -0.634921, -0.31746, 0.0, 0.0, 0.31746, 0.634921, 1.0)
 VOL_VALUE_MAP = (0.0, 0.142882, 0.302414, 0.4, 0.55, 0.7, 0.85, 1.0)
 SEND_VALUE_MAP = (0.0, 0.103536, 0.164219, 0.238439, 0.343664, 0.55, 0.774942, 1.0)

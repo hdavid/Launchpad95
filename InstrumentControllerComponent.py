@@ -5,7 +5,7 @@ from _Framework.ButtonElement import ButtonElement
 from _Framework.Util import find_if
 from itertools import imap
 from TrackControllerComponent import TrackControllerComponent
-from ScaleComponent import *
+from ScaleComponent import ScaleComponent,CIRCLE_OF_FIFTHS,MUSICAL_MODES,KEY_NAMES
 import Settings
 
 class InstrumentControllerComponent(CompoundComponent):
@@ -522,7 +522,6 @@ class InstrumentControllerComponent(CompoundComponent):
 							else:
 								button.turn_off()
 
-				interval = self._scales._interval
 				pattern = self._scales.get_pattern()
 				max_j = self._matrix.width() - 1
 				a = 0
@@ -563,12 +562,12 @@ class InstrumentControllerComponent(CompoundComponent):
 				button.set_enabled(True)
 				button.force_next_send()
 
-			#self._control_surface._config_button.send_value(32)
+			#self._control_surface._config_button.send_value(32)#Send enable flashing led config message to LP
 
 	
-	def tuple_idx(self, tuple, obj):
-			for i in xrange(0, len(tuple)):
-				if (tuple[i] == obj):
+	def tuple_idx(self, target_tuple, obj):
+			for i in xrange(0, len(target_tuple)):
+				if (target_tuple[i] == obj):
 					return i
 			return(False)
 	

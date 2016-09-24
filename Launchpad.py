@@ -1,7 +1,7 @@
 from __future__ import with_statement
 import Live
 from _Framework.ControlSurface import ControlSurface
-from _Framework.InputControlElement import *
+from _Framework.InputControlElement import MIDI_CC_TYPE, MIDI_NOTE_TYPE
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
 from ConfigurableButtonElement import ConfigurableButtonElement
@@ -51,7 +51,7 @@ class Launchpad(ControlSurface):
 			#self._drum_notes = (20, 30, 31, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126)
 			self._drum_notes = (20, 30, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126)
 		else:
-			from SkinMK1 import make_skin
+			from SkinMK1 import make_skin # @Reimport
 			self._skin = make_skin()
 			self._side_notes = (8, 24, 40, 56, 72, 88, 104, 120)
 			self._drum_notes = (41, 42, 43, 44, 45, 46, 47, 57, 58, 59, 60, 61, 62, 63, 73, 74, 75, 76, 77, 78, 79, 89, 90, 91, 92, 93, 94, 95, 105, 106, 107)
@@ -132,7 +132,7 @@ class Launchpad(ControlSurface):
 			# launchpad mk2 needs disconnect string sent
 			self._send_midi((240, 0, 32, 41, 2, 24, 64, 247))
 		if self._config_button != None:
-			self._config_button.send_value(32)
+			self._config_button.send_value(32)#Send enable flashing led config message to LP
 			self._config_button.send_value(0)
 			self._config_button = None
 		self._user_byte_write_button.send_value(0)
@@ -203,9 +203,9 @@ class Launchpad(ControlSurface):
 		ControlSurface.build_midi_map(self, midi_map_handle)
 		if self._selector!=None:
 			if self._selector._main_mode_index==2 or self._selector._main_mode_index==1:
-				mode = Settings.USER_MODES[ (self._selector._main_mode_index-1) * 3 + self._selector._sub_mode_index[self._selector._main_mode_index] ] 
+				mode = Settings.USER_MODES[ (self._selector._main_mode_index-1) * 3 + self._selector._sub_mode_list[self._selector._main_mode_index] ] 
 				#self._selector.mode_index == 1:
-				#if self._selector._sub_mode_index[self._selector._mode_index] > 0:  # disable midi map rebuild for instrument mode to prevent light feedback errors
+				#if self._selector._sub_mode_list[self._selector._mode_index] > 0:  # disable midi map rebuild for instrument mode to prevent light feedback errors
 				if mode != "instrument":
 					new_channel = self._selector.channel_for_current_mode()
 					for note in self._drum_notes:

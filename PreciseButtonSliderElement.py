@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 from _Framework.ButtonSliderElement import ButtonSliderElement
 SLIDER_MODE_SINGLE = 0
@@ -24,10 +23,10 @@ class PreciseButtonSliderElement(ButtonSliderElement):
 		if (mode != self._mode):
 			self._mode = mode
 
-	def set_value_map(self, mapp):
-		assert isinstance(mapp, (tuple, type(None)))
-		assert len(mapp) == len(self._buttons)
-		self._value_map = mapp
+	def set_value_map(self, value_map):
+		assert isinstance(value_map, (tuple, type(None)))
+		assert len(value_map) == len(self._buttons)
+		self._value_map = value_map
 
 	def send_value(self, value):
 		if (not self._disabled):
