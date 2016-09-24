@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 from _Framework.ButtonSliderElement import ButtonSliderElement
 SLIDER_MODE_SINGLE = 0

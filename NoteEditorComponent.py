@@ -23,6 +23,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		# Velocity color map. this must remain of length 3. WHY???
 		self.velocity_map = [20, 50, 80, 105, 127]
 		self.velocity_color_map = [	"StepSequencer.NoteEditor.Velocity0", "StepSequencer.NoteEditor.Velocity1", "StepSequencer.NoteEditor.Velocity2", "StepSequencer.NoteEditor.Velocity3", "StepSequencer.NoteEditor.Velocity4"]
+		
 		# other colors
 		self.muted_note_color = "StepSequencer.NoteEditor.Muted"
 		self.playing_note_color = "StepSequencer.NoteEditor.Playing"

@@ -407,6 +407,7 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 
 #Used in Normal mode (Not Multinote) to delete/copy/mute/change loops regions
 #Scrolls the regions in Multinote Mode 
+
 class LoopSelectorComponent(ControlSurfaceComponent):
 
     def __init__(self, step_sequencer, buttons, control_surface):
@@ -926,6 +927,7 @@ class StepSequencerComponent(CompoundComponent):
                 return i
         return(-1)
 
+
 # enabled
     def set_enabled(self, enabled):
         if enabled:
@@ -1386,6 +1388,7 @@ class StepSequencerComponent(CompoundComponent):
             self._note_editor._is_mute_shifted = self._is_mute_shifted
             self._update_mute_shift_button()
             
+
 # MODE
     def _update_mode_button(self):
         if self.is_enabled():
