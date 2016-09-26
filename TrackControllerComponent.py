@@ -458,8 +458,7 @@ class TrackControllerComponent(MixerComponent):
 				self._control_surface.release_controlled_track()
 			for track in self.song().tracks:
 				if self.can_implicit_arm_track(track):
-					if(arm and self.selected_track == track):
-						track.implicit_arm = self._implicit_arm
+					track.implicit_arm = self._implicit_arm and arm and self.selected_track == track
 
 		
 	def on_selected_track_changed(self):

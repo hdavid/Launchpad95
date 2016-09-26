@@ -94,28 +94,28 @@ class SpecialMixerComponent(MixerComponent):
 			self._osd.update()
 
 	def _unarm_all_value(self, value):
-		assert self.is_enabled()
 		assert (self._unarm_all_button != None)
 		assert (value in range(128))
-		if value != 0 or not self._unarm_all_button.is_momentary():
-			for track in self.song().tracks:
-				if track.can_be_armed and track.arm:
-					track.arm = False
+		if self.is_enabled():
+			if value != 0 or not self._unarm_all_button.is_momentary():
+				for track in self.song().tracks:
+					if track.can_be_armed and track.arm:
+						track.arm = False
 
 	def _unsolo_all_value(self, value):
-		assert self.is_enabled()
 		assert (self._unsolo_all_button != None)
 		assert (value in range(128))
-		if value != 0 or not self._unsolo_all_button.is_momentary():
-			for track in tuple(self.song().tracks) + tuple(self.song().return_tracks):
-				if track.solo:
-					track.solo = False
+		if self.is_enabled():
+			if value != 0 or not self._unsolo_all_button.is_momentary():
+				for track in tuple(self.song().tracks) + tuple(self.song().return_tracks):
+					if track.solo:
+						track.solo = False
 
 	def _unmute_all_value(self, value):
-		assert self.is_enabled()
 		assert (self._unmute_all_button != None)
 		assert (value in range(128))
-		if value != 0 or not self._unmute_all_button.is_momentary():
-			for track in tuple(self.song().tracks) + tuple(self.song().return_tracks):
-				if track.mute:
-					track.mute = False
+		if self.is_enabled():
+			if value != 0 or not self._unmute_all_button.is_momentary():
+				for track in tuple(self.song().tracks) + tuple(self.song().return_tracks):
+					if track.mute:
+						track.mute = False
