@@ -407,7 +407,6 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 
 #Used in Normal mode (Not Multinote) to delete/copy/mute/change loops regions
 #Scrolls the regions in Multinote Mode 
-
 class LoopSelectorComponent(ControlSurfaceComponent):
 
     def __init__(self, step_sequencer, buttons, control_surface):
@@ -502,10 +501,16 @@ class LoopSelectorComponent(ControlSurfaceComponent):
         if self._clip != None:
             self._loop_end = end
             self._loop_start = start
-            self._clip.loop_start = self._loop_start
-            self._clip.loop_end = self._loop_end
-            self._clip.start_marker = self._loop_start
-            self._clip.end_marker = self._loop_end
+            if self._loop_start >= self._clip.loop_end:
+                self._clip.loop_end = self._loop_end
+                self._clip.loop_start = self._loop_start
+                self._clip.end_marker = self._loop_end
+                self._clip.start_marker = self._loop_start
+            else:
+                self._clip.loop_start = self._loop_start
+                self._clip.loop_end = self._loop_end
+                self._clip.start_marker = self._loop_start
+                self._clip.end_marker = self._loop_end
             self.update()
 
     #LoopSelector listener OK
@@ -586,7 +591,7 @@ class LoopSelectorComponent(ControlSurfaceComponent):
                         self._cache[i] = button._off_value
                 else:
                     #is the button in loop range
-                    in_loop = (i * self._blocksize * self._quantization < self._loop_end) and (i * self._blocksize * self._quantization >= self._loop_start) 
+                    in_loop = (i * self._blocksize * self._quantization < self._loop_end) and (i * self._blocksize * self._quantization >= self._loop_start)
                     #is the playing position is inside the block represented by the button
                     playing = self._playhead >= i * self._blocksize * self._quantization and self._playhead < (i + 1) * self._blocksize * self._quantization
                     #is this block selected (green)
@@ -621,47 +626,8 @@ class LoopSelectorComponent(ControlSurfaceComponent):
             self._force = False
 
     #Make a copy of the current loop to the next N empty blocks OK
-    def _extend_clip_content(self, new_loop_start, new_loop_end, old_loop_start, old_loop_end):
-        begin = 0
-        finish = 0
-
-        if(new_loop_start<old_loop_start):
-            begin=-1
-        elif(new_loop_start>old_loop_start):
-            begin=1
-            
-        if(new_loop_end<old_loop_end):
-            finish=-1
-        elif(new_loop_end>old_loop_end):
-            finish=1
-
-        if(begin==0 and finish==1):
-            Live.Base.log("LOG: LoopSelectorComponent -> extending loop range forward")
-        if(begin==0 and finish==0):
-            Live.Base.log("LOG: LoopSelectorComponent -> loop not changing")    
-        if(begin==0 and finish==-1):
-            Live.Base.log("LOG: LoopSelectorComponent -> cropping loop range backward")    
-        
-        if(begin==1 and finish==1):
-            Live.Base.log("LOG: LoopSelectorComponent -> copying and changing loop range forward")
-        if(begin==1 and finish==0):
-            Live.Base.log("LOG: LoopSelectorComponent -> cropping loop range forward")    
-        if(begin==1 and finish==-1):
-            Live.Base.log("LOG: LoopSelectorComponent -> cropping loop range shrinking")    
-        
-        if(begin==-1 and finish==1):
-            Live.Base.log("LOG: LoopSelectorComponent -> copying and expanding loop range")
-        if(begin==-1 and finish==0):
-            Live.Base.log("LOG: LoopSelectorComponent -> copying and expanding loop range backward")
-        if(begin==-1 and finish==-1):
-            Live.Base.log("LOG: LoopSelectorComponent ->copying and changing loop range backwards")
-
-        self._extend_clip_forward(old_loop_end, new_loop_end)
-
-
-    #Does the actual loop cloning OK
-    def _extend_clip_forward(self, old_loop_end, new_loop_end):
-        if(not self._exist_notes_in_range(old_loop_end, new_loop_end, False, True)): #check that target region is empty
+    def _extend_clip_content(self, loop_start, old_loop_end, new_loop_end):
+        if(self._no_notes_in_range(old_loop_end, new_loop_end, True)):
             clip_looping_length = 0
             if(old_loop_end > 1):
                 power = 1
@@ -674,8 +640,8 @@ class LoopSelectorComponent(ControlSurfaceComponent):
             else:
                 clone_start_point = 0
             self._copy_notes_in_range(clone_start_point, clone_start_point + clone_length, old_loop_end)
-            
-    #Does the note by note copy OK        
+
+    #Does the note by note copy OK
     def _copy_notes_in_range(self, start, end, new_start):
         new_notes = list(self._note_cache)
         # for i in range()
@@ -684,13 +650,13 @@ class LoopSelectorComponent(ControlSurfaceComponent):
                 new_notes.append([note[0], note[1] + new_start - start, note[2], note[3], note[4]])
         self._clip.select_all_notes()
         self._clip.replace_selected_notes(tuple(new_notes))
-
+    
     #Checks if a range is empty OK
-    def _exist_notes_in_range(self, start, end, or_before, or_after):
+    def _no_notes_in_range(self, start, end, or_after):
         for note in list(self._note_cache):
-            if (note[1] >= start or or_before) and (note[1] < end or or_after):
-                return(True)
-        return(False)
+            if note[1] >= start and (note[1] < end or or_after):
+                return(False)
+        return(True)
 
     #Deletes a block of notes OK
     def _delete_notes_in_range(self, start, end):
@@ -926,7 +892,6 @@ class StepSequencerComponent(CompoundComponent):
             if (pad_list[i] == pad):
                 return i
         return(-1)
-
 
 # enabled
     def set_enabled(self, enabled):
@@ -1388,7 +1353,6 @@ class StepSequencerComponent(CompoundComponent):
             self._note_editor._is_mute_shifted = self._is_mute_shifted
             self._update_mute_shift_button()
             
-
 # MODE
     def _update_mode_button(self):
         if self.is_enabled():

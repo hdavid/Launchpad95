@@ -1,11 +1,13 @@
+# -*- coding: utf-8 -*-
+
 from _Framework.ModeSelectorComponent import ModeSelectorComponent
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
-from _Framework.SessionZoomingComponent import *
+from _Framework.SessionZoomingComponent import DeprecatedSessionZoomingComponent# noqa
 from DeviceComponent import DeviceComponent
 from SpecialSessionComponent import SpecialSessionComponent
 from InstrumentControllerComponent import InstrumentControllerComponent
-from SubSelectorComponent import *
+from SubSelectorComponent import SubSelectorComponent  # noqa
 from StepSequencerComponent import StepSequencerComponent
 from StepSequencerComponent2 import StepSequencerComponent2
 import Settings
@@ -34,7 +36,6 @@ class MainSelectorComponent(ModeSelectorComponent):
 
 		#initialize index variables
 		self._mode_index = 0 #Inherited from parent
-		self._previous_mode_index = -1 #Unused
 		self._main_mode_index = 0 #LP original modes
 		self._sub_mode_list = [0, 0, 0, 0]
 		for index in range(4):
@@ -130,7 +131,6 @@ class MainSelectorComponent(ModeSelectorComponent):
 				self._mode_index = 0
 
 		else:
-			self._previous_mode_index = self._main_mode_index
 			self._main_mode_index = mode
 			self.update()
 
@@ -217,70 +217,116 @@ class MainSelectorComponent(ModeSelectorComponent):
 		if self.is_enabled():
 
 			self._update_mode_buttons()
+
+			as_active = True
+			as_enabled = True
 			self._session.set_allow_update(False)
 			self._zooming.set_allow_update(False)
 			self._config_button.send_value(40) #Set LP double buffering mode (investigate this)
 			self._config_button.send_value(1) #Set LP X-Y layout grid mapping mode
 
 			if self._main_mode_index == 0:
-				self._setup_mode("session")
-			elif self._main_mode_index == 1 or self._main_mode_index == 2:#User1 or User2 modes
-				self._setup_mode(Settings.USER_MODES[ (self._main_mode_index-1) * 3 + self._sub_mode_list[self._main_mode_index] ] )
+				# session
+				self._control_surface.show_message("SESSION MODE" )
+				self._setup_mixer(not as_active)
+				self._setup_device_controller(not as_active)
+				self._setup_step_sequencer(not as_active)
+				self._setup_step_sequencer2(not as_active)
+				self._setup_instrument_controller(not as_active)
+				self._setup_session(as_active, as_enabled)
+				self._update_control_channels()
+				self._mode_index = 0
+
+			elif self._main_mode_index == 1 or self._main_mode_index == 2:
+				self._setup_sub_mode(Settings.USER_MODES[ (self._main_mode_index-1) * 3 + self._sub_mode_list[self._main_mode_index] ] )
+
 			elif self._main_mode_index == 3:
-				self._setup_mode("mixer")
+				# mixer
+				self._control_surface.show_message("MIXER MODE")
+				self._setup_device_controller(not as_active)
+				self._setup_step_sequencer(not as_active)
+				self._setup_step_sequencer2(not as_active)
+				self._setup_instrument_controller(not as_active)
+				self._setup_session(not as_active, as_enabled)
+				self._setup_mixer(as_active)
+				self._update_control_channels()
+				self._mode_index = 3
 			else:
 				assert False
-			self._previous_mode_index = self._main_mode_index
 
 			self._session.set_allow_update(True)
 			self._zooming.set_allow_update(True)
-			#self.log_message("main selector update")
-			#for line in traceback.format_stack():
-			#	self.log_message(line.strip())
 		
-	def _setup_mode(self, mode):
-		self._disable_all_modes()
-		
-		if mode == "session":
-			self._control_surface.show_message("SESSION MODE" )
-			self._setup_session(True, True)
-			self._mode_index = 0
-		elif mode == "instrument":
+	def _setup_sub_mode(self, mode):
+		as_active = True
+		as_enabled = True
+		if mode == "instrument":
 			self._control_surface.show_message("INSTRUMENT MODE")
-			self._setup_instrument_controller(True) 
+			self._setup_session(not as_active, not as_enabled)
+			self._setup_step_sequencer(not as_active)
+			self._setup_step_sequencer2(not as_active)
+			self._setup_mixer(not as_active)
+			self._setup_device_controller(not as_active)
+			self._update_control_channels()
+			self._setup_instrument_controller(as_active)
 			self._mode_index = 4
-		elif mode == "device":
-			self._control_surface.show_message("DEVICE CONTROLLER MODE")
-			self._setup_device_controller(True)
-			self._mode_index = 5
+		elif mode == "melodic stepseq":
+			self._control_surface.show_message("MELODIC SEQUENCER MODE")
+			self._setup_session(not as_active, not as_enabled)
+			self._setup_instrument_controller(not as_active)
+			self._setup_device_controller(not as_active)
+			self._setup_mixer(not as_active)
+			self._setup_step_sequencer(not as_active)
+			self._setup_step_sequencer2(as_active)
+			self._update_control_channels()
+			self._mode_index = 7
 		elif mode == "user 1":
 			self._control_surface.show_message("USER 1 MODE" )
+			self._setup_session(not as_active, not as_enabled)
+			self._setup_step_sequencer(not as_active)
+			self._setup_step_sequencer2(not as_active)
+			self._setup_mixer(not as_active)
+			self._setup_device_controller(not as_active)
+			self._setup_instrument_controller(not as_active)
 			self._setup_user_mode(True, True, False, True)
 			self._update_control_channels()
 			self._mode_index = 1
-		elif mode == "melodic stepseq":
-			self._control_surface.show_message("MELODIC SEQUENCER MODE")
-			self._setup_step_sequencers(True, self._stepseq2)
-			self._mode_index = 7
+			self._osd.clear()
+			self._osd.mode = "User 1"
+			self._osd.update()
 		elif mode == "drum stepseq":
 			self._control_surface.show_message("DRUM SEQUENCER MODE")
-			self._setup_step_sequencers(True, self._stepseq)
+			self._setup_session(not as_active, not as_enabled)
+			self._setup_instrument_controller(not as_active)
+			self._setup_device_controller(not as_active)
+			self._setup_mixer(not as_active)
+			self._setup_step_sequencer2(not as_active)
+			self._setup_step_sequencer(as_active)
+			self._update_control_channels()
 			self._mode_index = 6
+		elif mode == "device":
+			self._control_surface.show_message("DEVICE CONTROLLER MODE")
+			self._setup_session(not as_active, not as_enabled)
+			self._setup_step_sequencer(not as_active)
+			self._setup_step_sequencer2(not as_active)
+			self._setup_mixer(not as_active)
+			self._setup_instrument_controller(not as_active)
+			self._setup_device_controller(as_active)
+			self._update_control_channels()
+			self._mode_index = 5
 		elif mode == "user 2":
 			self._control_surface.show_message("USER 2 MODE" )
+			self._setup_session(not as_active, not as_enabled)
+			self._setup_instrument_controller(not as_active)
+			self._setup_device_controller(not as_active)
+			self._setup_mixer(not as_active)
+			self._setup_step_sequencer(not as_active)
+			self._setup_step_sequencer2(not as_active)
 			self._setup_user_mode(False, False, False, False)
+			self._update_control_channels()
 			self._mode_index = 2
-		elif mode == "mixer":
-			self._control_surface.show_message("MIXER MODE")
-			self._setup_session(False, True)
-			self._setup_mixer(True)
-			self._mode_index = 3
-		
-		self._update_control_channels()#change channel for all buttons according to mode
-		
-		if(self._mode_index in range(1,3)):
 			self._osd.clear()
-			self._osd.mode = mode.capitalize()
+			self._osd.mode = "User 2"
 			self._osd.update()
 		
 	def _setup_session(self, as_active, as_navigation_enabled):
@@ -291,6 +337,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 			else:
 				button.set_on_off_values("DefaultButton.Disabled", "DefaultButton.Disabled")
 
+		# matrix
 		self._activate_matrix(True)
 		for scene_index in range(self._session._num_scenes):#iterate over scenes
 			scene = self._session.scene(scene_index)
@@ -340,7 +387,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 			self._zooming.set_scene_bank_buttons(None)
 			self._zooming.set_nav_buttons(None, None, None, None)
 
-		if as_navigation_enabled: # nav buttons -> Why set up clip slot navigation AND matrix control buttons???
+		if as_navigation_enabled: # nav buttons (track/scene)
 			self._session.set_track_bank_buttons(self._nav_buttons[3], self._nav_buttons[2])
 			self._session.set_scene_bank_buttons(self._nav_buttons[1], self._nav_buttons[0])
 		else:
@@ -402,17 +449,29 @@ class MainSelectorComponent(ModeSelectorComponent):
 			self._config_button.send_value(2)#Set LP drum rack layout grid mapping mode
 		self._config_button.send_value(32)#Send enable flashing led config message to LP
 				
-	def _setup_step_sequencers(self, as_active, sequencer):
-		if(sequencer != None):
-			#if(sequencer.is_enabled() != as_active):
+	def _setup_step_sequencer(self, as_active):
+		if(self._stepseq != None):
+			#if(self._stepseq.is_enabled() != as_active):
 			if as_active:
-				self._activate_scene_buttons(True)#Enable side buttons
-				self._activate_matrix(True) # Enable matrix buttons (clip slots)
-				self._activate_navigation_buttons(True)#Enable nav buttons
-				self._config_button.send_value(32)#Send enable flashing led config message to LP
-				sequencer.set_enabled(True)
+				self._activate_scene_buttons(True)
+				self._activate_matrix(True)
+				self._activate_navigation_buttons(True)
+				self._config_button.send_value(32)
+				self._stepseq.set_enabled(True)
 			else:
-				sequencer.set_enabled(False)
+				self._stepseq.set_enabled(False)
+
+	def _setup_step_sequencer2(self, as_active):
+		if(self._stepseq2 != None):
+			#if(self._stepseq2.is_enabled() != as_active):
+			if as_active:
+				self._activate_scene_buttons(True)
+				self._activate_matrix(True)
+				self._activate_navigation_buttons(True)
+				self._config_button.send_value(32)
+				self._stepseq2.set_enabled(True)
+			else:
+				self._stepseq2.set_enabled(False)
 
 	def _setup_mixer(self, as_active):
 		assert isinstance(as_active, type(False))
@@ -476,11 +535,3 @@ class MainSelectorComponent(ModeSelectorComponent):
 		for button in self._all_buttons:
 			button.set_channel(new_channel)
 			button.force_next_send()
-
-	def _disable_all_modes(self):
-		self._setup_session(False, False)
-		self._setup_instrument_controller(False) 			
-		self._setup_device_controller(False)
-		self._setup_step_sequencers(False, self._stepseq)
-		self._setup_step_sequencers(False, self._stepseq2)
-		self._setup_mixer(False)
