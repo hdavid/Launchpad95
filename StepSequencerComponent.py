@@ -550,7 +550,7 @@ class LoopSelectorComponent(ControlSurfaceComponent):
                                 self._delete_notes_in_range(start * self._blocksize * self._quantization, end * self._blocksize * self._quantization)
                         else:
                             if self._is_velocity_shifted: # FIX, see if can copy backwards
-                                self._extend_clip_content(start * self._blocksize * self._quantization, end * self._blocksize * self._quantization, self._loop_start, self._loop_end)
+                                self._extend_clip_content(start * self._blocksize * self._quantization, self._loop_end, end * self._blocksize * self._quantization)
                             self.set_clip_loop(start * self._blocksize * self._quantization, end * self._blocksize * self._quantization)
 
                     self._step_sequencer.set_page(self._block) # set sequencer focus
