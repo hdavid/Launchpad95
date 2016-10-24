@@ -59,7 +59,8 @@ class SubSelectorComponent(ModeSelectorComponent):
 		self._update_callback = callback
 
 	def set_modes_buttons(self, buttons):
-		assert ((buttons == None) or (isinstance(buttons, tuple) or (len(buttons) == self.number_of_modes())))
+		assert ((buttons == None) or (isinstance(buttons, tuple)))
+		assert (len(buttons) == self.number_of_modes())
 		identify_sender = True
 		for button in self._modes_buttons:
 			button.remove_value_listener(self._mode_value)
@@ -114,6 +115,7 @@ class SubSelectorComponent(ModeSelectorComponent):
 		self._session.set_stop_all_clips_button(None)
 
 	def update(self):
+		super(SubSelectorComponent, self).update()
 		assert (self._modes_buttons != None)
 		if self.is_enabled():
 			if (self._modes_buttons != None):
@@ -127,18 +129,10 @@ class SubSelectorComponent(ModeSelectorComponent):
 						button.set_on_off_values("Mixer.Sends")
 					elif index == 3:
 						button.set_on_off_values("Mixer.Sends")
-					elif index == 4:
-						button.set_on_off_values("Mixer.Stop")
-					elif index == 5:
-						button.set_on_off_values("Mixer.Mute")
-					elif index == 6:
-						button.set_on_off_values("Mixer.Solo")
-					elif index == 7:
-						button.set_on_off_values("Mixer.Arm")
 					if (index == self._mode_index):
-						button.turn_on()
-					else:
 						button.turn_off()
+					else:
+						button.turn_on()
 
 			for button in self._side_buttons:
 				button.set_on_off_values(127, "DefaultButton.Disabled")
@@ -165,8 +159,8 @@ class SubSelectorComponent(ModeSelectorComponent):
 				self._update_callback()
 			self._mixer.set_allow_update(True)
 			self._session.set_allow_update(True)
-		#else:
-			#self.release_controls()
+		else:
+			self.release_controls()
 
 	def _setup_mixer_overview(self):
 		stop_buttons = []
@@ -200,25 +194,18 @@ class SubSelectorComponent(ModeSelectorComponent):
 			strip.set_solo_button(self._matrix.get_button(track, 6))
 			strip.set_arm_button(self._matrix.get_button(track, 7))
 
-		for button in self._side_buttons:
-			if row == 0:
-				button.set_on_off_values("Mixer.Volume")
-			elif row == 1:
-				button.set_on_off_values("Mixer.Pan")
-			elif row == 2:
-				button.set_on_off_values("Mixer.Sends")
-			elif row == 3:
-				button.set_on_off_values("Mixer.Sends")
-			elif row == 4:
-				button.set_on_off_values("Mixer.Stop")
-			elif row == 5:
-				button.set_on_off_values("Mixer.Mute")
-			elif row == 6:
-				button.set_on_off_values("Mixer.Solo")
-			elif row == 7:
-				button.set_on_off_values("Mixer.Arm")
+			for button in self._side_buttons:
+				if list(self._side_buttons).index(button) == 0:
+					button.set_on_off_values("Mixer.Stop")
+				elif list(self._side_buttons).index(button) == 1:
+					button.set_on_off_values("Mixer.Mute")
+				elif list(self._side_buttons).index(button) == 2:
+					button.set_on_off_values("Mixer.Solo")
+				elif list(self._side_buttons).index(button) == 3:
+					button.set_on_off_values("Mixer.Arm") 
+				
 			button.force_next_send()
-			button.turn_on()
+			button.turn_off()
 
 		self._session.set_stop_track_clip_buttons(tuple(stop_buttons))
 		self._session.set_stop_all_clips_button(self._side_buttons[0])
@@ -274,7 +261,7 @@ class SubSelectorComponent(ModeSelectorComponent):
 			strip.set_volume_control(None)
 			strip.set_pan_control(None)
 			for row in range(self._matrix.height()):
-				self._matrix.get_button(track, row).set_on_off_values("Mixer.SendsSlider")
+				self._matrix.get_button(track, row).set_on_off_values("Mixer.SendsSlider_1")
 
 			self._sliders[track].set_mode(SLIDER_MODE_VOLUME)
 			self._sliders[track].set_value_map(SEND_VALUE_MAP)
@@ -294,7 +281,7 @@ class SubSelectorComponent(ModeSelectorComponent):
 			strip.set_volume_control(None)
 			strip.set_pan_control(None)
 			for row in range(self._matrix.height()):
-				self._matrix.get_button(track, row).set_on_off_values("Mixer.SendsSlider")
+				self._matrix.get_button(track, row).set_on_off_values("Mixer.SendsSlider_2")
 
 			self._sliders[track].set_mode(SLIDER_MODE_VOLUME)
 			self._sliders[track].set_value_map(SEND_VALUE_MAP)
