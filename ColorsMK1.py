@@ -9,6 +9,7 @@ class Rgb:
 	RED_HALF = Color(6)
 	RED_THIRD = Color(5)
 	
+	#RED BLINK
 	RED_BLINK = Color(11)
 	RED_BLINK_HALF = Color(10)
 	RED_BLINK_THIRD = Color(9)
@@ -19,6 +20,7 @@ class Rgb:
 	GREEN_HALF = Color(36)
 	GREEN_THIRD = Color(20)
 	
+	#GREEN_BLINK
 	GREEN_BLINK = Color(56)
 	GREEN_BLINK_HALF = Color(40)
 	GREEN_BLINK_THIRD = Color(24)
@@ -29,6 +31,7 @@ class Rgb:
 	AMBER_HALF = Color(38)
 	AMBER_THIRD = Color(21)
 	
+	#AMBER_BLINK
 	AMBER_BLINK = Color(59)
 	AMBER_BLINK_HALF = Color(42)
 	AMBER_BLINK_THIRD = Color(25)
@@ -52,8 +55,8 @@ class Rgb:
 	#MISC
 	MANDARIN = Color(23)
 	MANDARIN_FULL = Color(23)
-	ORANGE_BLINK = Color(27)
+	MANDARIN_BLINK = Color(27)
 	
-	LIME = Color(43)
-	LIME_FULL = Color(43)
-	LIME_BLINK = Color(47)
+	LIME = Color(53)
+	LIME_FULL = Color(53)
+	LIME_BLINK = Color(57)

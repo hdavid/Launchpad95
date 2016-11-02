@@ -40,7 +40,7 @@ class Colors:
 	
 	class Session:
 		# scene
-		SceneTriggered = Rgb.AMBER_BLINK
+		SceneTriggered = Rgb.GREEN_BLINK
 		Scene = Rgb.AMBER_THIRD
 		NoScene = Rgb.BLACK
 		# clip states
@@ -53,8 +53,8 @@ class Colors:
 		ClipTriggeredRecord = Rgb.RED_BLINK
 		RecordButton = Rgb.RED_THIRD
 		# stop button
-		StopClip = Rgb.RED
-		StopClipTriggered = Rgb.RED_BLINK
+		StopClip = Rgb.ORANGE_HALF
+		StopClipTriggered = Rgb.ORANGE_BLINK_HALF
 		# Enabled = Rgb.GREEN
 		# Off = Rgb.GREEN_THIRD
 
@@ -72,8 +72,8 @@ class Colors:
 			On = Rgb.RED
 			Off = Rgb.RED_THIRD
 		class Mute:
-			On = Rgb.AMBER_THIRD
-			Off = Rgb.AMBER
+			On = Rgb.AMBER
+			Off = Rgb.AMBER_THIRD
 		class Stop:
 			On = Rgb.RED
 			Off = Rgb.RED_THIRD
@@ -81,22 +81,25 @@ class Colors:
 			On = Rgb.AMBER
 			Off = Rgb.AMBER_THIRD
 		class Volume:
-			On = Rgb.GREEN
-			Off = Rgb.GREEN_THIRD
+			On = Rgb.GREEN_THIRD
+			Off = Rgb.GREEN
 		class VolumeSlider:
 			On = Rgb.GREEN
 			Off = Rgb.BLACK
 		class Pan:
-			On = Rgb.GREEN
-			Off = Rgb.GREEN_THIRD
+			On = Rgb.GREEN_THIRD
+			Off = Rgb.GREEN
 		class PanSlider:
-			On = Rgb.GREEN
+			On = Rgb.AMBER
 			Off = Rgb.BLACK
 		class Sends:
-			On = Rgb.GREEN
-			Off = Rgb.GREEN_THIRD
-		class SendsSlider:
-			On = Rgb.AMBER
+			On = Rgb.GREEN_THIRD
+			Off = Rgb.GREEN
+		class SendsSlider_1:
+			On = Rgb.ORANGE
+			Off = Rgb.BLACK
+		class SendsSlider_2:
+			On = Rgb.YELLOW
 			Off = Rgb.BLACK
 
 	class Sends:  # not used yet on legacy launchpad
@@ -241,11 +244,11 @@ class Colors:
 			On = Rgb.RED
 			Off = Rgb.RED_THIRD
 		class Stop:
-			On = Rgb.RED
-			Off = Rgb.RED_THIRD
+			On = Rgb.ORANGE
+			Off = Rgb.ORANGE_HALF
 		class Mute:
-			On = Rgb.RED
-			Off = Rgb.RED_THIRD
+			On = Rgb.AMBER
+			Off = Rgb.AMBER_THIRD
 		class Undo:
 			On = Rgb.AMBER
 			Off = Rgb.AMBER_THIRD

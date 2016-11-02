@@ -10,7 +10,7 @@ class ConfigurableButtonElement(ButtonElement):
 	False, which can be defined by setting the 'states' property.
 	Thus 'set_light' can take any state or skin color.
 	"""
-	default_states = {True: 'DefaultButton.On', False: 'DefaultButton.Disabled'}
+	default_states = {True: 'DefaultButton.On', False: 'DefaultButton.Off'}
 	send_depends_on_forwarding = False
 
 	def __init__(self, is_momentary, msg_type, channel, identifier, skin = None, default_states = None, control_surface = None, *a, **k):
@@ -44,7 +44,7 @@ class ConfigurableButtonElement(ButtonElement):
 
 	def reset(self):
 		self.set_light('DefaultButton.Disabled')
-		self.reset_state()
+		#self.reset_state()
 
 	def reset_state(self):
 		self.states = dict(self.default_states)
@@ -52,13 +52,14 @@ class ConfigurableButtonElement(ButtonElement):
 		self.set_enabled(True)
 
 	def set_on_off_values(self, on_value, off_value = None):
+		self.clear_send_cache()
 		if off_value == None:
 			self.states[True] = str(on_value)+".On"
 			self.states[False] = str(on_value)+".Off"
 		else:
 			self.states[True] = on_value
 			self.states[False] = off_value
-
+			
 	def set_enabled(self, enabled):
 		self.suppress_script_forwarding = not enabled
 
@@ -80,7 +81,7 @@ class ConfigurableButtonElement(ButtonElement):
 			super(ConfigurableButtonElement, self).send_value(value, **k)
 		else:
 			self._draw_skin(value)
-
+			
 	def force_next_send(self):
 		"""
 		Enforces sending the next value regardless of wether the
@@ -95,7 +96,7 @@ class ConfigurableButtonElement(ButtonElement):
 			super(ConfigurableButtonElement, self).send_value(self._on_value, **k)
 		else:
 			self._draw_skin(self._on_value)
-
+			
 	def _do_send_off_value(self, **k):
 		if type(self._off_value) is int:
 			super(ConfigurableButtonElement, self).send_value(self._off_value, **k)
