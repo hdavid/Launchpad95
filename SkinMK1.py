@@ -292,8 +292,8 @@ class Colors:
 					
 	class Scale:  # scale edition
 		class Horizontal:
-			On = Rgb.AMBER
-			Off = Rgb.AMBER_THIRD
+			On = Rgb.LIME
+			Off = Rgb.MANDARIN
 		class AbsoluteRoot:
 			On = Rgb.AMBER
 			Off = Rgb.AMBER_THIRD

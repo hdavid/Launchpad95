@@ -27,16 +27,20 @@ class InstrumentControllerComponent(CompoundComponent):
 		self._octave_up_button = None
 		self._octave_down_button = None
 		self._scales_toggle_button = None
-		self.set_scales_toggle_button(side_buttons[0])
-		self.set_octave_up_button(side_buttons[2])
-		self.set_octave_down_button(side_buttons[3])
+		self.set_scales_toggle_button(side_buttons[0])#Enable scale selecting mode
+		self.set_octave_up_button(side_buttons[2])#Shift octave up
+		self.set_octave_down_button(side_buttons[3])#Shift octave down
 
 		self._track_controller = self.register_component(TrackControllerComponent(control_surface = control_surface, implicit_arm = True))
 		self._track_controller.set_enabled(False)
+		
+		#Clip navigation buttons
 		self._track_controller.set_prev_scene_button(top_buttons[0])
 		self._track_controller.set_next_scene_button(top_buttons[1])
 		self._track_controller.set_prev_track_button(top_buttons[2])
 		self._track_controller.set_next_track_button(top_buttons[3])
+		
+		#Clip edition buttons
 		self._track_controller.set_undo_button(side_buttons[1])
 		self._track_controller.set_stop_button(side_buttons[4])
 		self._track_controller.set_play_button(side_buttons[5])
@@ -86,6 +90,7 @@ class InstrumentControllerComponent(CompoundComponent):
 	def _on_session_record_changed(self):
 		self._set_feedback_velocity()
 
+	# Refresh button and its listener
 	def set_scales_toggle_button(self, button):
 		assert isinstance(button, (ButtonElement, type(None)))
 		if (self._scales_toggle_button != None):
@@ -95,6 +100,7 @@ class InstrumentControllerComponent(CompoundComponent):
 			self._scales_toggle_button.add_value_listener(self._scales_toggle, identify_sender=True)
 			self._scales_toggle_button.turn_off()
 
+	# Refresh button and its listener
 	def set_octave_up_button(self, button=None):
 		assert isinstance(button, (ButtonElement, type(None)))
 		if (self._octave_up_button != None):
@@ -104,6 +110,7 @@ class InstrumentControllerComponent(CompoundComponent):
 			self._octave_up_button.add_value_listener(self._scroll_octave_up, identify_sender=True)
 			self._octave_up_button.turn_off()
 
+	# Refresh button and its listener
 	def set_octave_down_button(self, button=None):
 		assert isinstance(button, (ButtonElement, type(None)))
 		if (self._octave_down_button != None):
@@ -113,6 +120,7 @@ class InstrumentControllerComponent(CompoundComponent):
 			self._octave_down_button.add_value_listener(self._scroll_octave_down, identify_sender=True)
 			self._octave_down_button.turn_off()
 
+	#Enables scale selection mode
 	def _scales_toggle(self, value, sender):
 		if self.is_enabled():
 			if (value is not 0):
@@ -132,12 +140,8 @@ class InstrumentControllerComponent(CompoundComponent):
 				self._osd.mode = self._osd_mode_backup
 				self.update()
 
-	def _can_scroll_octave_up(self):
-		return self._scales._octave < 10
 
-	def _can_scroll_octave_down(self):
-		return self._scales._octave  > -2
-
+	# Transposes key one octave up 
 	def _scroll_octave_up(self, value, sender):
 		if self.is_enabled():
 			if ((not sender.is_momentary()) or (value is not 0)):
@@ -145,6 +149,10 @@ class InstrumentControllerComponent(CompoundComponent):
 					self._scales._octave += 1
 					self.update()
 
+	def _can_scroll_octave_up(self):
+		return self._scales._octave < 10
+
+	# Transposes key one octave down 
 	def _scroll_octave_down(self, value, sender):
 		if self.is_enabled():
 			if ((not sender.is_momentary()) or (value is not 0)):
@@ -152,8 +160,10 @@ class InstrumentControllerComponent(CompoundComponent):
 					self._scales._octave -= 1
 					self.update()
 
+	def _can_scroll_octave_down(self):
+		return self._scales._octave  > -2
 
-
+	#Handles scale setting and configuration
 	def _matrix_value_quickscale(self, value, x, y, is_momentary):  # matrix buttons listener for advanced mode
 		if self.is_enabled() and not self._scales.is_enabled() and self._scales.is_quick_scale:
 			keys = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
@@ -254,6 +264,7 @@ class InstrumentControllerComponent(CompoundComponent):
 								self._scales.update_object_name(self._track_controller.selected_clip)
 							self._control_surface.show_message("mode : "+str(self._scales._modus_names[self._scales._modus]))
 							self.update()
+		
 
 	def update(self):
 		if self.is_enabled():
@@ -319,6 +330,7 @@ class InstrumentControllerComponent(CompoundComponent):
 			self._osd.info[1] = " "
 			self._osd.update()
 
+	# Refresh matrix and its listener
 	def set_matrix(self, matrix):
 		self._matrix = matrix
 		if matrix:
@@ -331,6 +343,7 @@ class InstrumentControllerComponent(CompoundComponent):
 			self._matrix.add_value_listener(self._matrix_value_quickscale)
 		self._update_matrix()
 
+	#Listener, setup drumrack scale mode and load the selected scale for Track/Cip (Disabled)
 	def on_selected_track_changed(self):
 		if self._track_controller._implicit_arm:
 			self._get_drumrack_device()
@@ -357,6 +370,7 @@ class InstrumentControllerComponent(CompoundComponent):
 					
 			self.update()
 
+	#Set the drum rack instrument to _drum_group_device variable, if it exists
 	def _get_drumrack_device(self):
 		if self._track_controller.selected_track != None:
 			track = self._track_controller.selected_track
@@ -372,6 +386,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		else:
 			self._drum_group_device = None
 	
+	#Return the drum device inside the track devices or inside the track chain or None if device is not a Drum
 	def find_drum_group_device(self, track):
 		device = find_if(lambda d: d.type == Live.Device.DeviceType.instrument, track.devices)
 		if device:
@@ -383,7 +398,6 @@ class InstrumentControllerComponent(CompoundComponent):
 			return None
 			
 	def _update_matrix(self):
-
 		if not self.is_enabled() or not self._matrix or self._scales.is_enabled():
 			self._control_surface.release_controlled_track()
 			# self._control_surface.set_feedback_channels([])
@@ -396,14 +410,14 @@ class InstrumentControllerComponent(CompoundComponent):
 			for i in range(128):
 				note_channel[i] = self.base_channel
 
-			# select drumrack device
+			# Validate if device is drumrack (assign _drum_group_device)
 			self._get_drumrack_device()
 
 			if self._scales.is_drumrack and not self._scales.is_diatonic and not self._scales.is_chromatic:
 				if self._drum_group_device != None:
-					self._scales._is_drumrack = True
+					self._scales.set_drumrack(True) 
 				else:
-					self._scales._is_drumrack = False
+					self._scales.set_drumrack(False)
 
 			for button, (x, y) in self._matrix.iterbuttons():
 				button.use_default_message()
@@ -547,7 +561,8 @@ class InstrumentControllerComponent(CompoundComponent):
 							# comment the line above and use the one below if you want instrument controller to use one channel instead of 3
 							# button.set_channel(note_channel[0])
 							button.set_identifier(note_info.index)
-							note_channel[note_info.index] = note_channel[note_info.index] + 1
+							if(note_channel[note_info.index]<15):
+								note_channel[note_info.index] = note_channel[note_info.index] + 1
 						else:
 							button.set_channel(non_feedback_channel)
 							button.set_identifier(a)
