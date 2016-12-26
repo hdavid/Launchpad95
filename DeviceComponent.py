@@ -13,6 +13,8 @@ class DeviceComponent(LiveDeviceComponent):
 		self.name = name
 		self._device = None
 		self._matrix = matrix
+		self._selected_track = None		
+		
 		#Track navigation buttons
 		self._prev_track_button = None
 		self._next_track_button = None
@@ -32,6 +34,10 @@ class DeviceComponent(LiveDeviceComponent):
 		self._lock_buttons = [None,None,None,None]
 		self._locked_devices = [None,None,None,None]
 		self._locked_device_index = None
+		self._lock_buttons = [None,None,None,None]
+		self._locked_device_bank = [0,0,0,0]
+		self._lock_button_press = [0,0,0,0]
+		self._locked_devices = [None,None,None,None]
 		
 		self._is_active = False
 		self._force = True
@@ -47,12 +53,6 @@ class DeviceComponent(LiveDeviceComponent):
 		self._sliders = []
 		self.set_enabled(is_enabled)
 
-		self._selected_track = None
-		
-		self._lock_buttons = [None,None,None,None]
-		self._locked_device_bank = [0,0,0,0]
-		self._lock_button_press = [0,0,0,0]
-		self._locked_devices = [None,None,None,None]
 
 		if top_buttons != None:
 			# device selection buttons
@@ -131,10 +131,10 @@ class DeviceComponent(LiveDeviceComponent):
 		LiveDeviceComponent.set_enabled(self, active)
 
 	def _on_detail_view_changed(self):
-		self._update_buttons()
+		self._update()
 
 	def _on_views_changed(self):
-		self._update_buttons()
+		self._update()
 
 
 	def set_osd(self, osd):
@@ -192,9 +192,20 @@ class DeviceComponent(LiveDeviceComponent):
 	def on_selected_track_changed(self):
 		if not self._is_locked_to_device:
 			self._selected_track = self.song().view.selected_track
-			self.set_device(self._selected_track.view.selected_device)
+			if(self._selected_track.view.selected_device):
+				self.set_device(self._selected_track.view.selected_device)
+			else:
+				self.select_first_device()
 			if self.is_enabled():
 				self.update()
+				
+	def select_first_device(self):				
+		track = self.song().view.selected_track
+		if (track.devices is not None and len(track.devices)>0):
+			device_to_select = track.devices[0]
+			self.song().view.select_device(device_to_select)
+			self.set_device(device_to_select)
+
 	
 	def set_device(self, device):
 		if(device != self._device):
