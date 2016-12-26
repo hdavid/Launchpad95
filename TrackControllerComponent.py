@@ -475,7 +475,7 @@ class TrackControllerComponent(MixerComponent):
 
 	@property
 	def selected_track_idx(self):
-		return list(self.song().tracks).index(self.song().view.selected_track)
+		return list(self.song().tracks).index(self.song().view.selected_track) if self.song().view.selected_track in list(self.song().tracks) else None  
 
 	@property
 	def selected_scene_idx(self):

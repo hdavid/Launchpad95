@@ -131,10 +131,10 @@ class DeviceComponent(LiveDeviceComponent):
 		LiveDeviceComponent.set_enabled(self, active)
 
 	def _on_detail_view_changed(self):
-		self._update()
+		self.update()
 
 	def _on_views_changed(self):
-		self._update()
+		self.update()
 
 
 	def set_osd(self, osd):
