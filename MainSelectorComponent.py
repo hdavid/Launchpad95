@@ -271,7 +271,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 			self._setup_instrument_controller(as_active)
 			self._mode_index = 4
 		elif mode == "melodic stepseq":
-			self._control_surface.show_message("RETRO SEQUENCER MODE")
+			self._control_surface.show_message("MELODIC SEQUENCER MODE")
 			self._setup_session(not as_active, not as_enabled)
 			self._setup_instrument_controller(not as_active)
 			self._setup_device_controller(not as_active)
@@ -295,7 +295,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 			self._osd.mode = "User 1"
 			self._osd.update()
 		elif mode == "drum stepseq":
-			self._control_surface.show_message("DRUM/MELODIC SEQUENCER MODE")
+			self._control_surface.show_message("DRUM STEP SEQUENCER MODE")
 			self._setup_session(not as_active, not as_enabled)
 			self._setup_instrument_controller(not as_active)
 			self._setup_device_controller(not as_active)
