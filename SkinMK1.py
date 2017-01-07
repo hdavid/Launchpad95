@@ -22,6 +22,9 @@ class Colors:
 		class Device:
 			On = Rgb.RED
 			Off = Rgb.RED_THIRD
+		class Track:
+			On = Rgb.ORANGE
+			Off = Rgb.ORANGE_HALF
 		class StepSequencer:
 			On = Rgb.AMBER
 			Off = Rgb.AMBER_THIRD
@@ -125,7 +128,7 @@ class Colors:
 			On = Rgb.GREEN
 			Off = Rgb.GREEN_THIRD
 		class Lock:
-			Empty = Rgb.AMBER_THIRD
+			Empty = Rgb.BLACK
 			Set = Rgb.RED_THIRD
 			Locked = Rgb.RED
 		class Slider:
@@ -292,8 +295,8 @@ class Colors:
 					
 	class Scale:  # scale edition
 		class Horizontal:
-			On = Rgb.AMBER
-			Off = Rgb.AMBER_THIRD
+			On = Rgb.LIME
+			Off = Rgb.MANDARIN
 		class AbsoluteRoot:
 			On = Rgb.AMBER
 			Off = Rgb.AMBER_THIRD

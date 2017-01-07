@@ -74,11 +74,11 @@ class MainSelectorComponent(ModeSelectorComponent):
 		self._sub_modes._mixer.set_osd(self._osd)
 		self._sub_modes.set_update_callback(self._update_control_channels)
 
-		#User2 stepSequencer (Drum)
+		#User2 stepSequencer (Drum & Melodic)
 		self._stepseq = StepSequencerComponent(self._matrix, self._side_buttons, self._nav_buttons, self._control_surface)
 		self._stepseq.set_osd(self._osd)
 		
-		#User2 stepSequencer (Melodic)
+		#User2 stepSequencer (Retro style)
 		self._stepseq2 = StepSequencerComponent2(self._matrix, self._side_buttons, self._nav_buttons, self._control_surface)
 		self._stepseq2.set_osd(self._osd)
 		
@@ -295,7 +295,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 			self._osd.mode = "User 1"
 			self._osd.update()
 		elif mode == "drum stepseq":
-			self._control_surface.show_message("DRUM SEQUENCER MODE")
+			self._control_surface.show_message("DRUM STEP SEQUENCER MODE")
 			self._setup_session(not as_active, not as_enabled)
 			self._setup_instrument_controller(not as_active)
 			self._setup_device_controller(not as_active)
@@ -376,7 +376,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 			self._session.set_stop_all_clips_button(None)
 				
 		if as_active:# zoom
-			self._zooming.set_zoom_button(self._modes_buttons[0])# Set Session button as zoom button, wrong behavior???
+			self._zooming.set_zoom_button(self._modes_buttons[0])# Set Session button as zoom shift button 
 			self._zooming.set_button_matrix(self._matrix)
 			self._zooming.set_scene_bank_buttons(self._side_buttons)
 			self._zooming.set_nav_buttons(self._nav_buttons[0], self._nav_buttons[1], self._nav_buttons[2], self._nav_buttons[3])

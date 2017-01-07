@@ -9,6 +9,7 @@ VOL_VALUE_MAP = (0.0, 0.142882, 0.302414, 0.4, 0.55, 0.7, 0.85, 1.0)
 SEND_VALUE_MAP = (0.0, 0.103536, 0.164219, 0.238439, 0.343664, 0.55, 0.774942, 1.0)
 
 
+#SubSelector for Mixer Mode (Allow to select mixing sub modes: Vol, Pan, Snd, Stop, etc)
 class SubSelectorComponent(ModeSelectorComponent):
 
 	""" Class that handles different mixer modes """
