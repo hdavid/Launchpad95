@@ -106,8 +106,8 @@ class Launchpad(ControlSurface):
 				if isinstance(control, ConfigurableButtonElement):
 					control.add_value_listener(self._button_value)
 
-			self.set_highlighting_session_component(self._selector.session_component())
 			self._suppress_session_highlight = False
+			self.set_highlighting_session_component(self._selector.session_component())
 			# due to our 2 stage init, we need to rebuild midi map 
 			self.request_rebuild_midi_map()
 			# and request update 
