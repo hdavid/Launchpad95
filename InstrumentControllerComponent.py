@@ -10,9 +10,10 @@ import Settings
 
 class InstrumentControllerComponent(CompoundComponent):
 
-	def __init__(self, matrix, side_buttons, top_buttons, control_surface):
+	def __init__(self, matrix, side_buttons, top_buttons, control_surface, note_repeat):
 		super(InstrumentControllerComponent, self).__init__()
 		self._control_surface = control_surface
+		self._note_repeat = note_repeat
 		self._osd = None
 		self._matrix = None
 		self._side_buttons = side_buttons
@@ -20,7 +21,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		self._track_controller = None
 		self.base_channel = 11
 		self._quick_scales = [0, 1, 2, 3, 4, 5, 6, 7, 10, 13, 14, 15, 17, 18, 24]
-		self._quick_scale_root = True
+		self._quick_scale_root = 0
 		self._normal_feedback_velocity = int(self._control_surface._skin['Note.Feedback'])
 		self._recordind_feedback_velocity = int(self._control_surface._skin['Note.FeedbackRecord'])
 		self._drum_group_device = None
@@ -168,10 +169,11 @@ class InstrumentControllerComponent(CompoundComponent):
 		if self.is_enabled() and not self._scales.is_enabled() and self._scales.is_quick_scale:
 			keys = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 			if ((value != 0) or (not is_momentary)):
-				if self._quick_scale_root:
+				if self._quick_scale_root==0:
 					root = -1
 					selected_key = self._scales._key
 					selected_modus = self._scales._modus
+					#Root selection keys
 					if y == 1 and x < 7 or y == 0 and x in[0, 1, 3, 4, 5]:
 						if y == 1:
 							root = [0, 2, 4, 5, 7, 9, 11, 12][x]
@@ -191,18 +193,10 @@ class InstrumentControllerComponent(CompoundComponent):
 								selected_modus = 11
 							self._control_surface.show_message(keys[root]+" "+str(self._scales._modus_names[selected_modus]))
 					else:
-						if y == 0 and x == 7:  # change mode
-							self._quick_scale_root = not self._quick_scale_root
-							if self._quick_scale_root:
-								self._control_surface.show_message("quick scale : root")
-							else:
-								self._control_surface.show_message("quick scale : modes")
+						
+						if y == 0 and x == 7:  # change scale mode
+							self.setup_quick_scale_mode()
 							self.update()
-						#if y == 1 and x == 7 and False:  # rotate minor scales
-						#	if self._scales._modus in self._scales._minor_modes:
-						#		self._scales.set_modus(self._scales._minor_modes[(self.tuple_idx(self._scales._minor_modes, self._scales._modus) + 1) % 3])
-						#		self._control_surface.show_message(keys[root]+" "+str(self._scales._modus_names[self._scales._modus]))
-						#		self.update()
 						if y == 1 and x == 7:  # nav circle of 5th right
 							root = CIRCLE_OF_FIFTHS[(self.tuple_idx(CIRCLE_OF_FIFTHS, selected_key) + 1 + 12) % 12]
 							self._control_surface.show_message("circle of 5ths -> "+keys[selected_key]+" "+str(self._scales._modus_names[selected_modus])+" => "+keys[root]+" "+str(self._scales._modus_names[selected_modus]))
@@ -236,7 +230,7 @@ class InstrumentControllerComponent(CompoundComponent):
 								self._scales.update_object_name(self._track_controller.selected_clip)
 						self.update()
 
-				else:
+				elif self._quick_scale_root==1:
 					if(y == 0):
 						if x < 7 and self._quick_scales[x] != -1:
 							self._scales.set_modus(self._quick_scales[x])
@@ -248,11 +242,7 @@ class InstrumentControllerComponent(CompoundComponent):
 							self._control_surface.show_message("mode : "+str(self._scales._modus_names[self._scales._modus]))
 							self.update()
 						if x == 7:
-							self._quick_scale_root = not self._quick_scale_root
-							if self._quick_scale_root:
-								self._control_surface.show_message("quick scale : root")
-							else:
-								self._control_surface.show_message("quick scale : modes")
+							self.setup_quick_scale_mode()
 							self.update()
 					if(y == 1):
 						if x < 8 and self._quick_scales[x + 7] != -1:
@@ -264,7 +254,27 @@ class InstrumentControllerComponent(CompoundComponent):
 								self._scales.update_object_name(self._track_controller.selected_clip)
 							self._control_surface.show_message("mode : "+str(self._scales._modus_names[self._scales._modus]))
 							self.update()
-		
+				else:
+					if(y == 0):
+						if x == 7:
+							self.setup_quick_scale_mode()
+							self.update()
+					if(y == 1):
+						if x in range(8):
+							
+							self._note_repeat.set_freq_index(x)
+							self._control_surface.show_message("key pressed: " + str(self._note_repeat.freq_index()))
+							self.update()							
+
+	def setup_quick_scale_mode(self):
+		self._quick_scale_root = ((self._quick_scale_root + 1) % 3)
+		self._note_repeat.set_enabled(self._quick_scale_root==2)
+		if self._quick_scale_root==0:
+			self._control_surface.show_message("quick scale : root")
+		elif self._quick_scale_root==1:
+			self._control_surface.show_message("quick scale : modes")
+		else:
+			self._control_surface.show_message("quick scale : note repeater")
 
 	def update(self):
 		if self.is_enabled():
@@ -458,7 +468,7 @@ class InstrumentControllerComponent(CompoundComponent):
 					selected_modus = self._scales._modus
 					selected_key = self._scales._key
 
-					if self._quick_scale_root:
+					if self._quick_scale_root==0:
 						if selected_modus == 0 or selected_modus == 12:
 							key_color = "QuickScale.Major.Key"
 							fifth_button_color = "QuickScale.Major.CircleOfFifths"
@@ -507,7 +517,7 @@ class InstrumentControllerComponent(CompoundComponent):
 								button.turn_on()
 							else:
 								button.turn_off()
-					else:
+					elif self._quick_scale_root==1:
 						button = self._matrix.get_button(7, 0)
 						button.set_light("QuickScale.Major.Mode")
 						for x in range(7):
@@ -535,7 +545,8 @@ class InstrumentControllerComponent(CompoundComponent):
 								button.turn_on()
 							else:
 								button.turn_off()
-
+					else:
+						pass
 				pattern = self._scales.get_pattern()
 				max_j = self._matrix.width() - 1
 				a = 0

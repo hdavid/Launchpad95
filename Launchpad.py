@@ -6,6 +6,7 @@ from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
 from ConfigurableButtonElement import ConfigurableButtonElement
 from MainSelectorComponent import MainSelectorComponent
+from NoteRepeatComponent import NoteRepeatComponent
 from M4LInterface import M4LInterface
 import Settings
 
@@ -99,12 +100,14 @@ class Launchpad(ControlSurface):
 			side_buttons[7].name = 'Arm_Button'
 			self._osd = M4LInterface()
 			self._osd.name = "OSD"
-			self._selector = MainSelectorComponent(matrix, tuple(top_buttons), tuple(side_buttons), self._config_button, self._osd, self)
+			self._init_note_repeat()
+			self._selector = MainSelectorComponent(matrix, tuple(top_buttons), tuple(side_buttons), self._config_button, self._osd, self, self._note_repeat)
 			self._selector.name = 'Main_Modes'
 			self._do_combine()
 			for control in self.controls:
 				if isinstance(control, ConfigurableButtonElement):
 					control.add_value_listener(self._button_value)
+
 
 			self.set_highlighting_session_component(self._selector.session_component())
 			self._suppress_session_highlight = False
@@ -263,3 +266,8 @@ class Launchpad(ControlSurface):
 	def _set_session_highlight(self, track_offset, scene_offset, width, height, include_return_tracks):
 		if not self._suppress_session_highlight:
 			ControlSurface._set_session_highlight(self, track_offset, scene_offset, width, height, include_return_tracks)
+			
+	def _init_note_repeat(self):
+		self._note_repeat = NoteRepeatComponent(name='Note_Repeat')
+		self._note_repeat.set_enabled(False)
+		self._note_repeat.set_note_repeat(self._c_instance.note_repeat)

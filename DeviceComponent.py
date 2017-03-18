@@ -122,7 +122,7 @@ class DeviceComponent(LiveDeviceComponent):
 		
 	def set_enabled(self, active):
 		if active:
-			self.force = True
+			self._force = True
 			self.on_selected_track_changed()
 		# disable matrix.
 		for slider in self._sliders:
@@ -135,7 +135,6 @@ class DeviceComponent(LiveDeviceComponent):
 
 	def _on_views_changed(self):
 		self.update()
-
 
 	def set_osd(self, osd):
 		self._osd = osd
@@ -177,7 +176,6 @@ class DeviceComponent(LiveDeviceComponent):
 			else:
 				self._osd.info[1] = "no device selected"
 			self._osd.update()
-
 
 
 # DEVICE SELECTION
@@ -269,7 +267,6 @@ class DeviceComponent(LiveDeviceComponent):
 			self.update_precision_button()
 			self._update_OSD()
 			self._force = False
-
 
 
 # LOCK button
@@ -507,6 +504,7 @@ class DeviceComponent(LiveDeviceComponent):
 	
 
 # DEVICES
+		
 	def update_device_buttons(self):
 					
 		if self.is_enabled():
