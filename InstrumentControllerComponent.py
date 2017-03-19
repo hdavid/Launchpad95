@@ -2,7 +2,7 @@ import Live
 from _Framework.CompoundComponent import CompoundComponent
 from _Framework.SubjectSlot import subject_slot
 from _Framework.ButtonElement import ButtonElement
-from _Framework.Util import find_if
+from _Framework.Util import find_if, clamp
 from itertools import imap
 from TrackControllerComponent import TrackControllerComponent
 from ScaleComponent import ScaleComponent,CIRCLE_OF_FIFTHS,MUSICAL_MODES,KEY_NAMES
@@ -56,6 +56,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		self.set_matrix(matrix)
 
 		self._on_session_record_changed.subject = self.song()
+		self._on_swing_amount_changed_in_live.subject = self.song()
 
 	def set_enabled(self, enabled):
 		CompoundComponent.set_enabled(self, enabled)
@@ -67,6 +68,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		self._control_surface.set_feedback_channels(feedback_channels)
 		if not enabled:
 			self._control_surface.release_controlled_track()
+			
 		else:
 			self._control_surface.set_controlled_track(self._track_controller.selected_track)
 
@@ -80,6 +82,7 @@ class InstrumentControllerComponent(CompoundComponent):
 			if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":  
 				self._scales.from_object(self._track_controller.selected_clip)
 			self._update_OSD()
+		self._note_repeat.set_enabled(enabled)			
 
 	def _set_feedback_velocity(self):
 		if self.song().session_record:
@@ -90,6 +93,16 @@ class InstrumentControllerComponent(CompoundComponent):
 	@subject_slot('session_record')
 	def _on_session_record_changed(self):
 		self._set_feedback_velocity()
+
+	@subject_slot('swing_amount')
+	def _on_swing_amount_changed_in_live(self):
+		self.update()
+
+	def _change_swing_amount_value(self, value):
+		self.song().swing_amount = clamp(self.song().swing_amount + value * 0.75, 0.0, 0.75)
+		
+	def _swing_amount(self):
+		return self.song().swing_amount
 
 	# Refresh button and its listener
 	def set_scales_toggle_button(self, button):
@@ -256,19 +269,26 @@ class InstrumentControllerComponent(CompoundComponent):
 							self.update()
 				else:
 					if(y == 0):
-						if x == 7:
+						if x == 0:
+							self._change_swing_amount_value(0.05)
+						elif x == 1:
+							self._change_swing_amount_value(-0.05)
+						elif x == 7:
 							self.setup_quick_scale_mode()
 							self.update()
+					
 					if(y == 1):
 						if x in range(8):
 							
-							self._note_repeat.set_freq_index(x)
+							self._note_repeat.set_freq_index(7-x)
 							self._control_surface.show_message("key pressed: " + str(self._note_repeat.freq_index()))
 							self.update()							
 
 	def setup_quick_scale_mode(self):
+		
 		self._quick_scale_root = ((self._quick_scale_root + 1) % 3)
 		self._note_repeat.set_enabled(self._quick_scale_root==2)
+		
 		if self._quick_scale_root==0:
 			self._control_surface.show_message("quick scale : root")
 		elif self._quick_scale_root==1:
@@ -305,6 +325,7 @@ class InstrumentControllerComponent(CompoundComponent):
 					self._octave_down_button.turn_off()
 
 			self._update_OSD()
+			self._control_surface.log_message("Swing Amount: " + str(self.song().swing_amount))              
 
 	def set_osd(self, osd):
 		self._osd = osd
@@ -546,7 +567,29 @@ class InstrumentControllerComponent(CompoundComponent):
 							else:
 								button.turn_off()
 					else:
-						pass
+						button = self._matrix.get_button(7, 0)
+						button.set_light("QuickScale.Quant.Mode")
+						
+						for x in range(7):
+							button = self._matrix.get_button(x, 0)
+							button.set_enabled(True)
+							button.set_on_off_values("DefaultButton.On", "DefaultButton.Disabled")
+							if(x in range(2)):
+								button.turn_on()
+							else:
+								button.turn_off()
+							
+						for x in range(8):
+							button = self._matrix.get_button(x, 1)
+							button.set_enabled(True)
+							button.set_on_off_values("QuickScale.Quant")
+
+							if (7-x) == self._note_repeat.freq_index():
+								button.turn_on()
+							else:
+								button.turn_off()
+					
+					
 				pattern = self._scales.get_pattern()
 				max_j = self._matrix.width() - 1
 				a = 0

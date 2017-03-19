@@ -343,7 +343,11 @@ class Colors:
 			CircleOfFifths = Rgb.RED
 			RelativeScale = Rgb.RED
 			Mode = Rgb.GREEN
-		
-
+		class Quant:
+			On = Rgb.RED
+			Off = Rgb.YELLOW_HALF
+			Mode = Rgb.MANDARIN
+			
+			
 def make_skin():
 	return Skin(Colors)

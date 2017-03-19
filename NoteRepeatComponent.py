@@ -1,4 +1,3 @@
-#Embedded file name: /Users/versonator/Jenkins/live/output/mac_64_static/Release/midi-remote-scripts/Push/NoteRepeatComponent.py
 from _Framework import Task
 from _Framework.CompoundComponent import CompoundComponent
 import Live
