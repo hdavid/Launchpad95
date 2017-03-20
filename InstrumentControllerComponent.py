@@ -57,6 +57,7 @@ class InstrumentControllerComponent(CompoundComponent):
 
 		self._on_session_record_changed.subject = self.song()
 		self._on_swing_amount_changed_in_live.subject = self.song()
+		self._note_repeat.set_enabled(False)
 
 	def set_enabled(self, enabled):
 		CompoundComponent.set_enabled(self, enabled)
@@ -68,7 +69,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		self._control_surface.set_feedback_channels(feedback_channels)
 		if not enabled:
 			self._control_surface.release_controlled_track()
-			
+			self._note_repeat.set_enabled(False)
 		else:
 			self._control_surface.set_controlled_track(self._track_controller.selected_track)
 
@@ -82,8 +83,7 @@ class InstrumentControllerComponent(CompoundComponent):
 			if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":  
 				self._scales.from_object(self._track_controller.selected_clip)
 			self._update_OSD()
-		self._note_repeat.set_enabled(enabled)			
-
+					
 	def _set_feedback_velocity(self):
 		if self.song().session_record:
 			self._control_surface._c_instance.set_feedback_velocity(self._recordind_feedback_velocity)
@@ -99,10 +99,18 @@ class InstrumentControllerComponent(CompoundComponent):
 		self.update()
 
 	def _change_swing_amount_value(self, value):
-		self.song().swing_amount = clamp(self.song().swing_amount + value * 0.75, 0.0, 0.75)
+		self._set_swing_amount_value(clamp(self.song().swing_amount + value*0.025, 0.0, 0.99))
+
 		
+	def _set_swing_amount_value(self, value):
+		self.song().swing_amount = value
+		self._control_surface.show_message("Swing amount: " + str(int(self._swing_amount()*100)) + "%")
+				
 	def _swing_amount(self):
 		return self.song().swing_amount
+	
+	def _toggle_note_repeater(self):
+		self._note_repeat.set_enabled(not self._note_repeat.is_enabled())
 
 	# Refresh button and its listener
 	def set_scales_toggle_button(self, button):
@@ -152,6 +160,8 @@ class InstrumentControllerComponent(CompoundComponent):
 				if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":
 					self._scales.update_object_name(self._track_controller.selected_clip)
 				self._osd.mode = self._osd_mode_backup
+				if(not self._scales.is_quick_scale):
+					self._note_repeat.set_enabled(False)
 				self.update()
 
 
@@ -270,24 +280,32 @@ class InstrumentControllerComponent(CompoundComponent):
 				else:
 					if(y == 0):
 						if x == 0:
-							self._change_swing_amount_value(0.05)
+							self._change_swing_amount_value(-1)
 						elif x == 1:
-							self._change_swing_amount_value(-0.05)
+							self._change_swing_amount_value(1)
+						elif x == 2:
+							self._set_swing_amount_value(0.0)
+						elif x == 3:
+							self._set_swing_amount_value(0.25)
+						elif x == 4:
+							self._set_swing_amount_value(0.5)	
+						elif x == 5:
+							self._set_swing_amount_value(0.75)	
+						elif x == 6:
+							self._toggle_note_repeater()																							
 						elif x == 7:
 							self.setup_quick_scale_mode()
-							self.update()
-					
+							
 					if(y == 1):
 						if x in range(8):
 							
-							self._note_repeat.set_freq_index(7-x)
-							self._control_surface.show_message("key pressed: " + str(self._note_repeat.freq_index()))
-							self.update()							
+							self._note_repeat.set_freq_index(x)
+							self._control_surface.show_message("QUANTIZATION: " + str(self._note_repeat.freq_name()))
+					self.update()							
 
 	def setup_quick_scale_mode(self):
 		
 		self._quick_scale_root = ((self._quick_scale_root + 1) % 3)
-		self._note_repeat.set_enabled(self._quick_scale_root==2)
 		
 		if self._quick_scale_root==0:
 			self._control_surface.show_message("quick scale : root")
@@ -325,7 +343,7 @@ class InstrumentControllerComponent(CompoundComponent):
 					self._octave_down_button.turn_off()
 
 			self._update_OSD()
-			self._control_surface.log_message("Swing Amount: " + str(self.song().swing_amount))              
+			self._control_surface.log_message("Swing Amount: " + str(self._swing_amount()))              
 
 	def set_osd(self, osd):
 		self._osd = osd
@@ -570,21 +588,53 @@ class InstrumentControllerComponent(CompoundComponent):
 						button = self._matrix.get_button(7, 0)
 						button.set_light("QuickScale.Quant.Mode")
 						
+						
 						for x in range(7):
 							button = self._matrix.get_button(x, 0)
 							button.set_enabled(True)
-							button.set_on_off_values("DefaultButton.On", "DefaultButton.Disabled")
-							if(x in range(2)):
+							
+							if(x ==0):
+								button.set_on_off_values("QuickScale.Quant.On", "QuickScale.Quant.Off")
+								if(not self._swing_amount() ==0.0):
+									button.turn_on()
+								else:
+									button.turn_off()
+							elif(x ==1):
+								button.set_on_off_values("QuickScale.Quant.On", "QuickScale.Quant.Off")
+								if(self._swing_amount() < 0.98):
+									button.turn_on()
+								else:
+									button.turn_off()	
+								
+							elif(x ==2):
+								button.set_on_off_values("QuickScale.Quant.Straight", "DefaultButton.Disabled")
 								button.turn_on()
-							else:
-								button.turn_off()
+							elif(x ==3):
+								button.set_on_off_values("QuickScale.Quant.Swing", "DefaultButton.Disabled")
+								button.turn_on()
+							elif(x ==4):
+								button.set_on_off_values("QuickScale.Quant.Dotted", "DefaultButton.Disabled")
+								button.turn_on()
+							elif(x ==5):
+								button.set_on_off_values("QuickScale.Quant.Flam", "DefaultButton.Disabled")
+								button.turn_on()								
+							
+							elif(x ==6):
+								button.set_on_off_values("QuickScale.NoteRepeater.On", "QuickScale.NoteRepeater.Off")
+								if(self._note_repeat.is_enabled()):
+									button.turn_on()
+								else:								
+									button.turn_off()
 							
 						for x in range(8):
 							button = self._matrix.get_button(x, 1)
 							button.set_enabled(True)
-							button.set_on_off_values("QuickScale.Quant")
+							if(x%2==0):						
+								button.set_on_off_values("QuickScale.Quant.Selected", "QuickScale.Quant.Note")
+							else:
+								button.set_on_off_values("QuickScale.Quant.Selected", "QuickScale.Quant.Tripplet")
 
-							if (7-x) == self._note_repeat.freq_index():
+							if (x) == self._note_repeat.freq_index():
 								button.turn_on()
 							else:
 								button.turn_off()

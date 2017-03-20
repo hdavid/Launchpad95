@@ -3,16 +3,9 @@ from _Framework.CompoundComponent import CompoundComponent
 import Live
 
 t = 3.0 / 2.0
-NOTE_REPEAT_FREQUENCIES = [32 * t,
- 32,
- 16 * t,
- 16,
- 8 * t,
- 8,
- 4 * t,
- 4]
+NOTE_REPEAT_FREQUENCIES = [4, 4*t, 8, 8*t, 16, 16*t, 32, 32*t]
 del t
-
+QUANTIZATION_NAMES = ('1/4', '1/4t', '1/8',  '1/8t', '1/16', '1/16t', '1/32', '1/32t')
 
 class DummyNoteRepeat(object):
     repeat_rate = 1.0
@@ -46,6 +39,9 @@ class NoteRepeatComponent(CompoundComponent):
         
     def freq_index(self):              
         return self._freq_index
+    
+    def freq_name(self):              
+        return QUANTIZATION_NAMES[self._freq_index]
     
     def update(self):
         Live.Base.log("NoteRepeatComponent - update Start")         
