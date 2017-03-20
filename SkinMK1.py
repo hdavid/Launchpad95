@@ -320,8 +320,8 @@ class Colors:
 		
 	class QuickScale:  # quick scale on top of instrument mode
 		class Modus:
-			On = Rgb.ORANGE
-			Off = Rgb.MANDARIN
+			On = Rgb.MANDARIN
+			Off = Rgb.ORANGE
 		class Major:  # quick scale while in major mode
 			class Key:
 				On = Rgb.AMBER
@@ -345,11 +345,11 @@ class Colors:
 			Mode = Rgb.GREEN
 		class NoteRepeater:
 			On = Rgb.RED_BLINK
-			Off = Rgb.RED_THIRD
+			Off = Rgb.BLACK
 		class Quant:
 			On = Rgb.GREEN
 			Off = Rgb.GREEN_THIRD
-			Mode = Rgb.YELLOW
+			Mode = Rgb.GREEN
 			Straight = Rgb.ORANGE
 			Swing = Rgb.MANDARIN
 			Dotted = Rgb.LIME

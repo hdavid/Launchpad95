@@ -104,13 +104,14 @@ class InstrumentControllerComponent(CompoundComponent):
 		
 	def _set_swing_amount_value(self, value):
 		self.song().swing_amount = value
-		self._control_surface.show_message("Swing amount: " + str(int(self._swing_amount()*100)) + "%")
+		self._control_surface.show_message("REPEATER Swing amount: " + str(int(self._swing_amount()*100)) + "%")
 				
 	def _swing_amount(self):
 		return self.song().swing_amount
 	
 	def _toggle_note_repeater(self):
 		self._note_repeat.set_enabled(not self._note_repeat.is_enabled())
+		
 
 	# Refresh button and its listener
 	def set_scales_toggle_button(self, button):
@@ -292,7 +293,8 @@ class InstrumentControllerComponent(CompoundComponent):
 						elif x == 5:
 							self._set_swing_amount_value(0.75)	
 						elif x == 6:
-							self._toggle_note_repeater()																							
+							self._toggle_note_repeater()
+							self._control_surface.show_message("REPEATER is: " + str("ON" if self._note_repeat.is_enabled() else "OFF"))																							
 						elif x == 7:
 							self.setup_quick_scale_mode()
 							
@@ -300,7 +302,7 @@ class InstrumentControllerComponent(CompoundComponent):
 						if x in range(8):
 							
 							self._note_repeat.set_freq_index(x)
-							self._control_surface.show_message("QUANTIZATION: " + str(self._note_repeat.freq_name()))
+							self._control_surface.show_message("REPEATER Step: " + str(self._note_repeat.freq_name()))
 					self.update()							
 
 	def setup_quick_scale_mode(self):
@@ -312,7 +314,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		elif self._quick_scale_root==1:
 			self._control_surface.show_message("quick scale : modes")
 		else:
-			self._control_surface.show_message("quick scale : note repeater")
+			self._control_surface.show_message("quick scale : REPEATER")
 
 	def update(self):
 		if self.is_enabled():

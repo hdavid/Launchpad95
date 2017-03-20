@@ -22,7 +22,7 @@ class NoteRepeatComponent(CompoundComponent):
         super(NoteRepeatComponent, self).__init__(*a, **k)
         self._last_record_quantization = None
         self._note_repeat = None
-        self._freq_index = 5
+        self._freq_index = 2
         self.set_note_repeat(None)
         Live.Base.log("NoteRepeatComponent - Init End")
 

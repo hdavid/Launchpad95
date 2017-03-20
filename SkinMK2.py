@@ -325,7 +325,20 @@ class Colors:
 			CircleOfFifths = Rgb.RED
 			RelativeScale = Rgb.RED
 			Mode = Rgb.GREEN
-		
+		class NoteRepeater:
+			On = Rgb.RED_BLINK
+			Off = Rgb.BLACK
+		class Quant:
+			On = Rgb.GREEN
+			Off = Rgb.GREEN_THIRD
+			Mode = Rgb.GREEN
+			Straight = Rgb.BLUE_THIRD
+			Swing = Rgb.LIGHT_BLUE
+			Dotted = Rgb.PURPLE_THIRD
+			Flam = Rgb.PURPLE
+			Selected = Rgb.RED
+			Note = Rgb.RED_HALF	
+			Tripplet = Rgb.RED_THIRD			
 
 def make_skin():
 	return Skin(Colors)
