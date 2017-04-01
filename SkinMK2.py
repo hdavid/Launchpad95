@@ -97,6 +97,12 @@ class Colors:
 		class SendsSlider:
 			On = Rgb.MINT
 			Off = Rgb.BLACK
+		class SendsSlider_1:
+			On = Rgb.MINT
+			Off = Rgb.BLACK
+		class SendsSlider_2:
+			On = Rgb.MINT
+			Off = Rgb.BLACK
 
 	class Sends:#not used yet on legacy launchpad
 		A = Rgb.BLUE
