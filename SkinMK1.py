@@ -320,8 +320,8 @@ class Colors:
 		
 	class QuickScale:  # quick scale on top of instrument mode
 		class Modus:
-			On = Rgb.AMBER
-			Off = Rgb.AMBER_THIRD
+			On = Rgb.MANDARIN
+			Off = Rgb.ORANGE
 		class Major:  # quick scale while in major mode
 			class Key:
 				On = Rgb.AMBER
@@ -343,7 +343,21 @@ class Colors:
 			CircleOfFifths = Rgb.RED
 			RelativeScale = Rgb.RED
 			Mode = Rgb.GREEN
-		
-
+		class NoteRepeater:
+			On = Rgb.RED_BLINK
+			Off = Rgb.BLACK
+		class Quant:
+			On = Rgb.GREEN
+			Off = Rgb.GREEN_THIRD
+			Mode = Rgb.GREEN
+			Straight = Rgb.ORANGE
+			Swing = Rgb.MANDARIN
+			Dotted = Rgb.LIME
+			Flam = Rgb.YELLOW
+			Selected = Rgb.RED
+			Note = Rgb.RED_HALF	
+			Tripplet = Rgb.RED_THIRD		
+			
 def make_skin():
 	return Skin(Colors)
+

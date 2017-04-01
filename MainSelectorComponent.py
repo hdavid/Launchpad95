@@ -11,6 +11,7 @@ from SubSelectorComponent import SubSelectorComponent  # noqa
 from StepSequencerComponent import StepSequencerComponent
 from StepSequencerComponent2 import StepSequencerComponent2
 import Settings
+from NoteRepeatComponent import NoteRepeatComponent
 
 class MainSelectorComponent(ModeSelectorComponent):
 
@@ -19,7 +20,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 	#def log(self, message):
 	#	self._control_surface.log_message((' ' + message + ' ').center(50, '='))
 
-	def __init__(self, matrix, top_buttons, side_buttons, config_button, osd, control_surface):
+	def __init__(self, matrix, top_buttons, side_buttons, config_button, osd, control_surface,note_repeat):
 		#verify matrix dimentions
 		assert isinstance(matrix, ButtonMatrixElement)
 		assert ((matrix.width() == 8) and (matrix.height() == 8))
@@ -28,11 +29,18 @@ class MainSelectorComponent(ModeSelectorComponent):
 		assert isinstance(side_buttons, tuple)
 		assert (len(side_buttons) == 8)
 		assert isinstance(config_button, ButtonElement)
+		assert isinstance(note_repeat, NoteRepeatComponent)
 		ModeSelectorComponent.__init__(self) #super constructor
 		
 		#inject ControlSurface and OSD components (M4L)
+		self._matrix = matrix
+		self._nav_buttons = top_buttons[:4]#arrow buttons
+		self._mode_buttons = top_buttons[4:]#session,user1,user2,mixer buttons
+		self._side_buttons = side_buttons#launch buttons
+		self._config_button = config_button#used to reset launchpad
 		self._osd = osd
 		self._control_surface = control_surface
+		self._note_repeat = note_repeat
 
 		#initialize index variables
 		self._mode_index = 0 #Inherited from parent
@@ -40,8 +48,9 @@ class MainSelectorComponent(ModeSelectorComponent):
 		self._sub_mode_list = [0, 0, 0, 0]
 		for index in range(4):
 			self._sub_mode_list[index] = 0
-		self.set_mode_buttons(top_buttons[4:])
+		self.set_mode_buttons(self._mode_buttons)
 			
+		###SESSION COMPONENT			
 		if Settings.SESSION__STOP_BUTTONS:#session with bottom stop buttons
 			clip_stop_buttons = [] 
 			for column in range(8):
@@ -54,21 +63,17 @@ class MainSelectorComponent(ModeSelectorComponent):
 		self._session.set_osd(self._osd)
 		self._session.name = 'Session_Control'
 		
-		#initialize _zooming variables	
+		###ZOOMING COMPONENT
 		self._zooming = DeprecatedSessionZoomingComponent(self._session, enable_skinning = True)
 		self._zooming.name = 'Session_Overview'
 		self._zooming.set_empty_value("Default.Button.Off")
 		
-		self._matrix = matrix
-		self._side_buttons = side_buttons#launch buttons
-		self._nav_buttons = top_buttons[:4]#arrow buttons
-		self._config_button = config_button#used to reset launchpad
-		
+		#Non-Matrix buttons
 		self._all_buttons = []
 		for button in self._side_buttons + self._nav_buttons:
 			self._all_buttons.append(button)
 
-		#SubSelector changes the Mode using side buttons (ie. Pan, Volume, Send1, Send2, Stop, Solo, Activate, Arm)
+		#SubSelector changes the Mode using side buttons -> MIXER MODE (ie. Pan, Volume, Send1, Send2, Stop, Solo, Activate, Arm)
 		self._sub_modes = SubSelectorComponent(matrix, side_buttons, self._session, self._control_surface)
 		self._sub_modes.name = 'Mixer_Modes'
 		self._sub_modes._mixer.set_osd(self._osd)
@@ -83,7 +88,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 		self._stepseq2.set_osd(self._osd)
 		
 		#User1 Instrument controller (Scale)
-		self._instrument_controller = InstrumentControllerComponent(self._matrix, self._side_buttons, self._nav_buttons, self._control_surface)
+		self._instrument_controller = InstrumentControllerComponent(self._matrix, self._side_buttons, self._nav_buttons, self._control_surface, self._note_repeat)
 		self._instrument_controller.set_osd(self._osd)
 		#self._instrument_controller = None
 		
@@ -209,8 +214,6 @@ class MainSelectorComponent(ModeSelectorComponent):
 			new_channel = 6 + self._sub_modes.mode()  # 6,7,8,9,10
 
 		return new_channel
-
-				
 	
 	def update(self):
 		assert (self._modes_buttons != None)
