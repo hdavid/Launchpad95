@@ -217,7 +217,13 @@ class ScaleComponent(ControlSurfaceComponent):
 				
 				elif row==1:
 					if self.is_drumrack:
-						button.set_light("DefaultButton.Disabled")
+						if col==7:
+							if self._quick_scale:
+								button.set_light("Scale.QuickScale.On")
+							else:
+								button.set_light("Scale.QuickScale.Off")
+						else:
+							button.set_light("DefaultButton.Disabled")
 					else:
 						if col==0 or col==1 or col==3 or col==4 or col==5:
 							if self._key == self._white_notes_index[col]+1:
@@ -404,7 +410,7 @@ class ScaleComponent(ControlSurfaceComponent):
 					self.set_modus(selected_modus, message)
 					self.set_key(root, message)
 			#QuickScale
-			if y == 1 and x == 7 and not self.is_drumrack:
+			if y == 1 and x == 7: #and not self.is_drumrack:
 				self._quick_scale = not self._quick_scale
 				if self._quick_scale:
 					self._control_surface.show_message("Quick scale ON")
