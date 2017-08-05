@@ -193,7 +193,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		if self.is_enabled() and not self._scales.is_enabled() and self._scales.is_quick_scale:
 			keys = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 			if ((value != 0) or (not is_momentary)):
-				if self._quick_scale_root==0:
+				if self._quick_scale_root==0 and not self._scales.is_drumrack:
 					root = -1
 					selected_key = self._scales._key
 					selected_modus = self._scales._modus
@@ -254,7 +254,7 @@ class InstrumentControllerComponent(CompoundComponent):
 								self._scales.update_object_name(self._track_controller.selected_clip)
 						self.update()
 
-				elif self._quick_scale_root==1:
+				elif self._quick_scale_root==1 and not self._scales.is_drumrack:
 					if(y == 0):
 						if x < 7 and self._quick_scales[x] != -1:
 							self._scales.set_modus(self._quick_scales[x])
@@ -475,10 +475,147 @@ class InstrumentControllerComponent(CompoundComponent):
 				button.set_channel(non_feedback_channel)
 				#button.force_next_send()
 
+			if self._scales.is_quick_scale:
+				
+				selected_modus = self._scales._modus
+				selected_key = self._scales._key
+
+				if self._quick_scale_root==0 and not self._scales.is_drumrack:
+					if selected_modus == 0 or selected_modus == 12:
+						key_color = "QuickScale.Major.Key"
+						fifth_button_color = "QuickScale.Major.CircleOfFifths"
+						mode_button_color = "QuickScale.Major.Mode"
+						relative_scale_button_color = "QuickScale.Major.RelativeScale"
+					elif selected_modus == 1 or selected_modus == 11:
+						key_color = "QuickScale.Minor.Key"
+						fifth_button_color = "QuickScale.Minor.CircleOfFifths"
+						mode_button_color = "QuickScale.Minor.Mode"
+						relative_scale_button_color = "QuickScale.Minor.RelativeScale"
+					else:
+						key_color = "QuickScale.Other.Key"
+						fifth_button_color = "QuickScale.Other.CircleOfFifths"
+						mode_button_color = "QuickScale.Other.Mode"
+						relative_scale_button_color = "QuickScale.Other.RelativeScale"
+
+					# circle of 5th nav right
+					button = self._matrix.get_button(7, 1)
+					button.set_light(fifth_button_color)
+					# circle of 5th nav left
+					button = self._matrix.get_button(6, 0)
+					button.set_light(fifth_button_color)
+					# mode button
+					button = self._matrix.get_button(7, 0)
+					button.set_light(mode_button_color)
+					# relative scale button
+					button = self._matrix.get_button(2, 0)
+					button.set_light(relative_scale_button_color)
+
+					for x in [0, 1, 3, 4, 5]:
+						button = self._matrix.get_button(x, 0)
+						button.set_enabled(True)
+						button.set_on_off_values(key_color)
+						#button.force_next_send()
+						if [0, 2, 4, 5, 7, 9, 11, 12][x] + 1 == selected_key:
+							button.turn_on()
+						else:
+							button.turn_off()
+
+					for x in [0, 1, 2, 3, 4, 5, 6]:
+						button = self._matrix.get_button(x, 1)
+						button.set_enabled(True)
+						button.set_on_off_values(key_color)
+						#button.force_next_send()
+						if [0, 2, 4, 5, 7, 9, 11, 12][x] == selected_key:
+							button.turn_on()
+						else:
+							button.turn_off()
+				elif self._quick_scale_root==1 and not self._scales.is_drumrack:
+					button = self._matrix.get_button(7, 0)
+					button.set_light("QuickScale.Major.Mode")
+					for x in range(7):
+						button = self._matrix.get_button(x, 0)
+						button.set_enabled(True)
+						if self._quick_scales[x] != -1:
+							button.set_on_off_values("QuickScale.Modus")
+							if self._quick_scales[x] == selected_modus:
+								button.turn_on()
+							else:
+								button.turn_off()
+							
+						else:
+							button.set_light("DefaultButton.Disabled")
+						
+					for x in range(8):
+						button = self._matrix.get_button(x, 1)
+						button.set_enabled(True)
+						if self._quick_scales[x + 7] != -1:
+							button.set_on_off_values("QuickScale.Modus")
+						else:
+							button.set_on_off_values("DefaultButton.Disabled", "DefaultButton.Disabled")
+						#button.force_next_send()
+						if self._quick_scales[x + 7] == selected_modus:
+							button.turn_on()
+						else:
+							button.turn_off()
+				else:
+					button = self._matrix.get_button(7, 0)
+					button.set_light("QuickScale.Quant.Mode")
+					
+					
+					for x in range(7):
+						button = self._matrix.get_button(x, 0)
+						button.set_enabled(True)
+						
+						if(x ==0):
+							button.set_on_off_values("QuickScale.Quant.On", "QuickScale.Quant.Off")
+							if(not self._swing_amount() ==0.0):
+								button.turn_on()
+							else:
+								button.turn_off()
+						elif(x ==1):
+							button.set_on_off_values("QuickScale.Quant.On", "QuickScale.Quant.Off")
+							if(self._swing_amount() < 0.98):
+								button.turn_on()
+							else:
+								button.turn_off()	
+							
+						elif(x ==2):
+							button.set_on_off_values("QuickScale.Quant.Straight", "DefaultButton.Disabled")
+							button.turn_on()
+						elif(x ==3):
+							button.set_on_off_values("QuickScale.Quant.Swing", "DefaultButton.Disabled")
+							button.turn_on()
+						elif(x ==4):
+							button.set_on_off_values("QuickScale.Quant.Dotted", "DefaultButton.Disabled")
+							button.turn_on()
+						elif(x ==5):
+							button.set_on_off_values("QuickScale.Quant.Flam", "DefaultButton.Disabled")
+							button.turn_on()								
+						
+						elif(x ==6):
+							button.set_on_off_values("QuickScale.NoteRepeater.On", "QuickScale.NoteRepeater.Off")
+							if(self._note_repeat.is_enabled()):
+								button.turn_on()
+							else:								
+								button.turn_off()
+						
+					for x in range(8):
+						button = self._matrix.get_button(x, 1)
+						button.set_enabled(True)
+						if(x%2==0):						
+							button.set_on_off_values("QuickScale.Quant.Selected", "QuickScale.Quant.Note")
+						else:
+							button.set_on_off_values("QuickScale.Quant.Selected", "QuickScale.Quant.Tripplet")
+
+						if (x) == self._note_repeat.freq_index():
+							button.turn_on()
+						else:
+							button.turn_off()
+
 			if self._scales.is_drumrack:
 
 				for button, (x, y) in self._matrix.iterbuttons():
-					if button:
+					if button and (not self._scales.is_quick_scale or y > 1):
 						note = 0
 						if(x < 4):
 							note = 12 * self._scales._octave + x + 4 * (7 - y)
@@ -503,145 +640,7 @@ class InstrumentControllerComponent(CompoundComponent):
 						#button.force_next_send()
 						#button.turn_off()
 
-			else:
-				if self._scales.is_quick_scale:
-					
-					selected_modus = self._scales._modus
-					selected_key = self._scales._key
-
-					if self._quick_scale_root==0:
-						if selected_modus == 0 or selected_modus == 12:
-							key_color = "QuickScale.Major.Key"
-							fifth_button_color = "QuickScale.Major.CircleOfFifths"
-							mode_button_color = "QuickScale.Major.Mode"
-							relative_scale_button_color = "QuickScale.Major.RelativeScale"
-						elif selected_modus == 1 or selected_modus == 11:
-							key_color = "QuickScale.Minor.Key"
-							fifth_button_color = "QuickScale.Minor.CircleOfFifths"
-							mode_button_color = "QuickScale.Minor.Mode"
-							relative_scale_button_color = "QuickScale.Minor.RelativeScale"
-						else:
-							key_color = "QuickScale.Other.Key"
-							fifth_button_color = "QuickScale.Other.CircleOfFifths"
-							mode_button_color = "QuickScale.Other.Mode"
-							relative_scale_button_color = "QuickScale.Other.RelativeScale"
-
-						# circle of 5th nav right
-						button = self._matrix.get_button(7, 1)
-						button.set_light(fifth_button_color)
-						# circle of 5th nav left
-						button = self._matrix.get_button(6, 0)
-						button.set_light(fifth_button_color)
-						# mode button
-						button = self._matrix.get_button(7, 0)
-						button.set_light(mode_button_color)
-						# relative scale button
-						button = self._matrix.get_button(2, 0)
-						button.set_light(relative_scale_button_color)
-
-						for x in [0, 1, 3, 4, 5]:
-							button = self._matrix.get_button(x, 0)
-							button.set_enabled(True)
-							button.set_on_off_values(key_color)
-							#button.force_next_send()
-							if [0, 2, 4, 5, 7, 9, 11, 12][x] + 1 == selected_key:
-								button.turn_on()
-							else:
-								button.turn_off()
-
-						for x in [0, 1, 2, 3, 4, 5, 6]:
-							button = self._matrix.get_button(x, 1)
-							button.set_enabled(True)
-							button.set_on_off_values(key_color)
-							#button.force_next_send()
-							if [0, 2, 4, 5, 7, 9, 11, 12][x] == selected_key:
-								button.turn_on()
-							else:
-								button.turn_off()
-					elif self._quick_scale_root==1:
-						button = self._matrix.get_button(7, 0)
-						button.set_light("QuickScale.Major.Mode")
-						for x in range(7):
-							button = self._matrix.get_button(x, 0)
-							button.set_enabled(True)
-							if self._quick_scales[x] != -1:
-								button.set_on_off_values("QuickScale.Modus")
-								if self._quick_scales[x] == selected_modus:
-									button.turn_on()
-								else:
-									button.turn_off()
-								
-							else:
-								button.set_light("DefaultButton.Disabled")
-							
-						for x in range(8):
-							button = self._matrix.get_button(x, 1)
-							button.set_enabled(True)
-							if self._quick_scales[x + 7] != -1:
-								button.set_on_off_values("QuickScale.Modus")
-							else:
-								button.set_on_off_values("DefaultButton.Disabled", "DefaultButton.Disabled")
-							#button.force_next_send()
-							if self._quick_scales[x + 7] == selected_modus:
-								button.turn_on()
-							else:
-								button.turn_off()
-					else:
-						button = self._matrix.get_button(7, 0)
-						button.set_light("QuickScale.Quant.Mode")
-						
-						
-						for x in range(7):
-							button = self._matrix.get_button(x, 0)
-							button.set_enabled(True)
-							
-							if(x ==0):
-								button.set_on_off_values("QuickScale.Quant.On", "QuickScale.Quant.Off")
-								if(not self._swing_amount() ==0.0):
-									button.turn_on()
-								else:
-									button.turn_off()
-							elif(x ==1):
-								button.set_on_off_values("QuickScale.Quant.On", "QuickScale.Quant.Off")
-								if(self._swing_amount() < 0.98):
-									button.turn_on()
-								else:
-									button.turn_off()	
-								
-							elif(x ==2):
-								button.set_on_off_values("QuickScale.Quant.Straight", "DefaultButton.Disabled")
-								button.turn_on()
-							elif(x ==3):
-								button.set_on_off_values("QuickScale.Quant.Swing", "DefaultButton.Disabled")
-								button.turn_on()
-							elif(x ==4):
-								button.set_on_off_values("QuickScale.Quant.Dotted", "DefaultButton.Disabled")
-								button.turn_on()
-							elif(x ==5):
-								button.set_on_off_values("QuickScale.Quant.Flam", "DefaultButton.Disabled")
-								button.turn_on()								
-							
-							elif(x ==6):
-								button.set_on_off_values("QuickScale.NoteRepeater.On", "QuickScale.NoteRepeater.Off")
-								if(self._note_repeat.is_enabled()):
-									button.turn_on()
-								else:								
-									button.turn_off()
-							
-						for x in range(8):
-							button = self._matrix.get_button(x, 1)
-							button.set_enabled(True)
-							if(x%2==0):						
-								button.set_on_off_values("QuickScale.Quant.Selected", "QuickScale.Quant.Note")
-							else:
-								button.set_on_off_values("QuickScale.Quant.Selected", "QuickScale.Quant.Tripplet")
-
-							if (x) == self._note_repeat.freq_index():
-								button.turn_on()
-							else:
-								button.turn_off()
-					
-					
+			else:	
 				pattern = self._scales.get_pattern()
 				max_j = self._matrix.width() - 1
 				a = 0
