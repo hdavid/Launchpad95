@@ -1590,8 +1590,8 @@ class StepSequencerComponent(CompoundComponent):
                     track = self._clip_slot.canonical_parent
                     newIdx = track.duplicate_clip_slot(list(track.clip_slots).index(self._clip_slot))
                     self.song().view.selected_scene = self.song().scenes[newIdx]
-                    if track.clip_slots[newIdx] != None:
-                        track.clip_slots[newIdx].fire()
+                    #if track.clip_slots[newIdx] != None:
+                        #track.clip_slots[newIdx].fire()
                     self.on_clip_slot_changed()
                     self.update()
             except Live.Base.LimitationError:
