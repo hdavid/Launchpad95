@@ -225,18 +225,9 @@
 	<section>
 	<h4>scale edition mode</h4>
 	<p>
-		To enter scale edition mode press the 1st scene button from Instrument mode.<br/>
-		Top red buttons provide mode selection (drumrack, chromatic, diatonic).<br/>
-		2nd and 3rd amber rows provide root note selection.<br/>
-		4th red row allows you to select the octave. <br/>
-		Bottom green rows allow to select the mode. 
+		To enter scale edition mode press (and keep pressed) the 1st scene button from Instrument mode.
 	</p>
-	<p>
-		You can select the orientation (vertical or horizontal of the layout).<br/>
-		The 2nd top left button selects the interval among 3rd, 4th and 6th for the diatonic layout. 4th is the default mode, also on the push. 3rd is very practical to play chords vertically.<br/>
-		the 3rd top left button (amber) let you fix the first (bottom left) note to scale root or live it an a C.
-	<p/>
-
+	
 	<table class="launchpad">
 		<tr class="top">
 			<td class="green">prev scene</td>
@@ -249,8 +240,8 @@
 			<td>mixer mode</td>
 		</tr>
 		<tr>
-			<td class="amber" title="orientation">orient.</td>
 			<td class="amber">absolute root</td>
+			<td class="amber" title="orientation">orient.</td>
 			<td class="red">chromatic guitar</td>
 			<td class="red">diatonic sequent</td>
 			<td class="red">diatonic 3rd</td>
@@ -338,13 +329,59 @@
 			<td class="side red"><div class="note">session record</div>overdub</td>
 		</tr>
 	</table>
+	
+	<dl>
+		<dt>Orient</dt>
+		<dd>this button will change the orientation from vertical to horizontal of the instrument mode.</dd>
+		
+		<dt>Absolute root</dt>
+		<dd>the bottom left left button will always be the root mode of the selected root note.</dd>
+		
+		<dt>Chromatic Guitar</dt>
+		<dd>Scale Mode is pretty much like regular chromatic mode, except the top 
+			four rows are all shifted by one semitone. This is so that the bottom 6 rows emulate standard guitar tuning.
+		</dd>
+		
+		<dt>Diatonic sequent</dt>
+		<dd>each row represents an octave, so each first and last button of each row will be the root note.</dd>
+		
+		<dt>Diatonic 3rd</dt>
+		<dd>when moving from one button to the next top,
+			 you will move a 3rd degree in the scale. 3rd is very practical to play chords vertically.
+		 </dd>
+		
+		<dt>Diatonic 4th</dt>
+		<dd>when moving from one button to the next top, you will move a 4th degree in the scale. 4th is the default mode, also on the push.</dd>
+		
+		<dt>Chromatic</dt>
+		<dd>each button to the left or right of a button will be a semitone lower or higher.</dd>
+		
+		<dt>C, C#, D, D#, E, F, F#, G, G#, A, A#, B</dt>
+		<dd>selects the root note of the scale.</dd>
+		
+		<dt>Relative scale</dt>
+		<dd>changes current selected scale to its relative scale. IE. from C major to C minor and viceversa.</dd>
+		
+		<dt>5th left</dt>
+		<dd>changes current selected scale to the prior scale in the circle of fifths (a 5th lower).</dd>
+		
+		<dt>5th right</dt>
+		<dd>changes current selected scale to the next scale in the circle of fifths (a 5th higher).</dd>
+		
+		<dt>Quick scale mode</dt>
+		<dd>substitutes the top 2 rows of instrument mode for the quick scale modes (see below).</dd>
+		
+		<dt>-2, -1, 0, 1, 2, 3, 4, 5</dt>
+		<dd>changes the octave of the instrument mode.</dd>
+	<dl>
+	
+	
 	</section>
 
 	<section>
 	<h4>quick scale modes</h4>
 	<p>if quick scale is activated (last button on the right on the 2nd row in scale edit mode), the two first rows of the launchpad allow you to quickly change the scale.</p>
-	<p>this shows the two first rows of the launchpad. the last button of the first row changes between root note selection, mode selection, and note repeat.</p>
-	<p>if in drumrack mode, this is the only quick scale mode</p>
+	<p>this shows the two first rows of the launchpad. the last button of the first row changes between root note selection and mode selection.</p>
 	<h5>root note</h5>
 	<p>in this mode you can select the root note of your scale. you can also quickly alternate between minor and major by pressing the button again</p>
 	<table class="launchpad">
@@ -371,8 +408,9 @@
 			<td class="side amber"><div class="note">undo. long press to redo</div>undo</td>
 		</tr>
 	</table>
+	
 
-	<h5>modus</h5>
+	<h5>quick scale modes: modus</h5>
 	<p>in this mode you can select the mode of your scale.</p>
 	<table class="launchpad">
 		<tr>
@@ -398,33 +436,34 @@
 			<td class="side amber"><div class="note">undo. long press to redo</div>undo</td>
 		</tr>
 	</table>
-
+	
+	
 	<h5>note repeat</h5>
-	<p>in this mode you can activate and configure note repeat.</p>
-	<table class="launchpad">
-		<tr>
-			<td class="green">Swing +2.5% </td>
-			<td class="green">Swing -2.5%</td>
-			<td class="amber">Swing 0%</td>
-			<td class="amber">Swing 25%</td>
-			<td class="amber">Swing 50%</td>
-			<td class="amber">Swing 75%</td>
-			<td class="red">Repeat On/Off</td>
-			<td class="green">Scale / mode toggle</td>
-			<td class="side amber"><div class="note">enter scale edition mode</div>scale</td>
-		</tr>
-		<tr>
-			<td class="red">1/4</td>
-			<td class="red">1/4T</td>
-			<td class="red">1/8</td>
-			<td class="red">1/8T</td>
-			<td class="red">1/16</td>
-			<td class="red">1/16T</td>
-			<td class="red">1/32</td>
-			<td class="red">1/32T</td>
-			<td class="side amber"><div class="note">undo. long press to redo</div>undo</td>
-		</tr>
-	</table>
+		<p>in this mode you can activate and configure note repeat.</p>
+		<table class="launchpad">
+			<tr>
+				<td class="green">Swing +2.5% </td>
+				<td class="green">Swing -2.5%</td>
+				<td class="amber">Swing 0%</td>
+				<td class="amber">Swing 25%</td>
+				<td class="amber">Swing 50%</td>
+				<td class="amber">Swing 75%</td>
+				<td class="red">Repeat On/Off</td>
+				<td class="green">Scale / mode toggle</td>
+				<td class="side amber"><div class="note">enter scale edition mode</div>scale</td>
+			</tr>
+			<tr>
+				<td class="red">1/4</td>
+				<td class="red">1/4T</td>
+				<td class="red">1/8</td>
+				<td class="red">1/8T</td>
+				<td class="red">1/16</td>
+				<td class="red">1/16T</td>
+				<td class="red">1/32</td>
+				<td class="red">1/32T</td>
+				<td class="side amber"><div class="note">undo. long press to redo</div>undo</td>
+			</tr>
+		</table>
 	</section>
 
 
@@ -1495,6 +1534,7 @@
 	<section>
 	<h2>History</h2>
 	<ul>
+		<li>2019-08-26 - documentation fixes. duplicate clip now does not fire it.</li>
 		<li>2017-04-01 - note repeater ! (sub mode of quick scale mode) contribution from Pablo Torres.</li>
 		<li>2016-04-09 - small fixes for mk2. skin improvements</li>
 		<li>2016-03-28 - Launchpad MK2 RGB autodetect. better skinning. merging device mode from launchpad pro95</li>
