@@ -345,8 +345,7 @@ class InstrumentControllerComponent(CompoundComponent):
 					self._octave_down_button.turn_off()
 
 			self._update_OSD()
-			self._control_surface.log_message("Swing Amount: " + str(self._swing_amount()))              
-
+			
 	def set_osd(self, osd):
 		self._osd = osd
 

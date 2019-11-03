@@ -36,6 +36,9 @@ class Colors:
 		class Mixer:
 			On = Rgb.MINT
 			Off = Rgb.MINT_THIRD
+		class Track: #??
+			On = Rgb.MINT
+			Off = Rgb.MINT_THIRD
 	
 	class Session:
 		#scene

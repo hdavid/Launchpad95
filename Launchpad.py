@@ -12,6 +12,37 @@ import Settings
 
 DO_COMBINE = Live.Application.combine_apcs()  # requires 8.2 & higher
 
+
+LP_MINI_MK3_FAMILY_CODE = (19, 1)
+LP_MINI_MK3_ID = 13
+LP_X_FAMILY_CODE = (3, 1)
+LP_X_ID = 12
+
+#LAYOUT_COMMAND = 0
+#FADER_COMMAND = 1
+#NOTE_LAYOUT_COMMAND = 15
+
+SYSEX_START = 240
+SYSEX_END = 247
+SYSEX_GENERAL_INFO = 6
+SYSEX_NON_REALTIME = 126
+SYSEX_IDENTITY_REQUEST_ID = 1
+#SYSEX_IDENTITY_RESPONSE_ID = 2
+SYSEX_IDENTITY_REQUEST_MESSAGE = (SYSEX_START,SYSEX_NON_REALTIME,127,SYSEX_GENERAL_INFO,SYSEX_IDENTITY_REQUEST_ID,SYSEX_END)
+NOVATION_MANUFACTURER_ID = (0, 32, 41)
+FIRMWARE_MODE_COMMAND = 16
+#DAW_MODE = 1
+STANDALONE_MODE = 0
+#SESSION_LAYOUT = 0
+#NOTE_LAYOUT = 1
+#KEYS_LAYOUT = 5
+#FADERS_LAYOUT = 13
+#SCALE_LAYOUT = 0
+#DRUM_LAYOUT = 1
+
+STD_MSG_HEADER = (SYSEX_START,) + NOVATION_MANUFACTURER_ID + (2, )
+
+
 class Launchpad(ControlSurface):
 
 	_active_instances = []
@@ -23,12 +54,14 @@ class Launchpad(ControlSurface):
 		self._live_minor_version = live.get_minor_version()
 		self._live_bugfix_version = live.get_bugfix_version()
 		self._selector = None #needed because update hardware is called.
+		self._lpx = False
 		self._mk2_rgb = False
+		self._mk3_rgb = False
 		with self.component_guard():
 			self._suppress_send_midi = True
 			self._suppress_session_highlight = True
-			self._suggested_input_port = ("Launchpad", "Launchpad Mini", "Launchpad S", "Launchpad MK2")
-			self._suggested_output_port = ("Launchpad", "Launchpad Mini", "Launchpad S", "Launchpad MK2")				
+			self._suggested_input_port = ("Launchpad", "Launchpad Mini", "Launchpad S", "Launchpad MK2", "Launchpad X", "Launchpad Mini MK3")
+			self._suggested_output_port = ("Launchpad", "Launchpad Mini", "Launchpad S", "Launchpad MK2", "Launchpad X", "Launchpad Mini MK3")				
 			self._control_is_with_automap = False
 			self._user_byte_write_button = None
 			self._config_button = None
@@ -45,7 +78,12 @@ class Launchpad(ControlSurface):
 		self._init_done = True
 		
 		# second part of the __init__ after model has been identified using its challenge response
-		if self._mk2_rgb:
+		if self._mk3_rgb or self._lpx:
+			from SkinMK2 import make_skin
+			self._skin = make_skin()
+			self._side_notes = (89, 79, 69, 59, 49, 39, 29, 19)
+			self._drum_notes = (20, 30, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126)
+		elif self._mk2_rgb:
 			from SkinMK2 import make_skin
 			self._skin = make_skin()
 			self._side_notes = (89, 79, 69, 59, 49, 39, 29, 19)
@@ -70,7 +108,7 @@ class Launchpad(ControlSurface):
 			for row in range(8):
 				button_row = []
 				for column in range(8):
-					if self._mk2_rgb:
+					if self._mk2_rgb or self._mk3_rgb or self._lpx:
 						# for mk2 buttons are assigned "top to bottom"
 						midi_note = (81 - (10 * row)) + column
 					else:
@@ -80,8 +118,13 @@ class Launchpad(ControlSurface):
 					button_row.append(button)
 				matrix.add_row(tuple(button_row))
 
-			top_buttons = [ConfigurableButtonElement(is_momentary, MIDI_CC_TYPE, 0, 104 + index, skin = self._skin) for index in range(8)]
-			side_buttons = [ConfigurableButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, self._side_notes[index], skin = self._skin) for index in range(8)]
+			if self._mk3_rgb or self._lpx :
+				top_buttons = [ConfigurableButtonElement(is_momentary, MIDI_CC_TYPE, 0, 91 + index, skin = self._skin) for index in range(8)]
+				side_buttons = [ConfigurableButtonElement(is_momentary, MIDI_CC_TYPE, 0, self._side_notes[index], skin = self._skin) for index in range(8)]
+			else:
+				top_buttons = [ConfigurableButtonElement(is_momentary, MIDI_CC_TYPE, 0, 104 + index, skin = self._skin) for index in range(8)]
+				side_buttons = [ConfigurableButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, self._side_notes[index], skin = self._skin) for index in range(8)]
+				
 			top_buttons[0].name = 'Bank_Select_Up_Button'
 			top_buttons[1].name = 'Bank_Select_Down_Button'
 			top_buttons[2].name = 'Bank_Select_Left_Button'
@@ -107,17 +150,21 @@ class Launchpad(ControlSurface):
 			for control in self.controls:
 				if isinstance(control, ConfigurableButtonElement):
 					control.add_value_listener(self._button_value)
-          
+		  
 			self._suppress_session_highlight = False
 			self.set_highlighting_session_component(self._selector.session_component())
 			# due to our 2 stage init, we need to rebuild midi map 
 			self.request_rebuild_midi_map()
 			# and request update 
 			self._selector.update()
-			if self._mk2_rgb:
+			if self._lpx:
+				self.log_message("LaunchPad95 (LPX) Loaded !")
+			elif self._mk3_rgb:
+				self.log_message("LaunchPad95 (mk3) Loaded !")
+			elif self._mk2_rgb:
 				self.log_message("LaunchPad95 (mk2) Loaded !")
 			else:
-				self.log_message("LaunchPad95 Loaded !")
+				self.log_message("LaunchPad95 (classic) Loaded !")
 				
 	def disconnect(self):
 		self._suppress_send_midi = True
@@ -130,15 +177,24 @@ class Launchpad(ControlSurface):
 			self._config_button.remove_value_listener(self._config_value)
 		ControlSurface.disconnect(self)
 		self._suppress_send_midi = False
-		if self._mk2_rgb:
+		if self._lpx:
+			# lpx needs disconnect string sent
+			self._send_midi(STD_MSG_HEADER + (LP_X_ID, 14, 0, SYSEX_END))
+			self._send_midi(STD_MSG_HEADER + (LP_X_ID, FIRMWARE_MODE_COMMAND, STANDALONE_MODE, SYSEX_END))
+		elif self._mk3_rgb:
+			# launchpad mk2 needs disconnect string sent
+			self._send_midi(STD_MSG_HEADER + (LP_MINI_MK3_ID, 14, 0, SYSEX_END))
+			self._send_midi(STD_MSG_HEADER + (LP_MINI_MK3_ID, FIRMWARE_MODE_COMMAND, STANDALONE_MODE, SYSEX_END))
+		elif self._mk2_rgb:
 			# launchpad mk2 needs disconnect string sent
 			self._send_midi((240, 0, 32, 41, 2, 24, 64, 247))
 		if self._config_button != None:
 			self._config_button.send_value(32)#Send enable flashing led config message to LP
 			self._config_button.send_value(0)
 			self._config_button = None
-		self._user_byte_write_button.send_value(0)
-		self._user_byte_write_button = None
+		if self._user_byte_write_button != None:
+			self._user_byte_write_button.send_value(0)
+			self._user_byte_write_button = None
 
 	def _combine_active_instances():
 		support_devices = False
@@ -176,27 +232,49 @@ class Launchpad(ControlSurface):
 		self.schedule_message(5, self._update_hardware)
 
 	def handle_sysex(self, midi_bytes):
+		if len(midi_bytes) >= 10 and midi_bytes[:8] == (240, 126, 0, 6, 2, 0, 32, 41): #0,32,41=novation
+			if len(midi_bytes) >= 12 and midi_bytes[8:10] == (19,1):
+				self._mk3_rgb = True
+				#programmer mode
+				self._send_midi(STD_MSG_HEADER + (LP_MINI_MK3_ID, 14, 1, SYSEX_END))
+				#led feedback: internal off, external on
+				self._send_midi(STD_MSG_HEADER + (LP_MINI_MK3_ID, 10, 0, 1, SYSEX_END))
+				self._suppress_send_midi = False
+				self.set_enabled(True)
+				self.init()
+			elif len(midi_bytes) >= 12 and midi_bytes[8:10] == (3,1):
+				self._lpx = True
+				#programmer mode
+				self._send_midi(STD_MSG_HEADER + (LP_X_ID, 14, 1, SYSEX_END))
+				#led feedback: internal off, external on
+				self._send_midi(STD_MSG_HEADER + (LP_X_ID, 10, 0, 1, SYSEX_END))
+				self._suppress_send_midi = False
+				self.set_enabled(True)
+				self.init()
+			else:
+				ControlSurface.handle_sysex(self,midi_bytes)
+				#self.log_message("OTHER NOVATION")
+
 		# MK2 has different challenge and params
-		if len(midi_bytes) == 10 and midi_bytes[:7] == (240, 0, 32, 41, 2, 24, 64):
-					response = long(midi_bytes[7])
-					response += long(midi_bytes[8]) << 8
-					if response == Live.Application.encrypt_challenge2(self._challenge):
-						self._mk2_rgb = True
-						self.log_message("Challenge Response ok (mk2)")
-						
-						self._suppress_send_midi = False
-						self.set_enabled(True)
-						self.init()
+		elif len(midi_bytes) == 10 and midi_bytes[:7] == (240, 0, 32, 41, 2, 24, 64):
+			response = long(midi_bytes[7])
+			response += long(midi_bytes[8]) << 8
+			if response == Live.Application.encrypt_challenge2(self._challenge):
+				self.log_message("Challenge Response ok (mk2)")
+				self._mk2_rgb = True
+				self._suppress_send_midi = False
+				self.set_enabled(True)
+				self.init()
 		#MK1 Challenge
 		elif len(midi_bytes) == 8 and midi_bytes[1:5] == (0, 32, 41, 6):
-					response = long(midi_bytes[5])
-					response += long(midi_bytes[6]) << 8
-					if response == Live.Application.encrypt_challenge2(self._challenge):
-						self.log_message("Challenge Response ok (mk1)")
-						self._mk2_rgb = False
-						self.init()
-						self._suppress_send_midi = False
-						self.set_enabled(True)
+			response = long(midi_bytes[5])
+			response += long(midi_bytes[6]) << 8
+			if response == Live.Application.encrypt_challenge2(self._challenge):
+				self.log_message("Challenge Response ok (mk1)")
+				self._mk2_rgb = False
+				self.init()
+				self._suppress_send_midi = False
+				self.set_enabled(True)
 		else:
 			ControlSurface.handle_sysex(self,midi_bytes)
 		
@@ -231,6 +309,8 @@ class Launchpad(ControlSurface):
 
 	def _send_challenge(self):
 		# send challenge for all models to allow to detect which one is actually plugged
+		# mk3 and LPX
+		self._send_midi(SYSEX_IDENTITY_REQUEST_MESSAGE)
 		# mk2
 		challenge_bytes = tuple([ self._challenge >> 8 * index & 127 for index in xrange(4) ])
 		self._send_midi((240, 0, 32, 41, 2, 24, 64) + challenge_bytes + (247,))

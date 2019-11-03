@@ -47,14 +47,15 @@
 	<p id="toc"></p>
 	<p>
 		These scripts are modified version of Ableton Live 9.2 scripts for Novation Launchpad and 
-		provide the same functionality but add support for editing the midi clips using a step sequencer
-		, an Instrument Controller and Device Controller and an improved Instrument Mode.
+		provide the same functionality but add support for editing the midi clips using a step sequencer,
+		an Instrument Controller and Device Controller and an improved Instrument Mode.
 		It does not require any external tool like Max for Live (M4L) in order to work. 
 		This script is just a plain Live Control Surface Python Script.
 	</p>
 	<br/>
 	<p>
-		Comment, feedback and updates : please check this thread on Ableton forum <a href="http://forum.ableton.com/viewtopic.php?f=1&amp;t=168495">http://forum.ableton.com/viewtopic.php?f=1&amp;t=168495</a>
+		Comment, feedback and updates : please check this thread on Ableton forum 
+		<a href="http://forum.ableton.com/viewtopic.php?f=1&amp;t=168495">http://forum.ableton.com/viewtopic.php?f=1&amp;t=168495</a>
 	</p>
 	<p>
 		Willing to make a donation ? 
@@ -64,20 +65,39 @@
 
 	<section>
 	<h2>Installation</h2>
+	<h3>Supported Hardware and Software</h3>
 	<p>
-		First, download the installation archive :<br/>
-		- live 9.2.+ : <strong><a href="Launchpad95.zip">Launchpad95.zip</a></strong> (all launchpads but PRO)<br/>
-		- live 8.4 : have a look at the documentation for <a href="launchpad85.html">Launchpad85</a><br/>
-		- for Launchpad PRO see <strong><a href="http://motscousus.com/stuff/2015-12_Novation_Launchpad_Pro_Ableton_Live_Scripts/">Launchpad Pro95</a></strong><br/>
-		Unzip the zip file and copy the folder Launchpad95 into the Ableton Live's "MIDI Remote Scripts" folder. (where is that folder ? look at <a href="#faq-3">faq 3</a>.
+		Launchpad 95 supports Ableton Live 9.2 or greater and Live 10. 
+		For Live 8.4: <a href="launchpad85.html">Launchpad85</a>.
 	</p>
 	<p>
-		After the folder has been copied, plug-in your Launchpad in the computer 
+		Launchpad 95 supports:
+		<ul>
+			<li>Launchpad</li>
+			<li>Launchpad S</li>
+			<li>Launchpad Mini</li>
+			<li>Launchpad Mini MK2 (RGB)</li>
+			<li>Launchpad Mini MK3 (RGB)</li>
+			<li>Launchpad X (RGB)</li>
+			<li><strike>Launchpad PRO</strike> see 
+		<a href="http://motscousus.com/stuff/2015-12_Novation_Launchpad_Pro_Ableton_Live_Scripts/">Launchpad Pro95</a></li>
+		</ul>
+	</p>
+	<p>
+		<Strong>For Launchpad X and Launchpad Mini MK3</strong>, make sure to select <b>"MIDI" Ports and not the "<strike>DAW</strike>" ports</b>.
+	</p>
+	<h3>Setup</h3>
+	<ul>
+		<li>Download the installation archive : <strong><a href="Launchpad95.zip">Launchpad95.zip</a></strong></li>
+		<li>Unzip the zip file and copy the folder Launchpad95 into
+		 the Ableton Live's "MIDI Remote Scripts" folder. (where is that folder ? look at <a href="#faq-3">faq 3</a>.</li>
+		<li>After the folder has been copied, plug-in your Launchpad in the computer 
 		and start Ableton Live. Open up the preferences panel and go to "MIDI Sync" panel. 
-		Select Launchpad95 as your control surface and select the launchpad Midi Port midi ports like so : <br/>
-		<img src="setup.png"/>
-	</p>
-	
+		Select Launchpad95 as your control surface and select the launchpad Midi Port MIDI ports like so : <br/>
+		<img src="setup.png"/></li>
+		<li>Make sure to enable "Track", "Sync" and "Remote" in the midi options below for the MIDI ports used by Launchpad 95.</li>
+		
+	</ul>
 	</section>
 	
 	<section>
@@ -1460,18 +1480,18 @@
 	<dl>
 		<dt id="faq-1">1. Which Launchpad flavours are supported</dt>
 		<dd>
-			Launchpad, Launchpad S, Mini, Mini MK2 and MK2 (RGB) are supported<br/>
+			Launchpad, Launchpad S, Mini, Mini MK2 and MK2 (RGB), Mini MK3, and Launchpad X are supported<br/>
 			Basically all Launchpad but the pro are supported by this script.<br/>
 			Launchpad Pro is supported by <a href="http://motscousus.com/stuff/2015-12_Novation_Launchpad_Pro_Ableton_Live_Scripts/">Launchpad Pro95</a>
 		</dd>
 
 		<dt id="faq-2">2. Which Ableton live versions are supported</dt>
 		<dd>
-			Launchpad 95 works with Live 9.2+, 32 bit or 64 bit, Mac or Windows, suite or intro or standard. 
+			Launchpad 95 works with Live 9.2+, and Live10 32 bit or 64 bit, Mac or Windows, suite or intro or standard. 
 			Basically with every combination you may think of as long at it is live 9.2 or greater.<br/>
 			Of course Ableton from time to time change their Python Live without notification 
-			and therefore Launchpad95 might stop working. but i am trying to keep up and the changes.<br/>
-			if Launchpad95 stopped worked after an update, make sure to download the last version from my site.<br/>
+			and therefore Launchpad95 might stop working, but i am trying to keep up and the changes.<br/>
+			if Launchpad95 stopped worked after an update, make sure to download the last version from this site.<br/>
 		<br/>
 		</dd>
 
@@ -1534,6 +1554,7 @@
 	<section>
 	<h2>History</h2>
 	<ul>
+		<li>2019-11-02 - support for Launchpad Mini MK3 and Launchpad X</li>	
 		<li>2019-08-26 - documentation fixes. duplicate clip now does not fire it.</li>
 		<li>2017-04-01 - note repeater ! (sub mode of quick scale mode) contribution from Pablo Torres.</li>
 		<li>2016-04-09 - small fixes for mk2. skin improvements</li>
