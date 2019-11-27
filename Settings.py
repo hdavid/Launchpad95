@@ -27,6 +27,7 @@ USER_MODES = [
 STEPSEQ__SAVE_SCALE = None
 INSTRUMENT__SAVE_SCALE = None
 
-
-
-
+# Map buttons to levels in volume slider. Exactly 7 values must be provided.
+# The lowest button is always set to -inf. Lowest supported value is -69 dB.
+# So far the values are not exact: -24 dB below equals -23.7 dB in Ableton.
+VOLUME_LEVELS = (6, 0, -6, -12, -18, -24, -42)
