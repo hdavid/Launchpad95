@@ -11,11 +11,11 @@ class SpecialSessionComponent(SessionComponent):
 		self._control_surface = control_surface
 		self._main_selector = main_selector
 		self._osd = None
-		if self._control_surface._mk2_rgb:
+		if self._control_surface._lpx or self._control_surface._mk3_rgb or self._control_surface._mk2_rgb:
 			#use custom clip colour coding : blink and pulse for trig and play 
 			SceneComponent.clip_slot_component_type = ClipSlotMK2
 		SessionComponent.__init__(self, num_tracks = num_tracks, num_scenes = num_scenes, enable_skinning = True, name='Session', is_root=True)
-		if self._control_surface._mk2_rgb:
+		if self._control_surface._lpx or self._control_surface._mk3_rgb or self._control_surface._mk2_rgb:
 			from .ColorsMK2 import CLIP_COLOR_TABLE, RGB_COLOR_TABLE
 			self.set_rgb_mode(CLIP_COLOR_TABLE, RGB_COLOR_TABLE)
 
