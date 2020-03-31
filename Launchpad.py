@@ -239,6 +239,8 @@ class Launchpad(ControlSurface):
 				self._send_midi(STD_MSG_HEADER + (LP_MINI_MK3_ID, 14, 1, SYSEX_END))
 				#led feedback: internal off, external on
 				self._send_midi(STD_MSG_HEADER + (LP_MINI_MK3_ID, 10, 0, 1, SYSEX_END))
+				#disable sleep mode
+				self._send_midi(STD_MSG_HEADER + (LP_MINI_MK3_ID, 9, 1, SYSEX_END))
 				self._suppress_send_midi = False
 				self.set_enabled(True)
 				self.init()
@@ -248,6 +250,8 @@ class Launchpad(ControlSurface):
 				self._send_midi(STD_MSG_HEADER + (LP_X_ID, 14, 1, SYSEX_END))
 				#led feedback: internal off, external on
 				self._send_midi(STD_MSG_HEADER + (LP_X_ID, 10, 0, 1, SYSEX_END))
+				#disable sleep mode
+				self._send_midi(STD_MSG_HEADER + (LP_X_ID, 9, 1, SYSEX_END))
 				self._suppress_send_midi = False
 				self.set_enabled(True)
 				self.init()
