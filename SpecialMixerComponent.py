@@ -1,5 +1,5 @@
 from _Framework.MixerComponent import MixerComponent
-from DefChannelStripComponent import DefChannelStripComponent
+from .DefChannelStripComponent import DefChannelStripComponent
 from _Framework.ButtonElement import ButtonElement
 
 

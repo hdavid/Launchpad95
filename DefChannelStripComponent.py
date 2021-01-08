@@ -1,6 +1,6 @@
 import Live
 from _Framework.ChannelStripComponent import ChannelStripComponent
-from ConfigurableButtonElement import ConfigurableButtonElement
+from .ConfigurableButtonElement import ConfigurableButtonElement
 from itertools import chain
 
 

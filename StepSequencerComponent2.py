@@ -1,8 +1,8 @@
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
-from StepSequencerComponent import StepSequencerComponent, ButtonElement, NoteSelectorComponent, LoopSelectorComponent, QUANTIZATION_NAMES
-from ScaleComponent import MUSICAL_MODES, KEY_NAMES
-from TrackControllerComponent import TrackControllerComponent
+from .StepSequencerComponent import StepSequencerComponent, ButtonElement, NoteSelectorComponent, LoopSelectorComponent, QUANTIZATION_NAMES
+from .ScaleComponent import MUSICAL_MODES, KEY_NAMES
+from .TrackControllerComponent import TrackControllerComponent
 from random import randrange
 import time
 
@@ -150,8 +150,8 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		self._quantization = quantization
 		# update loop point
 		if self._clip != None and old_quantize != self._quantization:
-			self._loop_start = self._clip.loop_start * self._quantization / old_quantize
-			self._loop_end = self._clip.loop_end * self._quantization / old_quantize
+			self._loop_start = int(self._clip.loop_start * self._quantization / old_quantize)
+			self._loop_end = int(self._clip.loop_end * self._quantization / old_quantize)
 			if self._loop_start >= self._clip.loop_end:
 				self._clip.loop_end = self._loop_end
 				self._clip.loop_start = self._loop_start

@@ -3,12 +3,16 @@ from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.CompoundComponent import CompoundComponent
 from _Framework.ButtonElement import ButtonElement
 from _Framework.Util import find_if
-from itertools import imap
-from NoteEditorComponent import NoteEditorComponent
-from TrackControllerComponent import TrackControllerComponent
+try:
+    from itertools import imap
+except ImportError:
+    # Python 3...
+    imap=map
+from .NoteEditorComponent import NoteEditorComponent
+from .TrackControllerComponent import TrackControllerComponent
 import time
-import Settings
-from ScaleComponent import ScaleComponent, MUSICAL_MODES, KEY_NAMES
+from .Settings import *
+from .ScaleComponent import ScaleComponent, MUSICAL_MODES, KEY_NAMES
 
 # quantization button colours. this must remain of length 4.
 QUANTIZATION_MAP = [1, 0.5, 0.25, 0.125]  # 1/4 1/8 1/16 1/32
@@ -367,10 +371,10 @@ class NoteSelectorComponent(ControlSurfaceComponent):
 
     def set_selected_note(self, selected_note):
         if self.is_drumrack:
-            self._root_note = ((selected_note + 12) / 16 - 1) * 16 + 4
+            self._root_note = int((selected_note + 12) / 16 - 1) * 16 + 4
             self._offset = (selected_note - self._root_note + 16) % 16
         else:
-            self._root_note = ((selected_note - self._key) / 12) * 12 + self._key
+            self._root_note = int((selected_note - self._key) / 12) * 12 + self._key
             self._offset = (selected_note + 12 - self._root_note) % 12
         
         self._step_sequencer._scale_updated()
@@ -593,7 +597,7 @@ class LoopSelectorComponent(ControlSurfaceComponent):
                     #is the button in loop range
                     in_loop = (i * self._blocksize * self._quantization < self._loop_end) and (i * self._blocksize * self._quantization >= self._loop_start)
                     #is the playing position is inside the block represented by the button
-                    playing = self._playhead >= i * self._blocksize * self._quantization and self._playhead < (i + 1) * self._blocksize * self._quantization
+                    playing = self._playhead != None and self._playhead >= i * self._blocksize * self._quantization and self._playhead < (i + 1) * self._blocksize * self._quantization
                     #is this block selected (green)
                     selected = i == self.block
                     if in_loop:
@@ -985,7 +989,7 @@ class StepSequencerComponent(CompoundComponent):
                     keys[i] = self._note_selector._root_note + self._note_selector._offset + i
             else:
                 for i in range(8):
-                    keys[i] = self._note_selector._root_note + self._note_selector._scale[(i + idx) % self._note_selector._scale_length] + ((i + idx) / self._note_selector._scale_length) * 12
+                    keys[i] = self._note_selector._root_note + self._note_selector._scale[(i + idx) % self._note_selector._scale_length] + int((i + idx) / self._note_selector._scale_length) * 12
                     key_is_root_note[i] = (keys[i] + 12) % 12 == self._note_selector._key
                     key_is_in_scale[i] = True
         else:
@@ -1302,7 +1306,7 @@ class StepSequencerComponent(CompoundComponent):
             if value > 0:
                 self._mode_backup = self._mode
                 if self._scale_selector != None and self._note_selector != None:
-                    self._scale_selector.set_octave(self._note_selector._root_note / 12)
+                    self._scale_selector.set_octave(int(self._note_selector._root_note / 12))
                     self._scale_selector.set_key(self._note_selector._key)
                     self.set_mode(STEPSEQ_MODE_SCALE_EDIT)
             else:

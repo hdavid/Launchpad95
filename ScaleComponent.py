@@ -1,5 +1,11 @@
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 
+#fix for python3
+try:
+    xrange
+except NameError:
+    xrange = range
+
 KEY_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 CIRCLE_OF_FIFTHS = [7 * k % 12 for k in range(12)]
 # KEY_CENTERS = CIRCLE_OF_FIFTHS[0:6] + CIRCLE_OF_FIFTHS[-1:5:-1]
@@ -578,7 +584,7 @@ class MelodicPattern(object):
 		index = self.steps[0] * (self.origin[0] + x) + self.steps[1] * (self.origin[1] + y)
 		if self.chromatic_gtr_mode and y > 3:
 			index = index - 1
-		octave = index / scale_size
+		octave = int(index / scale_size)
 		note = scale[index % scale_size]
 		return (octave, note)
 

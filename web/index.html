@@ -67,11 +67,10 @@
 	<h2>Installation</h2>
 	<h3>Supported Hardware and Software</h3>
 	<p>
-		Launchpad 95 supports Ableton Live 9.2 or greater and Live 10. 
-		For Live 8.4: <a href="launchpad85.html">Launchpad85</a>.
+		Ableton Live 9.2 or greater, 10 and 11 are supported.
 	</p>
 	<p>
-		Launchpad 95 supports:
+		In terms of hardware the following are supported:
 		<ul>
 			<li>Launchpad</li>
 			<li>Launchpad S</li>
@@ -81,22 +80,40 @@
 			<li>Launchpad X (RGB)</li>
 			<li><strike>Launchpad PRO</strike> see 
 		<a href="http://motscousus.com/stuff/2015-12_Novation_Launchpad_Pro_Ableton_Live_Scripts/">Launchpad Pro95</a></li>
+			<li><strike>Launchpad PRO MK2</strike> is not supported</li> 
 		</ul>
-	</p>
-	<p>
-		<Strong>For Launchpad X and Launchpad Mini MK3</strong>, make sure to select <b>"MIDI" Ports and not the "<strike>DAW</strike>" ports</b>.
 	</p>
 	<h3>Setup</h3>
 	<ul>
 		<li>Download the installation archive : <strong><a href="Launchpad95.zip">Launchpad95.zip</a></strong></li>
-		<li>Unzip the zip file and copy the folder Launchpad95 into
-		 the Ableton Live's "MIDI Remote Scripts" folder. (where is that folder ? look at <a href="#faq-3">faq 3</a>.</li>
-		<li>After the folder has been copied, plug-in your Launchpad in the computer 
-		and start Ableton Live. Open up the preferences panel and go to "MIDI Sync" panel. 
-		Select Launchpad95 as your control surface and select the launchpad Midi Port MIDI ports like so : <br/>
-		<img src="setup.png"/></li>
-		<li>Make sure to enable "Track", "Sync" and "Remote" in the midi options below for the MIDI ports used by Launchpad 95.</li>
-		
+		<li>
+				For Live 10 and above, Unzip the zip file and copy the folder Launchpad95 into you Ableton Live User Library, 
+				in a folder named "Remote Scripts". Create this folder if needed.<br/>
+				<img src="setup-folders.png" style="margin:10px"/>
+		</li>
+		<li>
+				For Live 9 users, see <a href="#faq-4">faq 4</a>
+		</li>
+		<li>
+				After the folder has been copied, plug-in your Launchpad in the computer 
+				and start Ableton Live. Open up the preferences panel and go to "MIDI Sync" panel. 
+				Select Launchpad95 as your control surface and select 
+				the launchpad Midi Port MIDI ports like shown below. <br/>
+				Newer Launchpads (X and Mini MK3) offer two inputs and output ports. 
+				Make sure to use the 2nd one, both for input and output.<br/>
+				<img src="setup-script.png" style="margin:10px"/>
+		</li>
+		<li>
+			Make sure to enable "Track", "Sync" and "Remote" in the midi options 
+			below for the MIDI ports used by Launchpad95.<br/>
+			<img src="setup-ports.png" style="margin:10px"/>
+		</li>
+		<li>
+			For Live Suite users, in the M4LDevice folder is included an OSD (on screen display) Max4Live device
+			that will display information, similarly to what one could see on an Ableton Push screen.<br/>
+			<img src="osd.png" style="margin:10px"/>
+		</li>
+
 	</ul>
 	</section>
 	
@@ -1147,6 +1164,7 @@
 
 	<section>
 	<h3>User1 Mode</h3>
+	<p>Note that User1 Mode is now disabled by default. It can be activated again by editing Settings.py</p>
 	<table class="launchpad">
 		<tr class="top">
 			<td>&nbsp;</td>
@@ -1251,6 +1269,7 @@
 
 	<section>
 	<h3>User2 Mode</h3>
+	<p>Note that User2 Mode is now disabled by default. It can be activated again by editing Settings.py</p>
 	<table class="launchpad">
 		<tr class="top">
 			<td>&nbsp;</td>
@@ -1462,14 +1481,15 @@
 	</section>
 
 
-	<!--h2>Max For Live On Screen Display / Helper</h2>
+	<h2>Max For Live On Screen Display / Helper</h2>
 	<p>
 		Launchpad95 comes packaged with a Max for Live device that will display useful information about currently selected tracks, clips and other parameters. 
 		Make sure to try it !
 	</p>
+	<img src="osd.png" style="margin:10px;">
 	<p>
 		It is available Launchpad95/M4LDevice/Launchpad95 OSD.amxd
-	</p-->
+	</p>
 
 
 	<section>
@@ -1499,46 +1519,60 @@
 		<br/>
 		</dd>
 
-		<dt id="faq-3">3. Where should I put the script ?</dt>
+		<dt id="faq-3">3. Where should I put the script (for live 10 &amp; 11)?</dt>
 		<dd>
-			On pc/windows 7 : inside "C:\ProgramData\Ableton\Live&nbsp;9&nbsp;Suite\Resources\MIDI&nbsp;Remote&nbsp;Scripts"<br/>
-			On a mac right-click the Live application you use (there might more than one installed!) and select "view package content", then browse to "App-Resources/MIDI&nbsp;Remote&nbsp;Scripts". <br/>
-			<br/>
-			Inside this "MIDI&nbsp;Remote&nbsp;Scripts" folder, you should have a folder called "Launchpad95". inside this folder you should have a bunch of .py files, and a for each of them a .pyc file. (.pyc files are compiled version of the .py that live compiles as you start it.)<br/>
-			<br/>
-			Sometimes a picture is worth 1000 words. Take a look at these screenshots.<br/>
-			- On a mac it look like <a href="install_mac.png">this</a>.<br/>
-			- on a pc like <a href="install_windows.png">that</a><br/>
-			<br/>
+			From Live Browser, head to your "User Library". and create a folder "Remote Scripts"<br/>
+			Right click this folder and select "show in finder/explorer".<br/>
+			Copy the Launchpad95 folder there.<br/>
+			<img src="setup-folders.png" style="margin:10px"/> 
+		</dd>
+			
+		<dt id="faq-4">4. Where should I put the script (for live 9)?</dt>
+			<dd>
+				On pc/windows 7 : inside "C:\ProgramData\Ableton\Live&nbsp;9&nbsp;Suite\Resources\MIDI&nbsp;Remote&nbsp;Scripts"<br/>
+				On a mac right-click the Live application you use (there might more than one installed!) and select "view package content", then browse to "App-Resources/MIDI&nbsp;Remote&nbsp;Scripts". <br/>
+				<br/>
+				Inside this "MIDI&nbsp;Remote&nbsp;Scripts" folder, you should have a folder called "Launchpad95". inside this folder you should have a bunch of .py files, and a for each of them a .pyc file. (.pyc files are compiled version of the .py that live compiles as you start it.)<br/>
+				<br/>
+				Sometimes a picture is worth 1000 words. Take a look at these screenshots.<br/>
+				- On a mac it look like this: <br/>
+				<img src="setup-folders-9.png" style="margin:10px"/><br/>
+				- on a pc like that:
+				<img src="setup-folder-9-win.png" style="margin:10px"/><br/>
+				<br/>
 		</dd>
 
-		<dt id="faq-4">4. It does not work, I installed everything, but the launchpad does not light up when I select Launchpad95 in the dropdown in the preferences. what is wrong ? </dt>
+		<dt id="faq-5">5. It does not work, I installed everything, but the launchpad does not light up when I select Launchpad95 in the dropdown in the preferences. what is wrong ? </dt>
 		<dd>
 			It is hard to guess what you did wrong. You must have installed not the right way somehow. 
 			Try to install it from scratch again, download from this site, extract install, restart live.
 			Among the list of things you can try to do :
 			<ul>
-				<li> - check the you installed at the right place. (check <a href="#faq-3">question #3</a> !)</li>	
-				<li> - Pay attention to the folder name AND its full path. (again see screenshots in above in <a href="#faq-3">question #3</a>)</li>
+				<li> - check the you installed at the right place. (check <a href="#faq-3">question #3</a> and <a href="#faq-4">question #4</a> !)</li>	
+				<li> - Pay attention to the folder name AND its full path. (again see screenshots in above in <a href="#faq-3">question #3</a> <a href="#faq-4">question #4</a>)</li>
 				<li> - how many versions of live do you have installed ?</li>
 				<li> - are you running live 9.2 or greater ? for live 8 please use launchpad85. For live 9.0, upgrade to live 9.2+. </li>
 			</ul>
 			<br/>
 		</dd>
 
-		<dt id="faq-5">5. It does not work, I installed everything, but Launchpad95 does not appears the dropdown in the preferences. what is wrong ? </dt>
+		<dt id="faq-6">6. It does not work, I installed everything, but Launchpad95 does not appears the dropdown in the preferences. what is wrong ? </dt>
 		<dd>
-			See <a href="#faq-4">question 4</a>.<br/>
+			See <a href="#faq-5">question 5</a>.<br/>
 			<br/>
 		</dd>
 
-		<dt id="faq-6">6. Note Feedback is not working in Instrument Controller</dt>
+		<dt id="faq-7">7. Note Feedback is not working in Instrument Controller</dt>
 		<dd>
 			Make sure you activated the launchapd midi in/out as "track" in Live midi preferences.<br/>
 			<br/>
 		</dd>
+		<dt id="faq-8">8. Live 8 ?</dt>
+		<dd>
+			For Live 8.4: <a href="launchpad85.html">Launchpad85</a>.
+		</dd>
 
-		<dt id="faq-7">7. good work ! I wish to donate ! is there a way to donate somehow ?</dt>
+		<dt id="faq-9">9. good work ! I wish to donate ! is there a way to donate somehow ?</dt>
 		<dd>
 			Sure ! Your donations allowed me to pay for the Launchpad Pro that is now supported ! thank you for this.<br/>
 			<a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_send-money&amp;nav=1&amp;email=hdavid@mail.com">paypal</a> to my account hdavid@mail.com.
@@ -1558,6 +1592,7 @@
 	<section>
 	<h2>History</h2>
 	<ul>
+		<li>2020-12-16 - Support for Live 11. User mode 1 and 2 are now disabled by default. They can be enabled from Settings.py</li>	
 		<li>2020-03-23 - enable RGb session mode on LPX and LPmini MK3</li>	
 		<li>2020-01-12 - user customisable mixer volume slider values</li>	
 		<li>2019-11-02 - support for Launchpad Mini MK3 and Launchpad X</li>	

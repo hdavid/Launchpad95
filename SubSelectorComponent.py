@@ -3,11 +3,11 @@ from _Framework.ModeSelectorComponent import ModeSelectorComponent
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
 from _Framework.SessionComponent import SessionComponent
-from SpecialMixerComponent import SpecialMixerComponent
-from PreciseButtonSliderElement import (
+from .SpecialMixerComponent import SpecialMixerComponent
+from .PreciseButtonSliderElement import (
 	PreciseButtonSliderElement, SLIDER_MODE_VOLUME, SLIDER_MODE_PAN
 )
-from Settings import VOLUME_LEVELS
+from .Settings import Settings
 
 
 def level_to_value(level):
@@ -18,7 +18,7 @@ def level_to_value(level):
 
 
 PAN_VALUE_MAP = (-1.0, -0.634921, -0.31746, 0.0, 0.0, 0.31746, 0.634921, 1.0)
-VOL_VALUE_MAP = tuple(sorted([0.0] + [level_to_value(level) for level in VOLUME_LEVELS]))
+VOL_VALUE_MAP = tuple(sorted([0.0] + [level_to_value(level) for level in Settings.VOLUME_LEVELS]))
 SEND_VALUE_MAP = (0.0, 0.103536, 0.164219, 0.238439, 0.343664, 0.55, 0.774942, 1.0)
 
 
@@ -69,7 +69,6 @@ class SubSelectorComponent(ModeSelectorComponent):
 		ModeSelectorComponent.disconnect(self)
 
 	def set_update_callback(self, callback):
-		assert (dir(callback).count("im_func") is 1)
 		self._update_callback = callback
 
 	def set_modes_buttons(self, buttons):

@@ -4,11 +4,17 @@ from _Framework.ControlSurface import ControlSurface
 from _Framework.InputControlElement import MIDI_CC_TYPE, MIDI_NOTE_TYPE
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
-from ConfigurableButtonElement import ConfigurableButtonElement
-from MainSelectorComponent import MainSelectorComponent
-from NoteRepeatComponent import NoteRepeatComponent
-from M4LInterface import M4LInterface
-import Settings
+from .ConfigurableButtonElement import ConfigurableButtonElement
+from .MainSelectorComponent import MainSelectorComponent
+from .NoteRepeatComponent import NoteRepeatComponent
+from .M4LInterface import M4LInterface
+from .Settings import *
+
+#fix for python3
+try:
+    xrange
+except NameError:
+    xrange = range
 
 DO_COMBINE = Live.Application.combine_apcs()  # requires 8.2 & higher
 
@@ -79,18 +85,18 @@ class Launchpad(ControlSurface):
 		
 		# second part of the __init__ after model has been identified using its challenge response
 		if self._mk3_rgb or self._lpx:
-			from SkinMK2 import make_skin
+			from .SkinMK2 import make_skin
 			self._skin = make_skin()
 			self._side_notes = (89, 79, 69, 59, 49, 39, 29, 19)
 			self._drum_notes = (20, 30, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126)
 		elif self._mk2_rgb:
-			from SkinMK2 import make_skin
+			from .SkinMK2 import make_skin
 			self._skin = make_skin()
 			self._side_notes = (89, 79, 69, 59, 49, 39, 29, 19)
 			#self._drum_notes = (20, 30, 31, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126)
 			self._drum_notes = (20, 30, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126)
 		else:
-			from SkinMK1 import make_skin # @Reimport
+			from .SkinMK1 import make_skin # @Reimport
 			self._skin = make_skin()
 			self._side_notes = (8, 24, 40, 56, 72, 88, 104, 120)
 			self._drum_notes = (41, 42, 43, 44, 45, 46, 47, 57, 58, 59, 60, 61, 62, 63, 73, 74, 75, 76, 77, 78, 79, 89, 90, 91, 92, 93, 94, 95, 105, 106, 107)
@@ -286,14 +292,17 @@ class Launchpad(ControlSurface):
 	def build_midi_map(self, midi_map_handle):
 		ControlSurface.build_midi_map(self, midi_map_handle)
 		if self._selector!=None:
-			if self._selector._main_mode_index==2 or self._selector._main_mode_index==1:
-				mode = Settings.USER_MODES[ (self._selector._main_mode_index-1) * 3 + self._selector._sub_mode_list[self._selector._main_mode_index] ] 
-				#self._selector.mode_index == 1:
-				#if self._selector._sub_mode_list[self._selector._mode_index] > 0:  # disable midi map rebuild for instrument mode to prevent light feedback errors
+			if self._selector._main_mode_index==1:
+				mode = Settings.USER_MODES_1[self._selector._sub_mode_list[self._selector._main_mode_index] ]
 				if mode != "instrument":
 					new_channel = self._selector.channel_for_current_mode()
 					for note in self._drum_notes:
 						self._translate_message(MIDI_NOTE_TYPE, note, 0, note, new_channel)
+			elif self._selector._main_mode_index==2:
+				mode = Settings.USER_MODES_2[self._selector._sub_mode_list[self._selector._main_mode_index] ] 
+				#self._selector.mode_index == 1:
+				#if self._selector._sub_mode_list[self._selector._mode_index] > 0:  # disable midi map rebuild for instrument mode to prevent light feedback errors
+
 
 	def _send_midi(self, midi_bytes, optimized=None):
 		sent_successfully = False

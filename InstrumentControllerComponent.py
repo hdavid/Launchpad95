@@ -3,10 +3,16 @@ from _Framework.CompoundComponent import CompoundComponent
 from _Framework.SubjectSlot import subject_slot
 from _Framework.ButtonElement import ButtonElement
 from _Framework.Util import find_if, clamp
-from itertools import imap
-from TrackControllerComponent import TrackControllerComponent
-from ScaleComponent import ScaleComponent,CIRCLE_OF_FIFTHS,MUSICAL_MODES,KEY_NAMES
-import Settings
+try:
+    from itertools import imap
+except ImportError:
+    # Python 3...
+    imap=map
+	
+from .TrackControllerComponent import TrackControllerComponent
+from .ScaleComponent import ScaleComponent,CIRCLE_OF_FIFTHS,MUSICAL_MODES,KEY_NAMES
+from .Settings import *
+
 
 class InstrumentControllerComponent(CompoundComponent):
 
@@ -456,7 +462,8 @@ class InstrumentControllerComponent(CompoundComponent):
 			non_feedback_channel = self.base_channel + 4
 
 			# create array to keep last channel used for note.
-			note_channel = range(128)
+			note_channel = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ]
+			#range(128)
 			for i in range(128):
 				note_channel[i] = self.base_channel
 
