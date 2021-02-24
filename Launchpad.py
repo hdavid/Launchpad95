@@ -267,8 +267,8 @@ class Launchpad(ControlSurface):
 
 		# MK2 has different challenge and params
 		elif len(midi_bytes) == 10 and midi_bytes[:7] == (240, 0, 32, 41, 2, 24, 64):
-			response = long(midi_bytes[7])
-			response += long(midi_bytes[8]) << 8
+			response = int(midi_bytes[7])
+			response += int(midi_bytes[8]) << 8
 			if response == Live.Application.encrypt_challenge2(self._challenge):
 				self.log_message("Challenge Response ok (mk2)")
 				self._mk2_rgb = True
@@ -277,8 +277,8 @@ class Launchpad(ControlSurface):
 				self.init()
 		#MK1 Challenge
 		elif len(midi_bytes) == 8 and midi_bytes[1:5] == (0, 32, 41, 6):
-			response = long(midi_bytes[5])
-			response += long(midi_bytes[6]) << 8
+			response = int(midi_bytes[5])
+			response += int(midi_bytes[6]) << 8
 			if response == Live.Application.encrypt_challenge2(self._challenge):
 				self.log_message("Challenge Response ok (mk1)")
 				self._mk2_rgb = False

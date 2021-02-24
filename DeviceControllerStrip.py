@@ -175,7 +175,7 @@ class DeviceControllerStrip(ButtonSliderElement):
 		assert (len(buttons) == len(self._buttons))
 		for index in range(len(self._buttons)):
 			self._buttons[index].set_on_off_values(buttons[index], buttons[index])
-			if buttons[index].endswith("on"):#buttons[index]>0:
+			if buttons[index].endswith("On"):#buttons[index]>0:
 				self._buttons[index].turn_on()
 			else:
 				self._buttons[index].turn_off()
