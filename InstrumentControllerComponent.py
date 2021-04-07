@@ -11,7 +11,7 @@ except ImportError:
 	
 from .TrackControllerComponent import TrackControllerComponent
 from .ScaleComponent import ScaleComponent,CIRCLE_OF_FIFTHS,MUSICAL_MODES,KEY_NAMES
-from .Settings import *
+from .Settings import Settings
 
 
 class InstrumentControllerComponent(CompoundComponent):

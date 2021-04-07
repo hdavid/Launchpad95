@@ -8,7 +8,7 @@ from .ConfigurableButtonElement import ConfigurableButtonElement
 from .MainSelectorComponent import MainSelectorComponent
 from .NoteRepeatComponent import NoteRepeatComponent
 from .M4LInterface import M4LInterface
-from .Settings import *
+from .Settings import Settings
 
 #fix for python3
 try:
