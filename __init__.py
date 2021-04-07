@@ -8,20 +8,21 @@ def create_instance(c_instance):
 def get_capabilities():
 	return {
 		CONTROLLER_ID_KEY: controller_id(
-			vendor_id = 4661, 
+			vendor_id = 4661,
 			product_ids = [
 				14, # Lauchpad
+				54, # Launchpad Mini
 				105,# Launchpad ?
-				106,107,108,109, 110,111,112, 113,114,115,116, 117,118,119,120,
+				106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,
 				275,# Launchpad Mini MK3'
-				259 # launchpad X	
-			], 
-			model_name = 
+				259 # launchpad X
+			],
+			model_name =
 			[
-				'Launchpad', 
+				'Launchpad',
+				'Launchpad Mini',
 				'Launchpad S',
-				'Launchpad Mini',  
-				'Launchpad MK2', 
+				'Launchpad MK2',
 				'Launchpad MK2 2',
 				'Launchpad MK2 3',
 				'Launchpad MK2 4',
@@ -41,14 +42,14 @@ def get_capabilities():
 				'Launchpad X'
 			]
 		),
-		PORTS_KEY: 
+		PORTS_KEY:
 			[
 	            #inport(props=[NOTES_CC, SCRIPT]),
 	            #inport(props=[NOTES_CC, REMOTE]),
 	            #outport(props=[NOTES_CC, SYNC, SCRIPT]),
 	            #outport(props=[REMOTE])
-				inport(props = [NOTES_CC, REMOTE]), 
-				inport(props = [NOTES_CC, REMOTE, SCRIPT]), 
+				inport(props = [NOTES_CC, REMOTE]),
+				inport(props = [NOTES_CC, REMOTE, SCRIPT]),
 				outport(props = [NOTES_CC, SYNC, REMOTE]),
 				outport(props = [NOTES_CC, SYNC, REMOTE, SCRIPT])
 			]

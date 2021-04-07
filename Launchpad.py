@@ -8,7 +8,10 @@ from .ConfigurableButtonElement import ConfigurableButtonElement
 from .MainSelectorComponent import MainSelectorComponent
 from .NoteRepeatComponent import NoteRepeatComponent
 from .M4LInterface import M4LInterface
-from .Settings import *
+try:
+    exec("from .Settings import Settings")
+except ImportError:
+    exec("from .Settings import *")
 
 #fix for python3
 try:

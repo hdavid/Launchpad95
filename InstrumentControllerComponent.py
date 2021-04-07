@@ -11,8 +11,10 @@ except ImportError:
 	
 from .TrackControllerComponent import TrackControllerComponent
 from .ScaleComponent import ScaleComponent,CIRCLE_OF_FIFTHS,MUSICAL_MODES,KEY_NAMES
-from .Settings import *
-
+try:
+    exec("from .Settings import Settings")
+except ImportError:
+    exec("from .Settings import *")
 
 class InstrumentControllerComponent(CompoundComponent):
 
