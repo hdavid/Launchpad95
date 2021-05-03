@@ -1,3 +1,5 @@
+# imported from https://github.com/poltow/Launchpad97
+
 import Live
 from _Framework.ClipCreator import ClipCreator
 from _Framework.SessionRecordingComponent import SessionRecordingComponent, track_playing_slot, track_is_recording
