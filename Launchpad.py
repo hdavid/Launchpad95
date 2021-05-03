@@ -153,7 +153,7 @@ class Launchpad(ControlSurface):
 			self._osd = M4LInterface()
 			self._osd.name = "OSD"
 			self._init_note_repeat()
-			self._selector = MainSelectorComponent(matrix, tuple(top_buttons), tuple(side_buttons), self._config_button, self._osd, self, self._note_repeat)
+			self._selector = MainSelectorComponent(matrix, tuple(top_buttons), tuple(side_buttons), self._config_button, self._osd, self, self._note_repeat, self._c_instance)
 			self._selector.name = 'Main_Modes'
 			self._do_combine()
 			for control in self.controls:

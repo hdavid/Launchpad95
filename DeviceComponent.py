@@ -440,7 +440,7 @@ class DeviceComponent(LiveDeviceComponent):
 			if(self._prev_track_button != None):
 				self._prev_track_button.set_on_off_values("Mode.Track.On", "Mode.Track.Off")
 				
-				if(self.selected_track_idx > 0 and not self._is_locked_to_device):
+				if self.selected_track_idx != None and self.selected_track_idx > 0 and not self._is_locked_to_device:
 					self._prev_track_button.turn_on()
 				else:
 					self._prev_track_button.turn_off()
@@ -448,7 +448,7 @@ class DeviceComponent(LiveDeviceComponent):
 			if(self._next_track_button != None):
 				self._next_track_button.set_on_off_values("Mode.Track.On", "Mode.Track.Off")
 				
-				if(self.selected_track_idx < len(self.song().tracks) - 1 and not self._is_locked_to_device):
+				if self.selected_track_idx != None and self.selected_track_idx < len(self.song().tracks) - 1 and not self._is_locked_to_device:
 					self._next_track_button.turn_on()
 				else:
 					self._next_track_button.turn_off()
@@ -468,7 +468,7 @@ class DeviceComponent(LiveDeviceComponent):
 		assert (value in range(128))
 		if self.is_enabled():
 			if ((not sender.is_momentary()) or (value is not 0)):
-				if(self.selected_track_idx < len(self.song().tracks) - 1 and not self._is_locked_to_device):
+				if self.selected_track_idx != None and self.selected_track_idx < len(self.song().tracks) - 1 and not self._is_locked_to_device:
 					self.song().view.selected_track = self.song().tracks[self.selected_track_idx + 1]
 					self.update()
 
@@ -488,7 +488,7 @@ class DeviceComponent(LiveDeviceComponent):
 		assert (value in range(128))
 		if ((not sender.is_momentary()) or (value is not 0)):
 			if self.is_enabled():
-				if(self.selected_track_idx > 0 and not self._is_locked_to_device):
+				if self.selected_track_idx != None and self.selected_track_idx > 0 and not self._is_locked_to_device:
 					self.song().view.selected_track = self.song().tracks[self.selected_track_idx - 1]
 					self.update()
 

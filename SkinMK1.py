@@ -13,6 +13,9 @@ class Colors:
 		class Session:
 			On = Rgb.AMBER
 			Off = Rgb.AMBER_THIRD
+		class ProSession:
+			On = Rgb.RED
+			Off = Rgb.RED_HALF
 		class Note:
 			On = Rgb.AMBER
 			Off = Rgb.AMBER_THIRD
@@ -22,9 +25,6 @@ class Colors:
 		class Device:
 			On = Rgb.RED
 			Off = Rgb.RED_THIRD
-		class Track:
-			On = Rgb.ORANGE
-			Off = Rgb.ORANGE_HALF
 		class StepSequencer:
 			On = Rgb.AMBER
 			Off = Rgb.AMBER_THIRD
@@ -40,6 +40,9 @@ class Colors:
 		class Mixer:
 			On = Rgb.AMBER
 			Off = Rgb.AMBER_THIRD
+		class Track:
+			On = Rgb.ORANGE
+			Off = Rgb.ORANGE_HALF
 	
 	class Session:
 		# scene
@@ -60,6 +63,88 @@ class Colors:
 		StopClipTriggered = Rgb.ORANGE_BLINK_HALF
 		# Enabled = Rgb.GREEN
 		# Off = Rgb.GREEN_THIRD
+
+
+	class ProSession:  # session zoomin
+		On = Rgb.GREEN
+		Off = Rgb.GREEN_THIRD
+		ClipStarted = Rgb.GREEN
+		ClipTriggeredPlay = Rgb.GREEN_BLINK
+		ClipStopped = Rgb.AMBER
+		ClipFoldedTrack = Rgb.AMBER
+		ClipUnFoldedTrack = Rgb.AMBER_HALF
+		class Shift:
+			On = Rgb.GREEN
+			Off = Rgb.GREEN_THIRD
+		class Click:
+			On = Rgb.AMBER_BLINK
+			Off = Rgb.AMBER
+		class Undo:
+			On = Rgb.GREEN
+			Off = Rgb.GREEN_THIRD
+		class Delete:
+			On = Rgb.RED_THIRD
+			Off = Rgb.RED_HALF
+		class Duplicate:
+			On = Rgb.GREEN
+			Off = Rgb.GREEN_THIRD
+		class Double:
+			On = Rgb.GREEN
+			Off = Rgb.GREEN_THIRD
+		class Quantize:
+			On = Rgb.GREEN
+			Off = Rgb.GREEN_THIRD
+		class SessionRec:
+			On = Rgb.RED_FULL
+			Off = Rgb.RED_THIRD
+		class SessionRecMode:
+			On = Rgb.RED_BLINK
+			Off = Rgb.RED_BLINK_THIRD
+
+
+
+	class LaunchQuant:
+		On = Rgb.GREEN
+		Off = Rgb.GREEN_THIRD
+		class PlusMinus:
+			On = Rgb.AMBER
+			Idle = Rgb.AMBER_HALF
+			Off = Rgb.AMBER_THIRD
+		class Value:
+			On = Rgb.MANDARIN_BLINK
+			Idle = Rgb.MANDARIN
+			Off = Rgb.ORANGE_HALF
+
+	class FixedLength:
+		On = Rgb.GREEN
+		Off = Rgb.GREEN_THIRD
+		class PlusMinus:
+			On = Rgb.AMBER
+			Idle = Rgb.AMBER_HALF
+			Off = Rgb.AMBER_THIRD
+		class Value:
+			On = Rgb.AMBER
+			Idle = Rgb.AMBER_HALF
+			Off = Rgb.AMBER_THIRD
+
+	class Metronome:
+		On = Rgb.GREEN
+		Off = Rgb.GREEN_THIRD
+		Nudge = Rgb.AMBER
+		DeltaOne = Rgb.RED_THIRD
+		DeltaFive = Rgb.RED
+		
+	class RecQuant:
+		On = Rgb.GREEN
+		Off = Rgb.GREEN_THIRD
+		class PlusMinus:
+			On = Rgb.AMBER
+			Idle = Rgb.AMBER_HALF
+			Off = Rgb.AMBER_THIRD
+		class Value:
+			On = Rgb.ORANGE_BLINK
+			Idle = Rgb.ORANGE
+			Off = Rgb.ORANGE_HALF
 
 	class Zooming:  # session zoomin
 		Selected = Rgb.AMBER
@@ -99,11 +184,11 @@ class Colors:
 			On = Rgb.GREEN_THIRD
 			Off = Rgb.GREEN
 		class SendsSlider_1:
-			On = Rgb.ORANGE
-			Off = Rgb.BLACK
+			On = Rgb.GREEN_THIRD
+			Off = Rgb.GREEN
 		class SendsSlider_2:
-			On = Rgb.YELLOW
-			Off = Rgb.BLACK
+			On = Rgb.GREEN_THIRD
+			Off = Rgb.GREEN
 
 	class Sends:  # not used yet on legacy launchpad
 		A = Rgb.RED
@@ -173,13 +258,13 @@ class Colors:
 			Selected = Rgb.GREEN
 			InLoop = Rgb.AMBER_THIRD
 		class Quantization:
-			One = Rgb.GREEN_FULL
-			Two = Rgb.YELLOW_FULL
+			One = Rgb.GREEN_THIRD
+			Two = Rgb.GREEN_FULL
 			Three = Rgb.AMBER_FULL
 			Four = Rgb.RED_FULL
 		class QuantizationLow:
-			One = Rgb.GREEN_HALF
-			Two = Rgb.YELLOW_HALF
+			One = Rgb.GREEN_THIRD
+			Two = Rgb.GREEN_FULL
 			Three = Rgb.AMBER_HALF
 			Four = Rgb.RED_HALF
 		class NoteSelector:
@@ -195,11 +280,11 @@ class Colors:
 			Velocity0 = Rgb.GREEN_THIRD
 			Velocity1 = Rgb.GREEN_HALF
 			Velocity2 = Rgb.GREEN
-			Velocity3 = Rgb.ORANGE_FULL
-			Velocity4 = Rgb.MANDARIN_FULL
+			Velocity3 = Rgb.AMBER_HALF
+			Velocity4 = Rgb.AMBER
 			Muted = Rgb.RED_THIRD
 			Playing = Rgb.RED
-			Metronome = Rgb.YELLOW_FULL
+			Metronome = Rgb.RED
 			NoteMarker = Rgb.AMBER
 			PageMarker = Rgb.AMBER_THIRD
 			CurrentPageMarker = Rgb.RED_THIRD
@@ -261,7 +346,12 @@ class Colors:
 				
 	class DrumGroup:
 		PadEmpty = Rgb.BLACK
-		PadFilled = Rgb.GREEN_THIRD
+		PadFilled = Rgb.RED_THIRD
+		PadFilled1 = Rgb.RED_THIRD
+		PadFilled2 = Rgb.RED_THIRD
+		PadFilled3 = Rgb.RED_THIRD
+		PadFilled4 = Rgb.RED_THIRD
+		PadFilled5 = Rgb.RED_THIRD
 		PadSelected = Rgb.GREEN
 		PadSelectedNotSoloed = Rgb.AMBER
 		PadMuted = Rgb.AMBER
@@ -350,10 +440,10 @@ class Colors:
 			On = Rgb.GREEN
 			Off = Rgb.GREEN_THIRD
 			Mode = Rgb.GREEN
-			Straight = Rgb.ORANGE
-			Swing = Rgb.MANDARIN
-			Dotted = Rgb.LIME
-			Flam = Rgb.YELLOW
+			Straight = Rgb.GREEN_THIRD
+			Swing = Rgb.GREEN_THIRD
+			Dotted = Rgb.GREEN_THIRD
+			Flam = Rgb.GREEN_THIRD
 			Selected = Rgb.RED
 			Note = Rgb.RED_HALF	
 			Tripplet = Rgb.RED_THIRD		
