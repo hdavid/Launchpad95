@@ -109,7 +109,7 @@ class DeviceComponent(LiveDeviceComponent):
 		if self._matrix:
 			self._sliders = []
 			for column in range(self._matrix.width()):
-				slider = DeviceControllerStrip(tuple([self._matrix.get_button(column, (self._matrix.height() - 1 - row)) for row in range(self._matrix.height())]), self)
+				slider = DeviceControllerStrip(tuple([self._matrix.get_button(column, (self._matrix.height() - 1 - row)) for row in range(self._matrix.height())]), self,column)
 				slider._parent = self
 				self._sliders.append(slider)
 			self._sliders = tuple(self._sliders)

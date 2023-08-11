@@ -254,10 +254,30 @@ class Colors:
             Set = Rgb.RED_THIRD
             Locked = Rgb.RED
 
-        class Slider:
+        class Slider0:
             On = Rgb.PURPLE
-            Off = Rgb.PURPLE_THIRD
-
+            Off = Rgb.BLACK
+        class Slider1:
+            On = Rgb.PURPLE
+            Off = Rgb.BLACK
+        class Slider2:
+            On = Rgb.LIGHT_BLUE
+            Off = Rgb.BLACK
+        class Slider3:
+            On = Rgb.LIGHT_BLUE
+            Off = Rgb.BLACK
+        class Slider4:
+            On = Rgb.MINT
+            Off = Rgb.BLACK
+        class Slider5:
+            On = Rgb.MINT
+            Off = Rgb.BLACK
+        class Slider6:
+            On = Rgb.BLUE
+            Off = Rgb.BLACK
+        class Slider7:
+            On = Rgb.BLUE
+            Off = Rgb.BLACK
         class PrecisionSlider:
             On = Rgb.LIGHT_BLUE
             Off = Rgb.LIGHT_BLUE_THIRD
