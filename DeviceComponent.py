@@ -1,8 +1,9 @@
-from _Framework.DeviceComponent import DeviceComponent as LiveDeviceComponent
+from ._Framework.DeviceComponent import DeviceComponent as LiveDeviceComponent
 from _Framework.ButtonElement import ButtonElement
 from .DeviceControllerStrip import DeviceControllerStrip
 import time
 import Live
+from .Test import log
 
 class DeviceComponent(LiveDeviceComponent):
 	__module__ = __name__
@@ -39,6 +40,8 @@ class DeviceComponent(LiveDeviceComponent):
 		self._lock_button_press = [0,0,0,0]
 		self._locked_devices = [None,None,None,None]
 
+		self._stepless_faders_button = None
+		self._stepless_faders = False
 		self._is_active = False
 		self._force = True
 		self._osd = None
@@ -78,7 +81,7 @@ class DeviceComponent(LiveDeviceComponent):
 			self.set_lock_button1(side_buttons[4])
 			self.set_lock_button2(side_buttons[5])
 			self.set_lock_button3(side_buttons[6])
-			self.set_lock_button4(side_buttons[7])
+			self.set_stepless_faders_button(side_buttons[7])
 
 		if matrix is not None:
 			self.set_matrix(matrix)
@@ -103,6 +106,8 @@ class DeviceComponent(LiveDeviceComponent):
 		self._precision_mode = None
 		#self._remaining_buttons = None UNUSED
 		self._device = None
+		for slider in self._sliders:
+			slider.shutdown()
 
 	def set_matrix(self, matrix):
 		self._matrix = matrix
@@ -223,6 +228,7 @@ class DeviceComponent(LiveDeviceComponent):
 
 # UPDATE
 	def update(self):
+
 		if self.is_enabled():
 			if self._number_of_parameter_banks() <= self._bank_index:
 				self._bank_index = 0
@@ -432,7 +438,22 @@ class DeviceComponent(LiveDeviceComponent):
 			if self._on_off_button is not None:
 				assert isinstance(button, ButtonElement)
 				self._on_off_button.add_value_listener(self._on_off_value)
+	def set_stepless_faders_button(self, button):
+		assert (isinstance(button, (ButtonElement, type(None))))
+		if self._stepless_faders_button != button:
+			if self._stepless_faders_button is not None:
+				self._stepless_faders_button.remove_value_listener(self._stepless_fader_toggle)
+			self._stepless_faders_button = button
+			if self._stepless_faders_button is not None:
+				assert isinstance(button, ButtonElement)
+				self._stepless_faders_button.add_value_listener(self._stepless_fader_toggle)
 
+	def _stepless_fader_toggle(self, value):
+		log(f"stepless fader toggle {value}")
+		if value > 0:
+			self._stepless_faders = not self._stepless_faders
+			for slider in self._sliders:
+				slider.set_stepless_mode(self._stepless_faders)
 # TRACKS Buttons
 	def update_track_buttons(self):
 		# tracks
