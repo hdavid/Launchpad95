@@ -1,11 +1,11 @@
-from ._Framework.DeviceComponent import DeviceComponent as LiveDeviceComponent
+from ._Framework.DeviceComponent import DeviceComponent
 from _Framework.ButtonElement import ButtonElement
-from .DeviceControllerStrip import DeviceControllerStrip
+from .DeviceControllerStripProxy import DeviceControllerStripProxy
 import time
 import Live
 from .Test import log
 
-class DeviceComponent(LiveDeviceComponent):
+class DeviceControllerComponent(DeviceComponent):
 	__module__ = __name__
 	__doc__ = ''
 
@@ -30,18 +30,22 @@ class DeviceComponent(LiveDeviceComponent):
 		self._precision_button = None
 		self._precision_mode = False
 
-		#Lock logic
-		self._lock_button_slots = [None,None,None,None]
-		self._lock_buttons = [None,None,None,None]
-		self._locked_devices = [None,None,None,None]
-		self._locked_device_index = None
-		self._lock_buttons = [None,None,None,None]
-		self._locked_device_bank = [0,0,0,0]
-		self._lock_button_press = [0,0,0,0]
-		self._locked_devices = [None,None,None,None]
+		#Stepless logic
+		self._stepless_button = None
+		self._stepless_mode = False
 
-		self._stepless_faders_button = None
-		self._stepless_faders = False
+		#Lock logic
+		self._lock_button_slots = [None,None,None]
+		self._lock_buttons = [None,None,None]
+		self._locked_devices = [None,None,None]
+		self._locked_device_index = None
+		self._lock_buttons = [None,None,None]
+
+		self._locked_device_bank = [0,0,0]
+		self._lock_button_press = [0,0,0]
+		self._locked_devices = [None,None,None]
+
+
 		self._is_active = False
 		self._force = True
 		self._osd = None
@@ -50,7 +54,7 @@ class DeviceComponent(LiveDeviceComponent):
 		self._control_surface.application().view.add_is_view_visible_listener('Detail/Clip', self._on_views_changed)
 
 		#self._remaining_buttons = None UNUSED
-		LiveDeviceComponent.__init__(self)
+		DeviceComponent.__init__(self)
 
 		# Sliders
 		self._sliders = []
@@ -81,7 +85,7 @@ class DeviceComponent(LiveDeviceComponent):
 			self.set_lock_button1(side_buttons[4])
 			self.set_lock_button2(side_buttons[5])
 			self.set_lock_button3(side_buttons[6])
-			self.set_stepless_faders_button(side_buttons[7])
+			self.set_stepless_button(side_buttons[7])
 
 		if matrix is not None:
 			self.set_matrix(matrix)
@@ -114,7 +118,12 @@ class DeviceComponent(LiveDeviceComponent):
 		if self._matrix:
 			self._sliders = []
 			for column in range(self._matrix.width()):
-				slider = DeviceControllerStrip(tuple([self._matrix.get_button(column, (self._matrix.height() - 1 - row)) for row in range(self._matrix.height())]), self,column)
+				#slider = DeviceControllerStrip(tuple([self._matrix.get_button(column, (self._matrix.height() - 1 - row)) for row in range(self._matrix.height())]), self,column)
+				try:
+					slider = DeviceControllerStripProxy(tuple([self._matrix.get_button(column, (self._matrix.height() - 1 - row)) for row in range(self._matrix.height())]), self, column)
+				except Exception as e:
+					log("DeviceController: set_matrix: Exception: " + str(e))
+
 				slider._parent = self
 				self._sliders.append(slider)
 			self._sliders = tuple(self._sliders)
@@ -134,7 +143,7 @@ class DeviceComponent(LiveDeviceComponent):
 		for slider in self._sliders:
 			slider.set_enabled(active)
 		# ping parent
-		LiveDeviceComponent.set_enabled(self, active)
+		DeviceComponent.set_enabled(self, active)
 
 	def _on_detail_view_changed(self):
 		self.update()
@@ -217,7 +226,7 @@ class DeviceComponent(LiveDeviceComponent):
 				self._bank_index = 0
 			self._device = device
 			self.set_device_view()
-			LiveDeviceComponent.set_device(self, device)
+			DeviceComponent.set_device(self, device)
 
 	def set_device_view(self):
 		view = self.application().view
@@ -262,7 +271,7 @@ class DeviceComponent(LiveDeviceComponent):
 							self._matrix.get_button(x, y).turn_off()
 
 			# update parent
-			LiveDeviceComponent.update(self)
+			DeviceComponent.update(self)
 			if self._sliders is not None:
 				for slider in self._sliders:
 					slider.reset_if_no_parameter()
@@ -272,6 +281,7 @@ class DeviceComponent(LiveDeviceComponent):
 			self.update_lock_buttons()
 			self.update_on_off_button()
 			self.update_precision_button()
+			self.update_stepless_button()
 			self._update_OSD()
 			self._force = False
 
@@ -406,6 +416,45 @@ class DeviceComponent(LiveDeviceComponent):
 				self._precision_button.add_value_listener(self._precision_value, identify_sender=True)
 				self.update()
 
+#Stepless Button
+	def update_stepless_button(self):
+		try:
+			if self._stepless_button is not None and self.is_enabled():
+				if self._stepless_button is not None:
+					if self._device is not None:
+						self._stepless_button.set_on_off_values("Device.SteplessSlider.On", "Device.SteplessSlider.Off")
+						if self._stepless_mode:
+							self._stepless_button.turn_on()
+						else:
+							self._stepless_button.turn_off()
+					else:
+						self._stepless_button.set_on_off_values("DefaultButton.Disabled","DefaultButton.Disabled")
+						self._stepless_button.turn_off()
+		except Exception as e:
+			self._control_surface.log_message("update_stepless_button: " + str(e))
+			log("update_stepless_button: " + str(e))
+
+	def _stepless_value(self, value, sender):
+		try:
+			if ((not sender.is_momentary()) or (value is not 0)):
+				if (self._stepless_button is not None and self.is_enabled()):
+					self._stepless_mode = not self._stepless_mode
+					self.update_stepless_button()
+					for slider in self._sliders:
+						slider.set_stepless_mode(self._stepless_mode)
+		except Exception as e:
+			log("_stepless_value: " + str(e))
+
+	def set_stepless_button(self, button):
+		assert (isinstance(button, (ButtonElement, type(None))))
+		if self._stepless_button != button:
+			if self._stepless_button is not None:
+				self._stepless_button.remove_value_listener(self._stepless_value)
+			self._stepless_button = button
+			if self._stepless_button is not None:
+				assert isinstance(button, ButtonElement)
+				self._stepless_button.add_value_listener(self._stepless_value, identify_sender=True)
+				self.update()
 
 # ON OFF button
 	def update_on_off_button(self):
@@ -425,7 +474,7 @@ class DeviceComponent(LiveDeviceComponent):
 
 	def _on_off_value(self, value):
 		if self._on_off_button is not None and self.is_enabled():
-			LiveDeviceComponent._on_off_value(self, value)
+			DeviceComponent._on_off_value(self, value)
 			self.update_on_off_button()
 
 
@@ -438,22 +487,6 @@ class DeviceComponent(LiveDeviceComponent):
 			if self._on_off_button is not None:
 				assert isinstance(button, ButtonElement)
 				self._on_off_button.add_value_listener(self._on_off_value)
-	def set_stepless_faders_button(self, button):
-		assert (isinstance(button, (ButtonElement, type(None))))
-		if self._stepless_faders_button != button:
-			if self._stepless_faders_button is not None:
-				self._stepless_faders_button.remove_value_listener(self._stepless_fader_toggle)
-			self._stepless_faders_button = button
-			if self._stepless_faders_button is not None:
-				assert isinstance(button, ButtonElement)
-				self._stepless_faders_button.add_value_listener(self._stepless_fader_toggle)
-
-	def _stepless_fader_toggle(self, value):
-		log(f"stepless fader toggle {value}")
-		if value > 0:
-			self._stepless_faders = not self._stepless_faders
-			for slider in self._sliders:
-				slider.set_stepless_mode(self._stepless_faders)
 # TRACKS Buttons
 	def update_track_buttons(self):
 		# tracks

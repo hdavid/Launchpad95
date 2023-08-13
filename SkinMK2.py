@@ -282,6 +282,10 @@ class Colors:
             On = Rgb.LIGHT_BLUE
             Off = Rgb.LIGHT_BLUE_THIRD
 
+        class SteplessSlider:
+            On = Rgb.LIGHT_BLUE
+            Off = Rgb.MINT
+
         class Enum:
             On = Rgb.MINT
             Off = Rgb.MINT_THIRD
