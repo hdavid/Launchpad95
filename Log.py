@@ -1,7 +1,7 @@
 import os
 
 USERNAME = os.getlogin()
-from Settings import Settings
+from .Settings import Settings
 
 with open(f'C:/Users/{USERNAME}/Documents/Ableton/User Library/Remote Scripts/log.txt', 'a') as f:
     if Settings.LOGGING:
