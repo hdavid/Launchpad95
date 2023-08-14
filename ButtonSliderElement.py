@@ -10,8 +10,6 @@ from _Framework.InputControlElement import MIDI_INVALID_TYPE, InputControlElemen
 from _Framework.SliderElement import SliderElement
 from _Framework.SubjectSlot import SlotManager
 
-from .Test import log
-
 
 class ButtonSliderElement(SliderElement, SlotManager):
     _last_sent_value = -1
@@ -20,11 +18,11 @@ class ButtonSliderElement(SliderElement, SlotManager):
         SliderElement.__init__(self, MIDI_INVALID_TYPE, 0, 0)
         self._parameter_value_slot = self.register_slot(None, self._on_parameter_changed, 'value')
         self._buttons = buttons
+        self._last_sent_value = -1
         self._button_slots = self.register_slot_manager()
         for button in self._buttons:
             self._button_slots.register_slot(button,
               (self._button_value), 'value', extra_kws={'identify_sender': True})
-        log('ButtonSliderElement.py')
 
     def disconnect(self):
         SliderElement.disconnect(self)

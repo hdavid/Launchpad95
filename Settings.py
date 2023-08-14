@@ -42,6 +42,10 @@ class Settings():
 	#the higher the value, the slower the parameter change
 	VELOCITY_FACTOR = 32
 
+	#Logging feature for debugging (creates C:/Users/{USERNAME}/Documents/Ableton/User Library/Remote Scripts/log.txt)
+	LOGGING = False
+
+
 	# Map buttons to levels in volume slider. Exactly 7 values must be provided.
 	# The lowest button is always set to -inf. Lowest supported value is -69 dB.
 	# So far the values are not exact: -24 dB below equals -23.7 dB in Ableton.

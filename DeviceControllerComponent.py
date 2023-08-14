@@ -3,7 +3,7 @@ from _Framework.ButtonElement import ButtonElement
 from .DeviceControllerStripProxy import DeviceControllerStripProxy
 import time
 import Live
-from .Test import log
+from .Log import log
 
 
 class DeviceControllerComponent(DeviceComponent):

@@ -4,7 +4,7 @@ import traceback
 from .ButtonSliderElement import ButtonSliderElement
 from .Settings import Settings
 import time, sys
-from .Test import log
+from .Log import log
 
 SLIDER_MODE_OFF = 0
 SLIDER_MODE_TOGGLE = 1

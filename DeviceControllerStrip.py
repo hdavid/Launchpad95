@@ -1,11 +1,8 @@
 import queue
 
-from .Test import log
-try:
-	from .ButtonSliderElement import ButtonSliderElement
-except Exception as e:
-	log('error importing ButtonSliderElement: ' + str(e))
-	exit(-1)
+from .Log import log
+from .ButtonSliderElement import ButtonSliderElement
+
 from .SliderQueueProcessor import process_loop
 
 from multiprocessing import Process
@@ -35,25 +32,8 @@ class DeviceControllerStrip(ButtonSliderElement):
 		self._precision_mode = False
 		self._stepless_mode = False
 		self._enabled = True
-		try:
-			self._slider_queue = queue.LifoQueue()#TODO FIX ORDER
-		except Exception as e:
-			log('error creating slider queue: ' + str(e))
-			exit(-1)
-		try:
-			#self._slider_queue_processor = Process(target=SliderQueueProcessor, args=(None,self._slider_queue,self._parameter_to_map_to))
-			self._slider_queue_processor = Process(target=process_loop, args=(self._slider_queue,self._parameter_to_map_to))
-		except Exception as e:
-			log('error creating slider queue process: ' + str(e))
-			exit(-1)
-		try:
-			#self._slider_queue_processor.start()
-			pass
-		except Exception as e:
-			log('error starting slider queue process: ' + str(e))
-			exit(-1)
 
-		log(f'DeviceControllerStrip {self._column} created')
+		log(f'DCS {self._column} created')
 	def set_enabled(self,enabled):
 		self._enabled = enabled
 	
@@ -293,7 +273,7 @@ class DeviceControllerStrip(ButtonSliderElement):
 							#self._parameter_to_map_to.value = self._min
 			if self._stepless_mode:
 				value = max(value,10)
-				#self._slider_queue.put(tuple(target_value,value))
+				#self._slider_queue.put(tuple(_target_value,value))
 
 				current_value = round(self._parameter_to_map_to.value, 3)
 				target_value = round(target_value, 3)
@@ -304,7 +284,7 @@ class DeviceControllerStrip(ButtonSliderElement):
 					velocity_factor = min(velocity_factor, max_diff)
 					new_value = current_value + velocity_factor if current_value < target_value else current_value - velocity_factor
 					new_value = max(min(new_value, self._parameter_to_map_to.max), self._parameter_to_map_to.min)
-					log("new_value: " + str(new_value) + " current_value: " + str(current_value) + " target_value: " + str(target_value) + " velocity_factor: " + str(velocity_factor))
+					log("new_value: " + str(new_value) + " current_value: " + str(current_value) + " _target_value: " + str(target_value) + " velocity_factor: " + str(velocity_factor))
 					self._parameter_to_map_to.value = new_value
 					self.notify_value(value)
 					time.sleep(0.1)
