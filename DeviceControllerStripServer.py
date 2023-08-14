@@ -2,6 +2,7 @@ import threading
 import traceback
 
 from .ButtonSliderElement import ButtonSliderElement
+from .Settings import Settings
 import time, sys
 from .Test import log
 
@@ -30,9 +31,10 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
         self._stepless_mode = False
         self._enabled = True
         self._current_value = None
+        self._last_value = None
+        self._last_sent_value = -1
         self._target_value = None
         self._current_velocity = 10
-        log(f'DCSServer {self._column} created')
 
     def set_enabled(self, enabled):
         self._enabled = enabled
@@ -40,12 +42,10 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
     def set_precision_mode(self, precision_mode):
         self._precision_mode = precision_mode
         self.update()
-        log('precision mode: ' + str(precision_mode))
 
     def set_stepless_mode(self, stepless_mode):
         self._stepless_mode = stepless_mode
         self.update()
-        log('stepless mode: ' + str(stepless_mode))
 
     def shutdown(self):
         self._control_surface = None
@@ -204,7 +204,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
     def _button_value(self, value, sender):
         assert isinstance(value, int)
         assert (sender in self._buttons)
-        # log("Button value: " + str(value) + " sender: " + str(sender))
+        log("button_value: value: " + str(value))
         self._last_sent_value = -1
         if (self._parameter_to_map_to != None and self._enabled and (
             (value != 0) or (not sender.is_momentary()))):
@@ -263,18 +263,17 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
         velocity = self._current_velocity if new_velocity is None else new_velocity
         current_value = self._current_value
         if self._precision_mode or not self._stepless_mode:
-            self._target_value = target_value
-            self._current_value = target_value
             while True:
                 try:
                     self._parameter_to_map_to.value = target_value
                     break
                 except RuntimeError:
-                    # log(f"DCSServer {self._column}: {self._parameter_to_map_to.name} failed to set to {round(new_value, 3)} from {round(current_value, 3)} with velocity {round(velocity_factor, 3)} and target {round(target_value, 3)}")
-                    continue  # self.notify_value(value)
+                    continue
+            self._current_value = self._parameter_to_map_to.value
+            self._target_value = self._current_value
+            self._last_value = self._current_value
         else:
             if self._target_value != target_value or self._current_velocity != velocity:
-                # Got new instructons, updating target value and velocity
                 self._target_value = target_value
                 self._current_velocity = velocity
             if target_value != current_value:
@@ -283,36 +282,42 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                 new_value = current_value + velocity_factor if current_value < target_value else current_value - velocity_factor
                 new_value = max(min(new_value, self._parameter_to_map_to.max),
                                 self._parameter_to_map_to.min)
-                # log(f"DCSServer {self._column}: {self._parameter_to_map_to.name} will be set to {round(new_value, 3)} from {round(current_value, 3)} with velocity {round(velocity_factor, 3)} and target {round(target_value, 3)}")
                 while True:
                     try:
                         self._parameter_to_map_to.value = new_value
                         break
                     except RuntimeError:
-                        # log(f"DCSServer {self._column}: {self._parameter_to_map_to.name} failed to set to {round(new_value, 3)} from {round(current_value, 3)} with velocity {round(velocity_factor, 3)} and target {round(target_value, 3)}")
                         continue
-                self.notify_value(new_value)
-                self._current_value = new_value
+                self._current_value = self._parameter_to_map_to.value
+                self._last_value = self._current_value
+        self._update_slider()
 
     def run(self):
-        log(f"DCSServer Loop {self._column}")
         try:
             while True:
                 if self._request_queue.empty():
                     time.sleep(0.01)
                     if (self._parameter_to_map_to != None and self._enabled):
                         self._current_value = self._parameter_to_map_to.value
-                        if self._target_value is None:
+                        if self._target_value is None or self._last_value is None:
                             self._target_value = self._current_value
+                            self._last_value = self._current_value
+
                         if self._current_value != self._target_value:
-                            self.update_value()
+                            if round(self._last_value, 5) == round(
+                                self._current_value, 5):
+                                self.update_value()
+                            else:
+                                self._last_value = self._current_value
+                                self._target_value = self._current_value
+                                self._update_slider()
                     continue
                 else:
                     # log(f"DCSServer {self._column} waiting for request")
                     funct_name, args, kwargs = self._request_queue.get()
                     # log(f"DCSServer {self._column} got request {funct_name} with {args} and {kwargs}")
                     if funct_name == "shutdown":
-                        log(f"Shutting down DCSServer {self._column}")
+                        #log(f"Shutting down DCSServer {self._column}")
                         return
                     else:
                         result = self._call_dispatcher(funct_name, *args,
@@ -325,7 +330,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
             raise e
 
     def _call_dispatcher(self, method_name, *args, **kwargs):
-        log(f"DCSServer {self._column} calling {method_name} with {args} and {kwargs}")
+        #log(f"DCSServer {self._column} calling {method_name} with {args} and {kwargs}")
         if hasattr(self, method_name):
             method = getattr(self, method_name)
             if callable(method):
@@ -342,4 +347,6 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
         self.update()
 
     def velocity_factor(self, velocity, max_diff):
-        return min(max(velocity, 10) / (4 * 127.0), max_diff)
+        if velocity > Settings.VELOCITY_THRESHOLD_MAX:
+            return max_diff
+        return min(max(velocity, 10) / (Settings.VELOCITY_FACTOR * 127.0), max_diff)
