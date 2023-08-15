@@ -1,4 +1,4 @@
-from ._Framework.DeviceComponent import DeviceComponent
+from _Framework.DeviceComponent import DeviceComponent
 from _Framework.ButtonElement import ButtonElement
 from .DeviceControllerStripProxy import DeviceControllerStripProxy
 import time
