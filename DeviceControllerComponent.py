@@ -163,12 +163,9 @@ class DeviceControllerComponent(DeviceComponent):
                 if slider._parameter_to_map_to is not None:
                     self._osd.attribute_names[i] = str(
                         slider._parameter_to_map_to.name)
-                    try:
-                        self._osd.attributes[i] = str(
-                            slider._parameter_to_map_to)
-                    except:
-                        self._osd.attributes[i] = str(
-                            slider._parameter_to_map_to.value)
+                    self._osd.attributes[i] = str(
+                        slider._parameter_to_map_to.value)
+
                 else:
                     self._osd.attribute_names[i] = " "
                     self._osd.attributes[i] = " "

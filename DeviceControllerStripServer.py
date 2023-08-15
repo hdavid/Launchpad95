@@ -204,7 +204,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
     def _button_value(self, value, sender):
         assert isinstance(value, int)
         assert (sender in self._buttons)
-        log("button_value: value: " + str(value))
+        #log("button_value: value: " + str(value))
         self._last_sent_value = -1
         if (self._parameter_to_map_to != None and self._enabled and (
             (value != 0) or (not sender.is_momentary()))):
@@ -297,6 +297,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
             while True:
                 if self._request_queue.empty():
                     time.sleep(0.01)
+                    #TODO: CHANGE VALUE ALWAYS BUT UPDATE GUI OLY WHEN ENABLED
                     if (self._parameter_to_map_to != None and self._enabled):
                         self._current_value = self._parameter_to_map_to.value
                         if self._target_value is None or self._last_value is None:
@@ -313,21 +314,30 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                                 self._update_slider()
                     continue
                 else:
-                    # log(f"DCSServer {self._column} waiting for request")
                     funct_name, args, kwargs = self._request_queue.get()
-                    # log(f"DCSServer {self._column} got request {funct_name} with {args} and {kwargs}")
                     if funct_name == "shutdown":
                         #log(f"Shutting down DCSServer {self._column}")
                         return
                     else:
-                        result = self._call_dispatcher(funct_name, *args,
-                                                       **kwargs)
-                        if result is not None:
-                            self._response_queue.put(result)
+                        self._request_handler(funct_name, *args, **kwargs)
         except Exception as e:
             log(f"Exception in DCSServer {self._column}:\n {e}")
             log(traceback.format_exc())
             raise e
+
+    def _request_handler(self, funct_name, *args, **kwargs):
+        #log(f"DCSServer {self._column} requesting {funct_name} with {args} and {kwargs}")
+
+        if funct_name == "_parameter_to_map_to":
+            self._response_queue.put(self._parameter_to_map_to)
+        elif False:
+            pass
+        else:
+            result = self._call_dispatcher(funct_name, *args,
+                                           **kwargs)
+            if result is not None:
+                self._response_queue.put(result)
+
 
     def _call_dispatcher(self, method_name, *args, **kwargs):
         #log(f"DCSServer {self._column} calling {method_name} with {args} and {kwargs}")
