@@ -12,6 +12,7 @@ SLIDER_MODE_SLIDER = 2
 SLIDER_MODE_PRECISION_SLIDER = 3
 SLIDER_MODE_SMALL_ENUM = 4
 SLIDER_MODE_BIG_ENUM = 5
+ROUNDTRIP_TARGET = 0.01
 
 
 class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
@@ -35,6 +36,9 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
         self._last_sent_value = -1
         self._target_value = None
         self._current_velocity = 10
+        self.roundtrip_start = 0
+        self.roundtrip_end = 0
+
 
     def set_enabled(self, enabled):
         self._enabled = enabled
@@ -127,7 +131,6 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                 self._update_precision_slider()
             else:
                 self._update_off()
-
     def reset(self):
         self._update_off()
 
@@ -204,7 +207,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
     def _button_value(self, value, sender):
         assert isinstance(value, int)
         assert (sender in self._buttons)
-        #log("button_value: value: " + str(value))
+        log("button_value: value: " + str(value)) if not value == 0 else None
         self._last_sent_value = -1
         if (self._parameter_to_map_to != None and self._enabled and (
             (value != 0) or (not sender.is_momentary()))):
@@ -290,15 +293,20 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                         continue
                 self._current_value = self._parameter_to_map_to.value
                 self._last_value = self._current_value
-        self._update_slider()
+        self.update()
 
     def run(self):
         try:
             while True:
+
                 if self._request_queue.empty():
-                    time.sleep(0.01)
+                    time.sleep(ROUNDTRIP_TARGET)
+                    self.roundtrip_end = time.time()
+                    self.roundtrip_time = self.roundtrip_end - self.roundtrip_start
+                    self.roundtrip_start = self.roundtrip_end
                     #TODO: CHANGE VALUE ALWAYS BUT UPDATE GUI OLY WHEN ENABLED
-                    if (self._parameter_to_map_to != None and self._enabled):
+                    if (self._parameter_to_map_to != None):
+                    #if (self._parameter_to_map_to != None and self._enabled):
                         self._current_value = self._parameter_to_map_to.value
                         if self._target_value is None or self._last_value is None:
                             self._target_value = self._current_value
@@ -311,7 +319,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                             else:
                                 self._last_value = self._current_value
                                 self._target_value = self._current_value
-                                self._update_slider()
+                                self.update()
                     continue
                 else:
                     funct_name, args, kwargs = self._request_queue.get()
@@ -359,4 +367,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
     def velocity_factor(self, velocity, max_diff):
         if velocity > Settings.VELOCITY_THRESHOLD_MAX:
             return max_diff
-        return min(max(velocity, 10) / (Settings.VELOCITY_FACTOR * 127.0), max_diff)
+        velocity_factor = max(velocity, 10) / (Settings.VELOCITY_FACTOR * 127.0)
+        change_per_roundtrip = velocity_factor/ROUNDTRIP_TARGET
+        velocity_factor = change_per_roundtrip * self.roundtrip_time
+        return min(velocity_factor, max_diff)

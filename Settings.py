@@ -40,7 +40,7 @@ class Settings():
 	VELOCITY_THRESHOLD_MAX = 100
 	#used for the gradient of the parameter change
 	#the higher the value, the slower the parameter change
-	VELOCITY_FACTOR = 32
+	VELOCITY_FACTOR = 512
 
 	#Logging feature for debugging (creates C:/Users/{USERNAME}/Documents/Ableton/User Library/Remote Scripts/log.txt)
 	LOGGING = False
