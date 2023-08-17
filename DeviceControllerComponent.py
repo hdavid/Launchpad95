@@ -578,9 +578,12 @@ class DeviceControllerComponent(DeviceComponent):
             if ((not sender.is_momentary()) or (value is not 0)):
                 if self.selected_track_idx is not None and self.selected_track_idx < len(
                     self.song().tracks) - 1 and not self._is_locked_to_device:
-                    self.song().view.selected_track = self.song().tracks[
-                        self.selected_track_idx + 1]
-                    self.update()
+                    for offset in range(1,len(self.song().tracks) - self.selected_track_idx):
+                        if self.song().tracks[self.selected_track_idx + offset].is_visible:
+                            self.song().view.selected_track = self.song().tracks[
+                                self.selected_track_idx + offset]
+                            self.update()
+                            break
 
     def set_prev_track_button(self, button):
         assert (isinstance(button, (ButtonElement, type(None))))
@@ -602,9 +605,12 @@ class DeviceControllerComponent(DeviceComponent):
         if ((not sender.is_momentary()) or (value is not 0)):
             if self.is_enabled():
                 if self.selected_track_idx is not None and self.selected_track_idx > 0 and not self._is_locked_to_device:
-                    self.song().view.selected_track = self.song().tracks[
-                        self.selected_track_idx - 1]
-                    self.update()
+                    for offset in range(1,self.selected_track_idx+1):
+                        if self.song().tracks[self.selected_track_idx - offset].is_visible:
+                            self.song().view.selected_track = self.song().tracks[
+                                self.selected_track_idx - offset]
+                            self.update()
+                            break
 
     @property
     def selected_track_idx(self):
