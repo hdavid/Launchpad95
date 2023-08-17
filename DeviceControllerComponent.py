@@ -632,21 +632,26 @@ class DeviceControllerComponent(DeviceComponent):
             if (self._prev_device_button is not None):
                 self._prev_device_button.set_on_off_values("Mode.Device.On",
                                                            "Mode.Device.Off")
-
-                if self.selected_track().devices is not None and (
-                    len(self.selected_track().devices) > 0 and self.selected_device_idx > 0 and not self._is_locked_to_device):
-                    self._prev_device_button.turn_on()
+                if self.selected_track().devices is not None and self.selected_device_idx is not None:
+                    if len(
+                        self.selected_track().devices) > 0 and self.selected_device_idx > 0 and not self._is_locked_to_device:
+                        self._prev_device_button.turn_on()
+                    else:
+                        self._prev_device_button.turn_off()
                 else:
                     self._prev_device_button.turn_off()
 
-            if (self._next_device_button is not None):
+            if self._next_device_button is not None:
                 self._next_device_button.set_on_off_values("Mode.Device.On",
                                                            "Mode.Device.Off")
 
-                if (
-                    len(self.selected_track().devices) > 0 and self.selected_device_idx < len(
-                    self.selected_track().devices) - 1 and not self._is_locked_to_device):
-                    self._next_device_button.turn_on()
+                if self.selected_track().devices is not None and self.selected_device_idx is not None:
+                    if len(
+                        self.selected_track().devices) > 0 and self.selected_device_idx < len(
+                        self.selected_track().devices) - 1 and not self._is_locked_to_device:
+                        self._next_device_button.turn_on()
+                    else:
+                        self._next_device_button.turn_off()
                 else:
                     self._next_device_button.turn_off()
 
