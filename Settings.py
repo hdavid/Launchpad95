@@ -41,10 +41,11 @@ class Settings():
 	#used for the gradient of the parameter change
 	#the higher the value, the slower the parameter change
 	VELOCITY_FACTOR = 512
+	USE_CUSTOM_DEVICE_CONTROL_COLORS = False
+
 
 	#Logging feature for debugging (creates C:/Users/{USERNAME}/Documents/Ableton/User Library/Remote Scripts/log.txt)
 	LOGGING = False
-
 
 	# Map buttons to levels in volume slider. Exactly 7 values must be provided.
 	# The lowest button is always set to -inf. Lowest supported value is -69 dB.

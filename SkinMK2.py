@@ -70,6 +70,7 @@ class Colors:
         # stop button
         StopClip = Rgb.GREY
         StopClipTriggered = Rgb.GREY_BLINK
+
     # Enabled = Rgb.GREEN
     # Off = Rgb.GREEN_THIRD
 
@@ -254,30 +255,42 @@ class Colors:
             Set = Rgb.RED_THIRD
             Locked = Rgb.RED
 
-        class Slider0:
+        class DefaultSlider:
+            On = Rgb.PURPLE
+            Off = Rgb.PURPLE_THIRD
+
+        class CustomSlider0:
             On = Rgb.PURPLE
             Off = Rgb.BLACK
-        class Slider1:
+
+        class CustomSlider1:
             On = Rgb.PURPLE
             Off = Rgb.BLACK
-        class Slider2:
+
+        class CustomSlider2:
             On = Rgb.LIGHT_BLUE
             Off = Rgb.BLACK
-        class Slider3:
+
+        class CustomSlider3:
             On = Rgb.LIGHT_BLUE
             Off = Rgb.BLACK
-        class Slider4:
+
+        class CustomSlider4:
             On = Rgb.MINT
             Off = Rgb.BLACK
-        class Slider5:
+
+        class CustomSlider5:
             On = Rgb.MINT
             Off = Rgb.BLACK
-        class Slider6:
+
+        class CustomSlider6:
             On = Rgb.BLUE
             Off = Rgb.BLACK
-        class Slider7:
+
+        class CustomSlider7:
             On = Rgb.BLUE
             Off = Rgb.BLACK
+
         class PrecisionSlider:
             On = Rgb.LIGHT_BLUE
             Off = Rgb.LIGHT_BLUE_THIRD

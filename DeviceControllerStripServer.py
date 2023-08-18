@@ -3,7 +3,7 @@ import traceback
 
 from .ButtonSliderElement import ButtonSliderElement
 from .Settings import Settings
-import time, sys
+import time
 from .Log import log
 
 SLIDER_MODE_OFF = 0
@@ -175,10 +175,16 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
     def _update_slider(self):
         v = ["DefaultButton.Disabled" for index in range(len(self._buttons))]
         for index in range(len(self._buttons)):
-            if self._value >= self._value_map[index] * self._range + self._min:
-                v[index] = f"Device.Slider{self._column}.On"
+            if self._value >=self._value_map[index]*self._range+self._min:
+                if Settings.USE_CUSTOM_DEVICE_CONTROL_COLORS:
+                    v[index]=f"Device.CustomSlider{self._column}.On"
+                else:
+                    v[index]="Device.DefaultSlider.On"
             else:
-                v[index] = f"Device.Slider{self._column}.Off"
+                if Settings.USE_CUSTOM_DEVICE_CONTROL_COLORS:
+                    v[index]=f"Device.CustomSlider{self._column}.Off"
+                else:
+                    v[index]="Device.DefaultSlider.Off"
         self._update_buttons(tuple(v))
 
     def _update_precision_slider(self):
