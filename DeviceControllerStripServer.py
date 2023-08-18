@@ -305,7 +305,6 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                     self.roundtrip_end = time.time()
                     self.roundtrip_time = self.roundtrip_end - self.roundtrip_start
                     self.roundtrip_start = self.roundtrip_end
-                    # TODO: CHANGE VALUE ALWAYS BUT UPDATE GUI OLY WHEN ENABLED
                     if (self._parameter_to_map_to is not None):
                         # if (self._parameter_to_map_to != None and self._enabled):
                         self._current_value = self._parameter_to_map_to.value
