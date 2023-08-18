@@ -28,24 +28,22 @@ class DeviceControllerComponent(DeviceComponent):
         self._prev_bank_button = None
         self._next_bank_button = None
 
-        # Precision logic
-        self._precision_button = None
+        # Precision/stepless logic
+        self._mode_toggle_button = None
+        self._last_mode_toggle_button_press = time.time()
         self._precision_mode = False
-
-        # Stepless logic
-        self._stepless_button = None
         self._stepless_mode = False
 
         # Lock logic
-        self._lock_button_slots = [None, None, None]
-        self._lock_buttons = [None, None, None]
-        self._locked_devices = [None, None, None]
+        self._lock_button_slots = [None, None, None, None]
+        self._lock_buttons = [None, None, None, None]
+        self._locked_devices = [None, None, None, None]
         self._locked_device_index = None
-        self._lock_buttons = [None, None, None]
+        self._lock_buttons = [None, None, None, None]
 
-        self._locked_device_bank = [0, 0, 0]
-        self._lock_button_press = [0, 0, 0]
-        self._locked_devices = [None, None, None]
+        self._locked_device_bank = [0, 0, 0, 0]
+        self._lock_button_press = [0, 0, 0, 0]
+        self._locked_devices = [None, None, None, None]
 
         self._is_active = False
         self._force = True
@@ -81,13 +79,13 @@ class DeviceControllerComponent(DeviceComponent):
             self._next_bank_button = side_buttons[2]
 
             # precision
-            self.set_precision_button(side_buttons[3])
+            self.set_mode_toggle_button(side_buttons[3])
 
             # lock buttons
             self.set_lock_button1(side_buttons[4])
             self.set_lock_button2(side_buttons[5])
             self.set_lock_button3(side_buttons[6])
-            self.set_stepless_button(side_buttons[7])
+            self.set_lock_button4(side_buttons[7])
 
         if matrix is not None:
             self.set_matrix(matrix)
@@ -109,7 +107,7 @@ class DeviceControllerComponent(DeviceComponent):
         self._next_device_button = None
         self._prev_bank_button = None
         self._next_bank_button = None
-        self._precision_button = None
+        self._mode_toggle_button = None
         self._precision_mode = None
         # self._remaining_buttons = None UNUSED
         self._device = None
@@ -291,8 +289,7 @@ class DeviceControllerComponent(DeviceComponent):
             self.update_device_buttons()
             self.update_lock_buttons()
             self.update_on_off_button()
-            self.update_precision_button()
-            self.update_stepless_button()
+            self.update_mode_toggle_button()
             self._update_OSD()
             self._force = False
 
@@ -424,84 +421,60 @@ class DeviceControllerComponent(DeviceComponent):
             return self.get_device_track_name(device.canonical_parent)
 
     # Precision button
-    def update_precision_button(self):
-        if self._precision_button is not None and self.is_enabled():
-            if self._precision_button is not None:
+    def update_mode_toggle_button(self):
+        if self._mode_toggle_button is not None and self.is_enabled():
+            if self._mode_toggle_button is not None:
                 if self._device is not None:
-                    self._precision_button.set_on_off_values(
-                        "Device.PrecisionSlider.On",
-                        "Device.PrecisionSlider.Off")
+                    off_value = "Device.ModeToggle.Stepless" if self._stepless_mode else "Device.ModeToggle.Normal"
+                    self._mode_toggle_button.set_on_off_values(
+                        "Device.ModeToggle.Precision", off_value)
                     if self._precision_mode:
-                        self._precision_button.turn_on()
+                        self._mode_toggle_button.turn_on()
                     else:
-                        self._precision_button.turn_off()
+                        self._mode_toggle_button.turn_off()
                 else:
-                    self._precision_button.set_on_off_values(
+                    self._mode_toggle_button.set_on_off_values(
                         "DefaultButton.Disabled", "DefaultButton.Disabled")
-                    self._precision_button.turn_off()
+                    self._mode_toggle_button.turn_off()
 
-    def _precision_value(self, value, sender):
-        if ((not sender.is_momentary()) or (value is not 0)):
-            if (self._precision_button is not None and self.is_enabled()):
-                self._precision_mode = not self._precision_mode
-                self.update_precision_button()
-                for slider in self._sliders:
-                    slider.set_precision_mode(self._precision_mode)
+    def _mode_toggle_value(self, value, sender):
+        assert (self._mode_toggle_button is not None)
+        assert (value in range(128))
 
-    def set_precision_button(self, button):
+        if self.is_enabled():
+            if not sender.is_momentary() or value is not 0:
+                self._last_mode_toggle_button_press = time.time()
+            else:
+                if time.time() - self._last_mode_toggle_button_press > 0.5:
+                    self._last_mode_toggle_button_press = time.time()
+                    self._stepless_mode = not self._stepless_mode
+                    self.update_mode_toggle_button()
+                    self._control_surface.show_message("stepless mode: " + str(
+                        self._stepless_mode))
+                    for slider in self._sliders:
+                        slider.set_stepless_mode(self._stepless_mode)
+                else:
+                    self._precision_mode = not self._precision_mode
+                    self.update_mode_toggle_button()
+                    for slider in self._sliders:
+                        slider.set_precision_mode(self._precision_mode)
+
+
+
+
+    def set_mode_toggle_button(self, button):
         assert (isinstance(button, (ButtonElement, type(None))))
-        if self._precision_button != button:
-            if self._precision_button is not None:
-                self._precision_button.remove_value_listener(
-                    self._precision_value)
-            self._precision_button = button
-            if self._precision_button is not None:
+        if self._mode_toggle_button != button:
+            if self._mode_toggle_button is not None:
+                self._mode_toggle_button.remove_value_listener(
+                    self._mode_toggle_value)
+            self._mode_toggle_button = button
+            if self._mode_toggle_button is not None:
                 assert isinstance(button, ButtonElement)
-                self._precision_button.add_value_listener(self._precision_value,
-                                                          identify_sender=True)
+                self._mode_toggle_button.add_value_listener(self._mode_toggle_value,
+                                                            identify_sender=True)
                 self.update()
 
-    # Stepless Button
-    def update_stepless_button(self):
-        if self._stepless_button is not None and self.is_enabled():
-            if self._stepless_button is not None:
-                if self._device is not None:
-                    self._stepless_button.set_on_off_values(
-                        "Device.SteplessSlider.On", "Device.SteplessSlider.Off")
-                    if self._stepless_mode:
-                        self._stepless_button.turn_on()
-
-                    else:
-                        self._stepless_button.turn_off()
-                else:
-                    self._stepless_button.set_on_off_values(
-                        "DefaultButton.Disabled", "DefaultButton.Disabled")
-                    self._stepless_button.turn_off()
-
-    def _stepless_value(self, value, sender):
-        if ((not sender.is_momentary()) or (value is not 0)):
-            if (self._stepless_button is not None and self.is_enabled()):
-                self._stepless_mode = not self._stepless_mode
-                self.update_stepless_button()
-                if self._stepless_mode:
-                    self._control_surface.show_message("Stepless Mode On")
-                else:
-                    self._control_surface.show_message("Stepless Mode Off")
-                for slider in self._sliders:
-                    slider.set_stepless_mode(self._stepless_mode)
-
-    def set_stepless_button(self, button):
-        assert (isinstance(button, (ButtonElement, type(None))))
-        if self._stepless_button != button:
-            if self._stepless_button is not None:
-                self._stepless_button.remove_value_listener(
-                    self._stepless_value)
-            self._stepless_button = button
-            if self._stepless_button is not None:
-                assert isinstance(button, ButtonElement)
-                self._stepless_button.add_value_listener(self._stepless_value,
-                                                         identify_sender=True)
-                self.update()
 
     # ON OFF button
     def update_on_off_button(self):

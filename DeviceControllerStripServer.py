@@ -38,7 +38,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
         self._current_velocity = 10
         self.roundtrip_start = 0
         self.roundtrip_end = 0
-
+        self.roundtrip_time = 0
 
     def set_enabled(self, enabled):
         self._enabled = enabled
@@ -73,35 +73,35 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
 
     @property
     def _min(self):
-        if self._parameter_to_map_to != None:
+        if self._parameter_to_map_to is not None:
             return self._parameter_to_map_to.min
         else:
             return 0
 
     @property
     def _range(self):
-        if self._parameter_to_map_to != None:
+        if self._parameter_to_map_to is not None:
             return self._parameter_to_map_to.max - self._parameter_to_map_to.min
         else:
             return 0
 
     @property
     def _default_value(self):
-        if self._parameter_to_map_to != None:
+        if self._parameter_to_map_to is not None:
             return self._parameter_to_map_to._default_value
         else:
             return 0
 
     @property
     def _is_quantized(self):
-        if self._parameter_to_map_to != None:
+        if self._parameter_to_map_to is not None:
             return self._parameter_to_map_to.is_quantized
         else:
             return False
 
     @property
     def _mode(self):
-        if self._parameter_to_map_to != None:
+        if self._parameter_to_map_to is not None:
             if self._is_quantized:
                 if self._range == 1:
                     return SLIDER_MODE_TOGGLE
@@ -131,11 +131,12 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                 self._update_precision_slider()
             else:
                 self._update_off()
+
     def reset(self):
         self._update_off()
 
     def reset_if_no_parameter(self):
-        if self._parameter_to_map_to == None:
+        if self._parameter_to_map_to is None:
             self.reset()
 
     def _update_off(self):
@@ -209,7 +210,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
         assert (sender in self._buttons)
         log("button_value: value: " + str(value)) if not value == 0 else None
         self._last_sent_value = -1
-        if (self._parameter_to_map_to != None and self._enabled and (
+        if (self._parameter_to_map_to is not None and self._enabled and (
             (value != 0) or (not sender.is_momentary()))):
             if (value != self._last_sent_value):
                 target_value = self._parameter_to_map_to.value
@@ -304,9 +305,9 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                     self.roundtrip_end = time.time()
                     self.roundtrip_time = self.roundtrip_end - self.roundtrip_start
                     self.roundtrip_start = self.roundtrip_end
-                    #TODO: CHANGE VALUE ALWAYS BUT UPDATE GUI OLY WHEN ENABLED
-                    if (self._parameter_to_map_to != None):
-                    #if (self._parameter_to_map_to != None and self._enabled):
+                    # TODO: CHANGE VALUE ALWAYS BUT UPDATE GUI OLY WHEN ENABLED
+                    if (self._parameter_to_map_to is not None):
+                        # if (self._parameter_to_map_to != None and self._enabled):
                         self._current_value = self._parameter_to_map_to.value
                         if self._target_value is None or self._last_value is None:
                             self._target_value = self._current_value
@@ -324,31 +325,29 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                 else:
                     funct_name, args, kwargs = self._request_queue.get()
                     if funct_name == "shutdown":
-                        #log(f"Shutting down DCSServer {self._column}")
+                        # log(f"Shutting down DCSServer {self._column}")
                         return
                     else:
                         self._request_handler(funct_name, *args, **kwargs)
         except Exception as e:
             log(f"Exception in DCSServer {self._column}:\n {e}")
-            log(traceback.format_exc())
+            log(traceback.print_exc())
             raise e
 
     def _request_handler(self, funct_name, *args, **kwargs):
-        #log(f"DCSServer {self._column} requesting {funct_name} with {args} and {kwargs}")
+        # log(f"DCSServer {self._column} requesting {funct_name} with {args} and {kwargs}")
 
         if funct_name == "_parameter_to_map_to":
             self._response_queue.put(self._parameter_to_map_to)
         elif False:
             pass
         else:
-            result = self._call_dispatcher(funct_name, *args,
-                                           **kwargs)
+            result = self._call_dispatcher(funct_name, *args, **kwargs)
             if result is not None:
                 self._response_queue.put(result)
 
-
     def _call_dispatcher(self, method_name, *args, **kwargs):
-        #log(f"DCSServer {self._column} calling {method_name} with {args} and {kwargs}")
+        # log(f"DCSServer {self._column} calling {method_name} with {args} and {kwargs}")
         if hasattr(self, method_name):
             method = getattr(self, method_name)
             if callable(method):
@@ -359,7 +358,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
             log(f"DCSServer {self._column} has no method {method_name}")
 
     def _on_parameter_changed(self):
-        assert (self._parameter_to_map_to != None)
+        assert (self._parameter_to_map_to is not None)
         if self._parent is not None:
             self._parent._update_OSD()
         self.update()
@@ -368,6 +367,6 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
         if velocity > Settings.VELOCITY_THRESHOLD_MAX:
             return max_diff
         velocity_factor = max(velocity, 10) / (Settings.VELOCITY_FACTOR * 127.0)
-        change_per_roundtrip = velocity_factor/ROUNDTRIP_TARGET
+        change_per_roundtrip = velocity_factor / ROUNDTRIP_TARGET
         velocity_factor = change_per_roundtrip * self.roundtrip_time
         return min(velocity_factor, max_diff)
