@@ -214,6 +214,9 @@ class Colors:
             On = Rgb.GREEN_THIRD
             Off = Rgb.GREEN
 
+        class SendsSlider:
+            On = Rgb.GREEN_THIRD
+            Off = Rgb.GREEN
         class SendsSlider_1:
             On = Rgb.GREEN_THIRD
             Off = Rgb.GREEN
@@ -254,10 +257,46 @@ class Colors:
             On = Rgb.AMBER
             Off = Rgb.AMBER_THIRD
 
+        class CustomSlider0:
+            On = Rgb.AMBER
+            Off = Rgb.AMBER_THIRD
+
+        class CustomSlider1:
+            On = Rgb.AMBER
+            Off = Rgb.AMBER_THIRD
+
+        class CustomSlider2:
+            On = Rgb.AMBER
+            Off = Rgb.AMBER_THIRD
+
+        class CustomSlider3:
+            On = Rgb.AMBER
+            Off = Rgb.AMBER_THIRD
+
+        class CustomSlider4:
+            On = Rgb.AMBER
+            Off = Rgb.AMBER_THIRD
+
+        class CustomSlider5:
+            On = Rgb.AMBER
+            Off = Rgb.AMBER_THIRD
+
+        class CustomSlider6:
+            On = Rgb.AMBER
+            Off = Rgb.AMBER_THIRD
+
+        class CustomSlider7:
+            On = Rgb.AMBER
+            Off = Rgb.AMBER_THIRD
+
         class PrecisionSlider:
             On = Rgb.AMBER
             Off = Rgb.AMBER_THIRD
 
+        class ModeToggle:
+            Precision = Rgb.AMBER
+            Normal = Rgb.AMBER_THIRD
+            Stepless = Rgb.GREEN
         class Enum:
             On = Rgb.AMBER
             Off = Rgb.AMBER_THIRD
