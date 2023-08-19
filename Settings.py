@@ -40,7 +40,7 @@ class Settings():
 	VELOCITY_THRESHOLD_MAX = 100
 	#used for the gradient of the parameter change
 	#the higher the value, the slower the parameter change
-	VELOCITY_FACTOR = 512
+	VELOCITY_FACTOR = (127**2) * (127/2)
 	USE_CUSTOM_DEVICE_CONTROL_COLORS = False
 
 

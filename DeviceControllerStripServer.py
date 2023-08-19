@@ -214,7 +214,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
     def _button_value(self, value, sender):
         assert isinstance(value, int)
         assert (sender in self._buttons)
-        log("button_value: value: " + str(value)) if not value == 0 else None
+        log(f"button_value: value: {value} Mode: {self._mode} Range: {self._range}") if not value == 0 else None
         self._last_sent_value = -1
         if (self._parameter_to_map_to is not None and self._enabled and (
             (value != 0) or (not sender.is_momentary()))):
@@ -272,7 +272,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
         target_value = self._target_value if new_target_value is None else new_target_value
         velocity = self._current_velocity if new_velocity is None else new_velocity
         current_value = self._current_value
-        if self._precision_mode or not self._stepless_mode:
+        if self._precision_mode or not self._stepless_mode or not self._mode == SLIDER_MODE_SLIDER:
             while True:
                 try:
                     self._parameter_to_map_to.value = target_value
@@ -371,6 +371,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
     def velocity_factor(self, velocity, max_diff):
         if velocity > Settings.VELOCITY_THRESHOLD_MAX:
             return max_diff
+        velocity = velocity**3
         velocity_factor = max(velocity, 10) / (Settings.VELOCITY_FACTOR * 127.0)
         change_per_roundtrip = velocity_factor / ROUNDTRIP_TARGET
         velocity_factor = change_per_roundtrip * self.roundtrip_time
