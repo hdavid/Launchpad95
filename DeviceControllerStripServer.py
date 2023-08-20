@@ -308,7 +308,6 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                         continue
                 self._current_value = self._parameter_to_map_to.value
                 self._last_value = self._current_value
-        self.update()
 
     def update_parameter_stack(self):
         to_remove = []
@@ -377,7 +376,6 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                                 #log(f"Parameter {self._parameter_to_map_to.name} changed while moving, Dropping!!")
                                 self._last_value = self._current_value
                                 self._target_value = self._current_value
-                                self.update()
                     self.update_parameter_stack()
                     continue
                 else:
@@ -477,10 +475,11 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
             raise e
 
     def _on_parameter_changed(self):
-        assert (self._parameter_to_map_to is not None)
-        if self._parent is not None:
-            self._parent._update_OSD()
-        self.update()
+        if self._enabled:
+            assert (self._parameter_to_map_to is not None)
+            if self._parent is not None:
+                self._parent._update_OSD()
+            self.update()
 
     def velocity_factor(self, velocity, max_diff):
         if velocity > Settings.VELOCITY_THRESHOLD_MAX:
