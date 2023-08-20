@@ -31,6 +31,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
         self._precision_mode = False
         self._stepless_mode = False
         self._enabled = True
+        self._parameter_stack = {}
         self._current_value = None
         self._last_value = None
         self._last_sent_value = -1
@@ -63,6 +64,12 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
             return self._parameter_to_map_to.value
         else:
             return 0
+
+    def param_name(self):
+        if self._parameter_to_map_to is not None:
+            return self._parameter_to_map_to.name
+        else:
+            return "None"
 
     @property
     def _max(self):
@@ -175,16 +182,16 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
     def _update_slider(self):
         v = ["DefaultButton.Disabled" for index in range(len(self._buttons))]
         for index in range(len(self._buttons)):
-            if self._value >=self._value_map[index]*self._range+self._min:
+            if self._value >= self._value_map[index] * self._range + self._min:
                 if Settings.USE_CUSTOM_DEVICE_CONTROL_COLORS:
-                    v[index]=f"Device.CustomSlider{self._column}.On"
+                    v[index] = f"Device.CustomSlider{self._column}.On"
                 else:
-                    v[index]="Device.DefaultSlider.On"
+                    v[index] = "Device.DefaultSlider.On"
             else:
                 if Settings.USE_CUSTOM_DEVICE_CONTROL_COLORS:
-                    v[index]=f"Device.CustomSlider{self._column}.Off"
+                    v[index] = f"Device.CustomSlider{self._column}.Off"
                 else:
-                    v[index]="Device.DefaultSlider.Off"
+                    v[index] = "Device.DefaultSlider.Off"
         self._update_buttons(tuple(v))
 
     def _update_precision_slider(self):
@@ -266,9 +273,10 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                             target_value -= inc
                         else:
                             target_value = self._min
-                self.update_value(target_value, value)
+                self.update_current_parameter_value(target_value, value)
 
-    def update_value(self, new_target_value=None, new_velocity=None):
+    def update_current_parameter_value(self, new_target_value=None,
+        new_velocity=None):
         target_value = self._target_value if new_target_value is None else new_target_value
         velocity = self._current_velocity if new_velocity is None else new_velocity
         current_value = self._current_value
@@ -302,11 +310,54 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                 self._last_value = self._current_value
         self.update()
 
+    def update_parameter_stack(self):
+        to_remove = []
+        for param_id, param in self._parameter_stack.items():
+            parameter = param["parameter"]
+            param["current_value"] = parameter.value
+            if param["current_value"] != param["target_value"]:
+                if round(param["last_value"], 5) == round(
+                    param["current_value"], 5):
+                    target_value = param["target_value"]
+                    velocity = param["current_velocity"]
+                    current_value = param["current_value"]
+                    max_diff = abs(target_value - current_value)
+                    velocity_factor = self.velocity_factor(velocity, max_diff)
+                    new_value = current_value + velocity_factor if current_value < target_value else current_value - velocity_factor
+                    new_value = max(min(new_value, parameter.max),
+                                    parameter.min)
+                    tries = 0
+                    while True:
+                        try:
+                            parameter.value = new_value
+                            break
+                        except RuntimeError as e:
+                            tries += 1
+                            if tries % 10 == 0:
+                                log(f"Stacks-{self._column}: RuntimeError for parameter {parameter.name}")
+                            if tries > 1000:
+                                log(f"Stacks-{self._column}: RuntimeError for parameter {parameter.name}:\n {e}")
+                                break
+                            continue
+                    param["current_value"] = new_value
+                    param["last_value"] = new_value
+                    if new_value == param["target_value"]:
+                        to_remove.append(param_id)
+                else:
+                    to_remove.append(param_id)
+            else:
+                log(f"Parameter {parameter.name} is already at target value !!!!!!!!!!!!!!")
+                to_remove.append(param_id)
+        for param_id in to_remove:
+            # log(f"Stacks-{self._column}: Parameter {self._parameter_stack[param_id]['parameter'].name} removed from stack")
+            del self._parameter_stack[param_id]
+
     def run(self):
         try:
             while True:
-
-                if self._request_queue.empty():
+                roundtrip_end = time.time()
+                roundtrip_time = roundtrip_end - self.roundtrip_start
+                if self._request_queue.empty() or roundtrip_time > ROUNDTRIP_TARGET:
                     time.sleep(ROUNDTRIP_TARGET)
                     self.roundtrip_end = time.time()
                     self.roundtrip_time = self.roundtrip_end - self.roundtrip_start
@@ -321,29 +372,50 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                         if self._current_value != self._target_value:
                             if round(self._last_value, 5) == round(
                                 self._current_value, 5):
-                                self.update_value()
+                                self.update_current_parameter_value()
                             else:
+                                #log(f"Parameter {self._parameter_to_map_to.name} changed while moving, Dropping!!")
                                 self._last_value = self._current_value
                                 self._target_value = self._current_value
                                 self.update()
+                    self.update_parameter_stack()
                     continue
                 else:
-                    funct_name, args, kwargs = self._request_queue.get()
+                    funct_name, token, args, kwargs = self._request_queue.get()
                     if funct_name == "shutdown":
                         # log(f"Shutting down DCSServer {self._column}")
                         return
                     else:
-                        self._request_handler(funct_name, *args, **kwargs)
+                        self._request_handler(funct_name, token, *args,
+                                              **kwargs)
         except Exception as e:
             log(f"Exception in DCSServer {self._column}:\n {e}")
             log(traceback.print_exc())
             raise e
 
-    def _request_handler(self, funct_name, *args, **kwargs):
-        # log(f"DCSServer {self._column} requesting {funct_name} with {args} and {kwargs}")
+    def _request_handler(self, funct_name, token, *args, **kwargs):
 
         if funct_name == "_parameter_to_map_to":
-            self._response_queue.put(self._parameter_to_map_to)
+            log(f"DCSServer {self._column} GOT _parameter_to_map_to REQUEST!!!! DIRECT ACCESS is DEPRECATED!!!!!!!!!")
+            try:
+                if self._parameter_to_map_to is not None:
+                    self._response_queue.put((token, self._parameter_to_map_to))
+                else:
+                    self._response_queue.put((token, "None"))
+            except Exception as e:
+                log(f"Exception in DCSServer {self._column}:\n {e}")
+                log(traceback.print_exc())
+                raise e
+        elif funct_name == "release_parameter":
+            if self._parameter_to_map_to is not None and self._target_value is not None:
+                if not self._parameter_to_map_to.value == self._target_value:
+                    #log(f"A {self._column} Putting {self._parameter_to_map_to.name} on stack")
+                    self._put_parameter_on_stack()
+            result = self._call_dispatcher(funct_name, *args, **kwargs)
+            if result is not None:
+                self._response_queue.put(result)
+        elif funct_name == "connect_to":
+            self.connecting_to(funct_name, *args, **kwargs)
         elif False:
             pass
         else:
@@ -351,16 +423,58 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
             if result is not None:
                 self._response_queue.put(result)
 
+    def connecting_to(self, funct_name, *args, **kwargs):
+        if self._parameter_to_map_to is not None:
+            if not self._parameter_to_map_to.value == self._target_value:
+                #log(f"B {self._column} Putting {self._parameter_to_map_to.name} on stack")
+                self._put_parameter_on_stack()
+            self._call_dispatcher(funct_name, *args, **kwargs)
+            param_id = self._parameter_to_map_to._live_ptr
+            if param_id in self._parameter_stack.keys():
+                param = self._parameter_stack[param_id]
+                value = self._parameter_to_map_to.value
+                self._current_value = value
+                self._last_value = value
+                self._target_value = param["target_value"]
+                self._current_velocity = param["current_velocity"]
+                # log(f"Stacks-{self._column}: Parameter {param['parameter'].name} restored from stack {self._current_value} {self._target_value} {self._last_value} {self._current_velocity}")
+                del self._parameter_stack[param_id]
+            else:
+                value = self._parameter_to_map_to.value
+                self._current_value = value
+                self._last_value = value
+                self._target_value = value
+                self._current_velocity = 10
+        else:
+            self._call_dispatcher(funct_name, *args, **kwargs)
+            value = self._parameter_to_map_to.value
+            self._current_value = value
+            self._last_value = value
+            self._target_value = value
+            self._current_velocity = 10
+
+    def _put_parameter_on_stack(self):
+        value = self._parameter_to_map_to.value
+        if self._parameter_to_map_to._live_ptr not in self._parameter_stack.keys():
+            self._parameter_stack[self._parameter_to_map_to._live_ptr] = {
+                "parameter": self._parameter_to_map_to, "current_value": value,
+                "last_value": value, "target_value": self._target_value,
+                "current_velocity": self._current_velocity}
     def _call_dispatcher(self, method_name, *args, **kwargs):
         # log(f"DCSServer {self._column} calling {method_name} with {args} and {kwargs}")
-        if hasattr(self, method_name):
-            method = getattr(self, method_name)
-            if callable(method):
-                return method(*args, **kwargs)
+        try:
+            if hasattr(self, method_name):
+                method = getattr(self, method_name)
+                if callable(method):
+                    return method(*args, **kwargs)
+                else:
+                    log(f"DCSServer {self._column} method {method_name} is not callable")
             else:
-                log(f"DCSServer {self._column} method {method_name} is not callable")
-        else:
-            log(f"DCSServer {self._column} has no method {method_name}")
+                log(f"DCSServer {self._column} has no method {method_name}")
+        except Exception as e:
+            log(f"Exception in DCSServer {self._column}:\n {e}")
+            log(traceback.print_exc())
+            raise e
 
     def _on_parameter_changed(self):
         assert (self._parameter_to_map_to is not None)
@@ -371,7 +485,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
     def velocity_factor(self, velocity, max_diff):
         if velocity > Settings.VELOCITY_THRESHOLD_MAX:
             return max_diff
-        velocity = velocity**3
+        velocity = velocity ** 3
         velocity_factor = max(velocity, 10) / (Settings.VELOCITY_FACTOR * 127.0)
         change_per_roundtrip = velocity_factor / ROUNDTRIP_TARGET
         velocity_factor = change_per_roundtrip * self.roundtrip_time

@@ -158,12 +158,10 @@ class DeviceControllerComponent(DeviceComponent):
             self._osd.mode = "Device Controller"
             i = 0
             for slider in self._parameter_controls:
-                if slider._parameter_to_map_to is not None:
-                    self._osd.attribute_names[i] = str(
-                        slider._parameter_to_map_to.name)
-                    self._osd.attributes[i] = str(
-                        slider._parameter_to_map_to.value)
-
+                name = slider.param_name()
+                if name is not "None":
+                    self._osd.attribute_names[i] = str(name)
+                    self._osd.attributes[i] = str(slider._value)
                 else:
                     self._osd.attribute_names[i] = " "
                     self._osd.attributes[i] = " "
@@ -244,8 +242,8 @@ class DeviceControllerComponent(DeviceComponent):
 
             if not self._is_locked_to_device:
                 if self._device is not None:
-                    if (not self.application().view.is_view_visible(
-                        'Detail')) or (
+                    if (
+                    not self.application().view.is_view_visible('Detail')) or (
                         not self.application().view.is_view_visible(
                             'Detail/DeviceChain')):
                         self.application().view.show_view('Detail')
@@ -449,8 +447,8 @@ class DeviceControllerComponent(DeviceComponent):
                     self._last_mode_toggle_button_press = time.time()
                     self._stepless_mode = not self._stepless_mode
                     self.update_mode_toggle_button()
-                    self._control_surface.show_message("stepless mode: " + str(
-                        self._stepless_mode))
+                    self._control_surface.show_message(
+                        "stepless mode: " + str(self._stepless_mode))
                     for slider in self._sliders:
                         slider.set_stepless_mode(self._stepless_mode)
                 else:
@@ -458,9 +456,6 @@ class DeviceControllerComponent(DeviceComponent):
                     self.update_mode_toggle_button()
                     for slider in self._sliders:
                         slider.set_precision_mode(self._precision_mode)
-
-
-
 
     def set_mode_toggle_button(self, button):
         assert (isinstance(button, (ButtonElement, type(None))))
@@ -471,10 +466,9 @@ class DeviceControllerComponent(DeviceComponent):
             self._mode_toggle_button = button
             if self._mode_toggle_button is not None:
                 assert isinstance(button, ButtonElement)
-                self._mode_toggle_button.add_value_listener(self._mode_toggle_value,
-                                                            identify_sender=True)
+                self._mode_toggle_button.add_value_listener(
+                    self._mode_toggle_value, identify_sender=True)
                 self.update()
-
 
     # ON OFF button
     def update_on_off_button(self):
@@ -551,10 +545,12 @@ class DeviceControllerComponent(DeviceComponent):
             if ((not sender.is_momentary()) or (value is not 0)):
                 if self.selected_track_idx is not None and self.selected_track_idx < len(
                     self.song().tracks) - 1 and not self._is_locked_to_device:
-                    for offset in range(1,len(self.song().tracks) - self.selected_track_idx):
-                        if self.song().tracks[self.selected_track_idx + offset].is_visible:
-                            self.song().view.selected_track = self.song().tracks[
-                                self.selected_track_idx + offset]
+                    for offset in range(1,
+                                        len(self.song().tracks) - self.selected_track_idx):
+                        if self.song().tracks[
+                            self.selected_track_idx + offset].is_visible:
+                            self.song().view.selected_track = \
+                            self.song().tracks[self.selected_track_idx + offset]
                             self.update()
                             break
 
@@ -578,10 +574,11 @@ class DeviceControllerComponent(DeviceComponent):
         if ((not sender.is_momentary()) or (value is not 0)):
             if self.is_enabled():
                 if self.selected_track_idx is not None and self.selected_track_idx > 0 and not self._is_locked_to_device:
-                    for offset in range(1,self.selected_track_idx+1):
-                        if self.song().tracks[self.selected_track_idx - offset].is_visible:
-                            self.song().view.selected_track = self.song().tracks[
-                                self.selected_track_idx - offset]
+                    for offset in range(1, self.selected_track_idx + 1):
+                        if self.song().tracks[
+                            self.selected_track_idx - offset].is_visible:
+                            self.song().view.selected_track = \
+                            self.song().tracks[self.selected_track_idx - offset]
                             self.update()
                             break
 

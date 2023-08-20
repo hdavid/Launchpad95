@@ -1,3 +1,4 @@
+import traceback
 from threading import Thread
 from functools import partial
 import queue
@@ -11,6 +12,7 @@ class DeviceControllerStripProxy():
         self._response_queue = queue.Queue()
         self.failed = False
         self.column = column
+        self.request_id = 0
         self.server = DeviceControllerStripServer(buttons, control_surface,
                                                   column,
                                                   request_queue=self._request_queue,
@@ -22,9 +24,29 @@ class DeviceControllerStripProxy():
     def __getattr__(self, item):
         #log(f'Proxy: __getattr__ {item}')
         if item == '_parameter_to_map_to':
-            self._request_queue.put((item, {}, {}))
-            return self._response_queue.get()
+            self.request_id += 1
+            request_id = self.request_id
+            #log(f'Proxy{self.column}: __getattr__ {item} request_id: {request_id}')
+            self._request_queue.put((item,request_id, {}, {}))
+            try:
+                while True:
+                    token,response = self._response_queue.get(timeout=20)
+                    if token == request_id:
+                        break
+                    else:
+                        log(f"GOT WRONG TOKEN {token} != {request_id}")
+                        self._response_queue.put((token,response))
+
+                #log(f'Proxy{self.column}: __getattr__ {item} response: {response}')
+                if response == 'None':
+                    return None
+                return response
+            except queue.Empty as e:
+                self.failed = True
+                log(traceback.format_stack())
+                log(f'Proxy{self.column}: __getattr__ {item} failed')
+                return None
         return partial(self._call_handler, item)
 
     def _call_handler(self, name, *args, **kwargs):
-        self._request_queue.put((name, args, kwargs))
+        self._request_queue.put((name,self.request_id,args, kwargs))
