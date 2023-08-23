@@ -140,9 +140,10 @@ class DeviceControllerComponent(DeviceComponent):
             self.on_selected_track_changed()
         # disable matrix.
         for slider in self._sliders:
-            slider.set_enabled(active)
+            temp=slider.set_enabled(active)
         # ping parent
         DeviceComponent.set_enabled(self, active)
+        return True
 
     def _on_detail_view_changed(self):
         self.update()

@@ -493,7 +493,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 				self._device_controller.update()
 			else:
 				self._device_controller._is_active = False
-				self._device_controller.set_enabled(False)
+				temp=self._device_controller.set_enabled(False)
 
 	def _setup_user_mode(self, release_matrix=True, release_side_buttons=True, release_nav_buttons=True, drum_rack_mode=True):
 		# user1 -> All True but release_nav_buttons / user2 -> All false 

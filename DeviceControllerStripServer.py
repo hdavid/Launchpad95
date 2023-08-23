@@ -43,6 +43,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
 
     def set_enabled(self, enabled):
         self._enabled = enabled
+        return self._enabled
 
     def set_precision_mode(self, precision_mode):
         self._precision_mode = precision_mode
@@ -274,6 +275,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                         else:
                             target_value = self._min
                 self.update_current_parameter_value(target_value, value)
+                self.update()
 
     def update_current_parameter_value(self, new_target_value=None,
         new_velocity=None):
