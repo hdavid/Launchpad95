@@ -14,5 +14,5 @@ def log(message):
         with open(f'C:/Users/{USERNAME}/Documents/Ableton/User Library/Remote Scripts/log.txt', 'a') as f:
             if type(message) == list:
                 message = '\n'.join(message)
-            f.write(str(log_num) + ' ' + message + '\n')
+            f.write(str(log_num) + ' ' + str(message) + '\n')
     log_num += 1

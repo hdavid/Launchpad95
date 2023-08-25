@@ -365,7 +365,11 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                     self.roundtrip_start = self.roundtrip_end
                     if (self._parameter_to_map_to is not None):
                         # if (self._parameter_to_map_to != None and self._enabled):
-                        self._current_value = self._parameter_to_map_to.value
+                        try:
+                            self._current_value = self._parameter_to_map_to.value
+                        except Exception as e:
+                            continue
+
                         if self._target_value is None or self._last_value is None:
                             self._target_value = self._current_value
                             self._last_value = self._current_value
@@ -425,9 +429,13 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
 
     def connecting_to(self, funct_name, *args, **kwargs):
         if self._parameter_to_map_to is not None:
-            if not self._parameter_to_map_to.value == self._target_value:
-                #log(f"B {self._column} Putting {self._parameter_to_map_to.name} on stack")
-                self._put_parameter_on_stack()
+            try:
+                if not self._parameter_to_map_to.value == self._target_value:
+                    #log(f"B {self._column} Putting {self._parameter_to_map_to.name} on stack")
+                    self._put_parameter_on_stack()
+            except:
+                #this is the case when a device gets deleted and the connection is made to the previous in chain device
+                pass
             self._call_dispatcher(funct_name, *args, **kwargs)
             param_id = self._parameter_to_map_to._live_ptr
             if param_id in self._parameter_stack.keys():
