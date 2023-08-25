@@ -162,7 +162,7 @@ class DeviceControllerComponent(DeviceComponent):
                 name = slider.param_name()
                 if name is not "None":
                     self._osd.attribute_names[i] = str(name)
-                    self._osd.attributes[i] = str(slider._value)
+                    self._osd.attributes[i] = str(slider.param_value())
                 else:
                     self._osd.attribute_names[i] = " "
                     self._osd.attributes[i] = " "
@@ -244,7 +244,7 @@ class DeviceControllerComponent(DeviceComponent):
             if not self._is_locked_to_device:
                 if self._device is not None:
                     if (
-                    not self.application().view.is_view_visible('Detail')) or (
+                        not self.application().view.is_view_visible('Detail')) or (
                         not self.application().view.is_view_visible(
                             'Detail/DeviceChain')):
                         self.application().view.show_view('Detail')

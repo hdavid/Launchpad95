@@ -36,8 +36,6 @@ class DeviceControllerStripProxy():
                     else:
                         log(f"GOT WRONG TOKEN {token} != {request_id}")
                         self._response_queue.put((token,response))
-
-                #log(f'Proxy{self.column}: __getattr__ {item} response: {response}')
                 if response == 'None':
                     return None
                 return response
@@ -49,4 +47,24 @@ class DeviceControllerStripProxy():
         return partial(self._call_handler, item)
 
     def _call_handler(self, name, *args, **kwargs):
+        self.request_id += 1
+        request_id = self.request_id
         self._request_queue.put((name,self.request_id,args, kwargs))
+        if name == "shutdown":
+            return
+        try:
+            while True:
+                token,response = self._response_queue.get(timeout=20)
+                if token == request_id:
+                    break
+                else:
+                    log(f"GOT WRONG TOKEN {token} != {request_id}")
+                    self._response_queue.put((token,response))
+            if response == 'None':
+                return
+            #log(f'Proxy{self.column}: _call_handler {name} {args} {kwargs} {response}')
+            return response
+        except queue.Empty as e:
+            self.failed = True
+            log(traceback.format_stack())
+            return

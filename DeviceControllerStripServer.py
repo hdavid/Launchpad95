@@ -72,6 +72,12 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
         else:
             return "None"
 
+    def param_value(self):
+        if self._parameter_to_map_to is not None:
+            return self._parameter_to_map_to.value
+        else:
+            return 0
+
     @property
     def _max(self):
         if self._parameter_to_map_to is not None:
@@ -276,6 +282,8 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                             target_value = self._min
                 self.update_current_parameter_value(target_value, value)
                 self.update()
+                if self._parent is not None:
+                    self._parent._update_OSD()
 
     def update_current_parameter_value(self, new_target_value=None,
         new_velocity=None):
@@ -393,19 +401,20 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                         self._request_handler(funct_name, token, *args,
                                               **kwargs)
         except Exception as e:
-            log(f"Exception in DCSServer {self._column}:\n {e}")
+            log(f"C Exception in DCSServer {self._column}:\n {e}")
+            log(traceback.format_stack())
             log(traceback.print_exc())
             raise e
 
     def _request_handler(self, funct_name, token, *args, **kwargs):
-
+        result = None
         if funct_name == "_parameter_to_map_to":
             log(f"DCSServer {self._column} GOT _parameter_to_map_to REQUEST!!!! DIRECT ACCESS is DEPRECATED!!!!!!!!!")
             try:
                 if self._parameter_to_map_to is not None:
-                    self._response_queue.put((token, self._parameter_to_map_to))
+                    result = self._parameter_to_map_to
                 else:
-                    self._response_queue.put((token, "None"))
+                    result = "None"
             except Exception as e:
                 log(f"Exception in DCSServer {self._column}:\n {e}")
                 log(traceback.print_exc())
@@ -416,16 +425,15 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                     #log(f"A {self._column} Putting {self._parameter_to_map_to.name} on stack")
                     self._put_parameter_on_stack()
             result = self._call_dispatcher(funct_name, *args, **kwargs)
-            if result is not None:
-                self._response_queue.put(result)
         elif funct_name == "connect_to":
             self.connecting_to(funct_name, *args, **kwargs)
         elif False:
             pass
         else:
             result = self._call_dispatcher(funct_name, *args, **kwargs)
-            if result is not None:
-                self._response_queue.put(result)
+
+        #log(f"Call dispatcher {funct_name} returned {type(result)}")
+        self._response_queue.put((token,result if result is not None else "None"))
 
     def connecting_to(self, funct_name, *args, **kwargs):
         if self._parameter_to_map_to is not None:
@@ -495,7 +503,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
         if velocity > Settings.VELOCITY_THRESHOLD_MAX:
             return max_diff
         velocity = velocity ** 3
-        velocity_factor = max(velocity, 10) / (Settings.VELOCITY_FACTOR * 127.0)
+        velocity_factor = max(velocity, 20) / (Settings.VELOCITY_FACTOR * 127.0)
         change_per_roundtrip = velocity_factor / ROUNDTRIP_TARGET
         velocity_factor = change_per_roundtrip * self.roundtrip_time
         return min(velocity_factor, max_diff)
