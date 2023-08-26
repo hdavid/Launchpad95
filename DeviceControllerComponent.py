@@ -59,6 +59,8 @@ class DeviceControllerComponent(DeviceComponent):
 
         # Sliders
         self._sliders = []
+        if matrix is not None:
+            self.set_matrix(matrix)
         self.set_enabled(is_enabled)
 
         if top_buttons is not None:
@@ -87,8 +89,7 @@ class DeviceControllerComponent(DeviceComponent):
             self.set_lock_button3(side_buttons[6])
             self.set_lock_button4(side_buttons[7])
 
-        if matrix is not None:
-            self.set_matrix(matrix)
+
         # selected device listener
         self.song().add_appointed_device_listener(self._on_device_changed)
         self._control_surface.set_device_component(self)
@@ -124,6 +125,7 @@ class DeviceControllerComponent(DeviceComponent):
                                             (self._matrix.height() - 1 - row))
                     for row in range(self._matrix.height())]), self, column)
                 slider._parent = self
+                #slider.set_parent(self)
                 self._sliders.append(slider)
             self._sliders = tuple(self._sliders)
             self.set_parameter_controls(self._sliders)

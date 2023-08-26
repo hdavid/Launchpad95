@@ -1,9 +1,16 @@
 import traceback
+import time
 from threading import Thread
 from functools import partial
 import queue
 from .DeviceControllerStripServer import DeviceControllerStripServer
 from .Log import log
+
+non_returns = ["set_precision_mode", "set_stepless_mode", "shutdown",
+               "update", "reset_if_no_parameter", "_button_value", "connect_to",
+               "release_parameter", "set_parent", ]
+
+returning = ["set_enabled", "param_name", "param_value", ]
 
 
 class DeviceControllerStripProxy():
@@ -22,49 +29,42 @@ class DeviceControllerStripProxy():
         self._server_process.start()
 
     def __getattr__(self, item):
-        #log(f'Proxy: __getattr__ {item}')
-        if item == '_parameter_to_map_to':
-            self.request_id += 1
-            request_id = self.request_id
-            #log(f'Proxy{self.column}: __getattr__ {item} request_id: {request_id}')
-            self._request_queue.put((item,request_id, {}, {}))
-            try:
-                while True:
-                    token,response = self._response_queue.get(timeout=20)
-                    if token == request_id:
-                        break
-                    else:
-                        log(f"GOT WRONG TOKEN {token} != {request_id}")
-                        self._response_queue.put((token,response))
-                if response == 'None':
-                    return None
-                return response
-            except queue.Empty as e:
-                self.failed = True
-                log(traceback.format_stack())
-                log(f'Proxy{self.column}: __getattr__ {item} failed')
-                return None
-        return partial(self._call_handler, item)
-
-    def _call_handler(self, name, *args, **kwargs):
-        self.request_id += 1
-        request_id = self.request_id
-        self._request_queue.put((name,self.request_id,args, kwargs))
-        if name == "shutdown":
+        #log(f'Proxy{self.column}: __getattr__ {item}')
+        if self.failed:
             return
+        if item in non_returns:
+            return partial(self._call_non_return_handler, item)
+        elif item in returning:
+            return partial(self._call_return_handler, item)
+        else:
+            log(f'Proxy{self.column}: __getattr__ {item} not found !!!!!!!!!')
+            return partial(self._call_non_return_handler, item)
+
+    def _call_non_return_handler(self, name, *args, **kwargs):
+        self.request_id += 1
+        self._request_queue.put((name, self.request_id, args, kwargs))
+
+    def _call_return_handler(self, name, *args, **kwargs):
+        self.request_id += 1
+        current_id = self.request_id
+        self._request_queue.put((name, current_id, args, kwargs))
         try:
             while True:
-                token,response = self._response_queue.get(timeout=20)
-                if token == request_id:
+                token, response = self._response_queue.get(timeout=10)
+                if token == current_id:
                     break
                 else:
-                    log(f"GOT WRONG TOKEN {token} != {request_id}")
-                    self._response_queue.put((token,response))
-            if response == 'None':
-                return
-            #log(f'Proxy{self.column}: _call_handler {name} {args} {kwargs} {response}')
+                    #log(f'Proxy{self.column}: got old response {token} {response} instead of {current_id}')
+                    pass
+                if response =="ERROR":
+                    log(f'Proxy{self.column}: RunLoop Died!!!!!!')
+                    self.failed = True
+                time.sleep(0.01)
+            if response == 'None' and False:
+                return None
             return response
         except queue.Empty as e:
             self.failed = True
+            log(f'Proxy{self.column}: _call_return_handler {name} {args} {kwargs} failed')
             log(traceback.format_stack())
             return
