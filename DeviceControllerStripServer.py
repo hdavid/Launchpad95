@@ -38,6 +38,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
         self._precision_mode = False
         self._stepless_mode = False
         self._enabled = True
+        self._update_primed = False
         self._parameter_stack = {}
         self._current_value = None
         self._last_value = None
@@ -163,6 +164,8 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
     def reset_if_no_parameter(self):
         if self._parameter_to_map_to is None:
             self.reset()
+        else:
+            self._update_primed = True
 
     def _update_off(self):
         v = ["DefaultButton.Disabled" for index in range(len(self._buttons))]
@@ -541,7 +544,8 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
         #log(f"DCSServer {self._column} On Parameter changed")
         if self._enabled:
             assert (self._parameter_to_map_to is not None)
-            self.update()
+            if self._is_update_needed():
+                self.update()
             if self._parent is not None:
                 #self._custom_update_OSD()
                 pass
@@ -570,9 +574,11 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
         return min(velocity_factor, max_diff)
 
     def _is_update_needed(self):
+        if self._update_primed:
+            self._update_primed = False
+            return True
         if self._last_value_map_index == -1:
             return True
         if (self._value // self._value_map[1]) != self._last_value_map_index:
-            #log(f"DCSServer {self._column} Update needed: {self._value} {(self._value // self._value_map[1])} {self._last_value_map_index}")
             return True
         return False
