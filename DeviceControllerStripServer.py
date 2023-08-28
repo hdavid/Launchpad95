@@ -550,8 +550,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
 
     # when called from dispatcher, trigger_osd should be false
     def _on_parameter_changed(self, trigger_osd=True):
-        a = 1
-        b = a /0
+        #log(traceback.format_stack())
         #log(f"DCSServer {self._column} On Parameter changed")
         if self._enabled:
             assert (self._parameter_to_map_to is not None)
