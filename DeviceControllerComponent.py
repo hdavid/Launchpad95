@@ -123,7 +123,7 @@ class DeviceControllerComponent(DeviceComponent):
                 slider = DeviceControllerStripProxy(tuple([
                     self._matrix.get_button(column,
                                             (self._matrix.height() - 1 - row))
-                    for row in range(self._matrix.height())]), self, column)
+                    for row in range(self._matrix.height())]), self, column, self)
                 slider._parent = self
                 #slider.set_parent(self)
                 self._sliders.append(slider)

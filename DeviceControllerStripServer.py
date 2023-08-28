@@ -300,8 +300,9 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                 self.update_current_parameter_value(target_value, value)
                 self.update()
                 if self._parent is not None:
-                    #self._custom_update_OSD()
-                    pass
+                    self._custom_update_OSD()
+                    self._parent._osd.update()
+                    #pass
 
     def update_current_parameter_value(self, new_target_value=None,
         new_velocity=None):
@@ -546,9 +547,12 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
             assert (self._parameter_to_map_to is not None)
             if self._is_update_needed():
                 self.update()
-            if self._parent is not None:
-                #self._custom_update_OSD()
-                pass
+                if self._parent is not None:
+                    self._custom_update_OSD()
+                    # this might be called be background thread -> crash
+                    # so it means we cannot report changes done in Ableton UI with mouse etc in the osd anymore. not great, but okayish.
+                    # self._parent._osd.update()
+                    # pass
 
     def _custom_update_OSD(self):
         if self._parent._osd is not None:
@@ -561,7 +565,8 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
             else:
                 self._parent._osd.attribute_names[self._column] = " "
                 self._parent._osd.attributes[self._column] = " "
-            #self._parent._osd.update()
+            # this might be called be background thread -> crash
+            # self._parent._osd.update()
 
 
     def velocity_factor(self, velocity, max_diff):
