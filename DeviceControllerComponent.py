@@ -188,7 +188,7 @@ class DeviceControllerComponent(DeviceComponent):
                     self._osd.info[0] = "track : " + self._selected_track.name
             else:
                 self._osd.info[0] = " "
-            if self._device is not None:
+            try:
                 name = self._device.name
                 if name == "":
                     name = "(unamed device)"
@@ -196,7 +196,7 @@ class DeviceControllerComponent(DeviceComponent):
                     self._osd.info[1] = "device : " + name + " (locked)"
                 else:
                     self._osd.info[1] = "device : " + name
-            else:
+            except:
                 self._osd.info[1] = "no device selected"
             self._osd.update()
 
