@@ -308,8 +308,6 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                 self.update()
                 if self._parent is not None:
                     self._custom_update_OSD()
-                    self._parent._osd.update()
-                    #pass
 
     def update_current_parameter_value(self, new_target_value=None,
         new_velocity=None):
@@ -550,20 +548,22 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
             log(traceback.format_stack())
             raise e
 
-    def _on_parameter_changed(self):
+    # when called from dispatcher, trigger_osd should be false
+    def _on_parameter_changed(self, trigger_osd=True):
+        a = 1
+        b = a /0
         #log(f"DCSServer {self._column} On Parameter changed")
         if self._enabled:
             assert (self._parameter_to_map_to is not None)
             if self._is_update_needed():
                 self.update()
                 if self._parent is not None:
-                    self._custom_update_OSD()
                     # this might be called be background thread -> crash
-                    # so it means we cannot report changes done in Ableton UI with mouse etc in the osd anymore. not great, but okayish.
-                    # self._parent._osd.update()
-                    # pass
+                    # 
+                    #self._custom_update_OSD(trigger_osd)
+                    self._custom_update_OSD(False)
 
-    def _custom_update_OSD(self):
+    def _custom_update_OSD(self, trigger_osd=True):
         if self._parent._osd is not None:
             self._parent._osd.mode = "Device Controller"
             name = self.param_name()
@@ -575,7 +575,8 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                 self._parent._osd.attribute_names[self._column] = " "
                 self._parent._osd.attributes[self._column] = " "
             # this might be called be background thread -> crash
-            # self._parent._osd.update()
+            if trigger_osd:
+                self._parent._osd.update()
 
 
     def velocity_factor(self, velocity, max_diff):
