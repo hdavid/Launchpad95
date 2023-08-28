@@ -548,19 +548,19 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
             log(traceback.format_stack())
             raise e
 
-    # when called from dispatcher, trigger_osd should be false
+    # when called from connect_to, trigger_osd should be false
     def _on_parameter_changed(self, trigger_osd=True):
         #log(traceback.format_stack())
-        #log(f"DCSServer {self._column} On Parameter changed")
+        #log(f"DCSServer {self._column} _on_parameter_changed {trigger_osd}")
         if self._enabled:
             assert (self._parameter_to_map_to is not None)
             if self._is_update_needed():
                 self.update()
-                if self._parent is not None:
+            if self._parent is not None:
                     # this might be called be background thread -> crash
-                    # 
-                    #self._custom_update_OSD(trigger_osd)
-                    self._custom_update_OSD(False)
+                    #
+                self._custom_update_OSD(trigger_osd)
+                    #self._custom_update_OSD(False)
 
     def _custom_update_OSD(self, trigger_osd=True):
         if self._parent._osd is not None:

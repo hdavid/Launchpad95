@@ -44,7 +44,7 @@ class ButtonSliderElement(SliderElement, SlotManager):
         InputControlElement.connect_to(self, parameter)
         self._parameter_value_slot.subject = parameter
         if self._parameter_to_map_to != None:
-            self._on_parameter_changed()
+            self._on_parameter_changed(trigger_osd=False)
 
     def release_parameter(self):
         self._parameter_value_slot.subject = None
