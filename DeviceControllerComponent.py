@@ -455,8 +455,10 @@ class DeviceControllerComponent(DeviceComponent):
                     self._last_mode_toggle_button_press = time.time()
                     self._stepless_mode = not self._stepless_mode
                     self.update_mode_toggle_button()
-                    self._control_surface.show_message(
-                        "stepless mode: " + str(self._stepless_mode))
+                    if self._stepless_mode:
+                        self._control_surface.show_message("stepless faders mode")
+                    else:
+                        self._control_surface.show_message("normal faders mode")
                     for slider in self._sliders:
                         slider.set_stepless_mode(self._stepless_mode)
                 else:
