@@ -366,42 +366,48 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
     def update_parameter_stack(self):
         to_remove = []
         for param_id, param in self._parameter_stack.items():
-            parameter = param["parameter"]
-            param["current_value"] = parameter.value
-            if param["current_value"] != param["target_value"]:
-                if round(param["last_value"], 5) == round(
-                    param["current_value"], 5):
-                    target_value = param["target_value"]
-                    velocity = param["current_velocity"]
-                    current_value = param["current_value"]
-                    max_diff = abs(target_value - current_value)
-                    velocity_factor = self.velocity_factor(velocity, max_diff)
-                    new_value = current_value + velocity_factor if current_value < target_value else current_value - velocity_factor
-                    new_value = max(min(new_value, parameter.max),
-                                    parameter.min)
-                    tries = 0
-                    while True:
-                        try:
-                            parameter.value = new_value
-                            param["current_value"] = new_value
-                            param["last_value"] = new_value
-                            break
-                        except RuntimeError as e:
-                            tries += 1
-                            if tries % 100 == 0:
-                                # log(f"A Stacks-{self._column}: RuntimeError for parameter {parameter.name} ({tries})")
-                                pass
-                            if tries > 500:
-                                # log(f"B Stacks-{self._column}: RuntimeError for parameter {parameter.name}:\n {e} !!!")
+            try:
+                parameter = param["parameter"]
+                param["current_value"] = parameter.value
+                if param["current_value"] != param["target_value"]:
+                    if round(param["last_value"], 5) == round(
+                        param["current_value"], 5):
+                        target_value = param["target_value"]
+                        velocity = param["current_velocity"]
+                        current_value = param["current_value"]
+                        max_diff = abs(target_value - current_value)
+                        velocity_factor = self.velocity_factor(velocity, max_diff)
+                        new_value = current_value + velocity_factor if current_value < target_value else current_value - velocity_factor
+                        new_value = max(min(new_value, parameter.max),
+                                        parameter.min)
+                        tries = 0
+                        while True:
+                            try:
+                                parameter.value = new_value
+                                param["current_value"] = new_value
+                                param["last_value"] = new_value
                                 break
-                            continue
-                    if new_value == param["target_value"]:
+                            except RuntimeError as e:
+                                tries += 1
+                                if tries % 100 == 0:
+                                    # log(f"A Stacks-{self._column}: RuntimeError for parameter {parameter.name} ({tries})")
+                                    pass
+                                if tries > 500:
+                                    # log(f"B Stacks-{self._column}: RuntimeError for parameter {parameter.name}:\n {e} !!!")
+                                    break
+                                continue
+                        if new_value == param["target_value"]:
+                            to_remove.append(param_id)
+                    else:
                         to_remove.append(param_id)
                 else:
+                    log(f"Parameter {parameter.name} is already at target value !!!!!!!!!!!!!!")
                     to_remove.append(param_id)
-            else:
-                log(f"Parameter {parameter.name} is already at target value !!!!!!!!!!!!!!")
-                to_remove.append(param_id)
+            except Exception as e:
+                if "Python argument types in" in str(e):
+                    to_remove.append(param_id)
+                    continue
+                raise e
         for param_id in to_remove:
             del self._parameter_stack[param_id]
 
