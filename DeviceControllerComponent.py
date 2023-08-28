@@ -160,15 +160,20 @@ class DeviceControllerComponent(DeviceComponent):
         if self._osd is not None:
             self._osd.mode = "Device Controller"
             i = 0
-            for slider in self._parameter_controls:
-                name = slider.param_name()
-                if name is not "None":
-                    self._osd.attribute_names[i] = str(name)
-                    self._osd.attributes[i] = str(slider.param_value())
-                else:
+            try:
+                for slider in self._parameter_controls:
+                    name = slider.param_name()
+                    if name is not "None":
+                        self._osd.attribute_names[i] = str(name)
+                        self._osd.attributes[i] = str(slider.param_value())
+                    else:
+                        self._osd.attribute_names[i] = " "
+                        self._osd.attributes[i] = " "
+                    i += 1
+            except:
+                for i in range(8):
                     self._osd.attribute_names[i] = " "
                     self._osd.attributes[i] = " "
-                i += 1
 
             if self._selected_track is not None:
                 if self._is_locked_to_device:
