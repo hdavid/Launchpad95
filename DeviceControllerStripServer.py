@@ -79,15 +79,22 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
             return 0
 
     def param_name(self):
-        if self._parameter_to_map_to is not None:
-            return self._parameter_to_map_to.name
-        else:
+        try:
+            if self._parameter_to_map_to is not None:
+                return self._parameter_to_map_to.name
+            else:
+                return "None"
+
+        except:
             return "None"
 
     def param_value(self):
-        if self._parameter_to_map_to is not None:
-            return self._parameter_to_map_to.value
-        else:
+        try:
+            if self._parameter_to_map_to is not None:
+                return self._parameter_to_map_to.value
+            else:
+               return 0
+        except:
             return 0
 
     @property
@@ -440,9 +447,9 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                     self.update_parameter_stack()
 
         except Exception as e:
-            log(f"Run-Loop Exception in DCSServer {self._column}:\n {e}")
+            log(f"Run-Loop Exception in DCSServer {self._column}: Type {type(e)}\n {e}")
             log(traceback.format_stack())
-            log(traceback.print_exc())
+            log(traceback.format_exc())
             self._response_queue.put((0, "ERROR"))
             raise e
 
@@ -478,8 +485,10 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                     # log(f"A {self._column} Putting {self._parameter_to_map_to.name} on stack")
                     self._put_parameter_on_stack()
             except:
-                # this is the case when a device gets deleted and the connection is made to the previous in chain device
+                self._enabled = False
+                    # this is the case when a device gets deleted and the connection is made to the previous in chain device
                 pass
+        self._parameter_to_map_to = None
         self._call_dispatcher(funct_name, *args, **kwargs)
 
     def connecting_to(self, funct_name, *args, **kwargs):
