@@ -55,7 +55,7 @@ class NoteEditorComponent(ControlSurfaceComponent):
 		self._quantization = 16
 
 		# velocity
-		self._velocity_index = 2
+		self._velocity_index = 3
 		self._velocity = self.velocity_map[self._velocity_index]
 		self._is_velocity_shifted = False
 		self._velocity_notes_pressed = 0

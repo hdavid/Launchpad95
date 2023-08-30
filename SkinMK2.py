@@ -372,8 +372,8 @@ class Colors:
             Velocity0 = Rgb.GREEN_THIRD
             Velocity1 = Rgb.GREEN_HALF
             Velocity2 = Rgb.GREEN
-            Velocity3 = Rgb.AMBER_HALF
-            Velocity4 = Rgb.AMBER
+            Velocity3 = Rgb.PINK_HALF
+            Velocity4 = Rgb.PINK
             Muted = Rgb.DARK_GREY
             Playing = Rgb.RED
             Metronome = Rgb.BLUE
