@@ -53,7 +53,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		
 		self._osd_mode_backup = "Instrument"
 		
-		self._track_controller = self.register_component(TrackControllerComponent(control_surface = control_surface, implicit_arm = True))
+		self._track_controller: TrackControllerComponent = self.register_component(TrackControllerComponent(control_surface = control_surface, implicit_arm = True))
 		self._track_controller.set_enabled(False)
 		
 		#Clip navigation buttons
@@ -64,12 +64,12 @@ class InstrumentControllerComponent(CompoundComponent):
 		
 		#Clip edition buttons
 		self._track_controller.set_undo_button(side_buttons[1])
-		self._track_controller.set_stop_button(side_buttons[4])
-		self._track_controller.set_play_button(side_buttons[5])
+		self._track_controller.set_start_stop_button(side_buttons[4])
+		self._track_controller.set_lock_button(side_buttons[5])
 		self._track_controller.set_solo_button(side_buttons[6])
 		self._track_controller.set_session_record_button(side_buttons[7])
 
-		self._scales = self.register_component(ScaleComponent(self._control_surface))
+		self._scales: ScaleComponent = self.register_component(ScaleComponent(self._control_surface))
 		#self._scales.set_enabled(False)
 		self._scales.set_matrix(matrix)
 		self._scales.set_osd(self._osd)
