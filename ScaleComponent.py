@@ -1,5 +1,6 @@
+from .Log import log
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
-
+import Live
 #fix for python3
 try:
     xrange
@@ -10,45 +11,19 @@ KEY_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 CIRCLE_OF_FIFTHS = [7 * k % 12 for k in range(12)]
 # KEY_CENTERS = CIRCLE_OF_FIFTHS[0:6] + CIRCLE_OF_FIFTHS[-1:5:-1]
 
-MUSICAL_MODES = [
+MUSICAL_MODES = []
+for name,notes in Live.Song.get_all_scales_ordered():
+	MUSICAL_MODES.append(name)
+	MUSICAL_MODES.append(list(notes))
 
-	'Major',			[0, 2, 4, 5, 7, 9, 11],
-	'Minor',			[0, 2, 3, 5, 7, 8, 10],
-	'Dorian',			[0, 2, 3, 5, 7, 9, 10],
-	'Mixolydian',		[0, 2, 4, 5, 7, 9, 10],
-	'Lydian',			[0, 2, 4, 6, 7, 9, 11],
-	'Phrygian',			[0, 1, 3, 5, 7, 8, 10],
-	'Locrian',			[0, 1, 3, 5, 6, 8, 10],
-	'Diminished',		[0, 1, 3, 4, 6, 7, 9, 10],
 
-	'Whole-half',		[0, 2, 3, 5, 6, 8, 9, 11],
-	'Whole Tone',		[0, 2, 4, 6, 8, 10],
-	'Minor Blues',		[0, 3, 5, 6, 7, 10],
-	'Minor Pentatonic', [0, 3, 5, 7, 10],
-	'Major Pentatonic', [0, 2, 4, 7, 9],
-	'Harmonic Minor',	[0, 2, 3, 5, 7, 8, 11],
-	'Melodic Minor',	[0, 2, 3, 5, 7, 9, 11],
-	'Super Locrian',	[0, 1, 3, 4, 6, 8, 10],
 
-	'Bhairav',			[0, 1, 4, 5, 7, 8, 11],
-	'Hungarian Minor',	[0, 2, 3, 6, 7, 8, 11],
-	'Minor Gypsy',		[0, 1, 4, 5, 7, 8, 10],
-	'Hirojoshi',		[0, 2, 3, 7, 8],
-	'In-Sen',			[0, 1, 5, 7, 10],
-	'Iwato',			[0, 1, 5, 6, 10],
-	'Kumoi',			[0, 2, 3, 7, 9],
-	'Pelog',			[0, 1, 3, 4, 7, 8],
-
-	'Spanish',			[0, 1, 3, 4, 5, 6, 8, 10],
-	'IonEol',			[0, 2, 3, 4, 5, 7, 8, 9, 10, 11]
-]
-
-TOP_OCTAVE = {"chromatic_gtr": 7, "diatonic_ns": 2, "diatonic_chords": 7, "diatonic": 6,  
+TOP_OCTAVE = {"chromatic_gtr": 7, "diatonic_ns": 2, "diatonic_chords": 7, "diatonic": 6,
 			"chromatic": 7}
 
 
 class ScaleComponent(ControlSurfaceComponent):
-	
+
 	#matrix = control_matrix(PlayableControl)
 
 	def __init__(self, control_surface = None, enabled = False, mode = "diatonic", *a, **k):
@@ -59,7 +34,7 @@ class ScaleComponent(ControlSurfaceComponent):
 		self._osd = None
 		self._modus = 0
 		self._key = 0
-		self._octave = 3 
+		self._octave = 3
 		self._mode = mode #diatonic
 		self._is_drumrack = False
 		self._quick_scale = False
@@ -68,16 +43,16 @@ class ScaleComponent(ControlSurfaceComponent):
 		self._interval = 3
 		self._matrix = None
 		self._top_octave = 6
-		
+
 		# C  D  E  F  G  A  B
 		self._white_notes_index = [0, 2, 4, 5, 7, 9, 11]
-		
+
 		self._current_minor_mode = 1 #Natural
 		self._minor_modes = [1, 13, 14]#Natural, Harmonic, Melodic
-		
+
 		super(ScaleComponent, self).__init__(*a, **k)
+		self._register_scale_listeners()
 		self.set_enabled(enabled)
-		
 	@property
 	def notes(self):
 		return self.modus.scale(self._key).notes
@@ -86,45 +61,49 @@ class ScaleComponent(ControlSurfaceComponent):
 	def modus(self):
 		return self._modus_list[self._modus]
 
-	def set_key(self, key, message = True):
+	def set_key(self, key, message = True, listener_called = False):
 		if key>=0 and key<=11:
 			self._key = key % 12
+			if not listener_called:
+				self.song().root_note = self._key
 			if message:
 				self._control_surface.show_message(str("Selected Scale: " + KEY_NAMES[self._key])+" "+str(self._modus_names[self._modus]))
-		
+
 	def set_octave(self, octave, message = True):
 		if octave>=0 and octave<self._top_octave:
 			self._octave = octave
 			if message:
 				self._control_surface.show_message("Selected octave: " + str(octave))
-				
+
 	def _set_top_octave(self, message = True):
 		if(self.is_drumrack):
 			self._top_octave = 8
 		else:
 			self._top_octave = TOP_OCTAVE[self._mode]
-			
+
 		if(self._octave>=self._top_octave):
 			self._octave = self._top_octave -1
 			if message:
-				self._control_surface.show_message("Selected octave: " + str(self._octave))				
+				self._control_surface.show_message("Selected octave: " + str(self._octave))
 
 	def octave_up(self, message = True):
-		self.set_octave(self._octave + 1, message) 
-	
+		self.set_octave(self._octave + 1, message)
+
 	def octave_down(self, message = True):
-		self.set_octave(self._octave - 1, message) 
-		
-	def set_modus(self, index, message = True):
+		self.set_octave(self._octave - 1, message)
+
+	def set_modus(self, index, message = True,listener_called = False):
 		if index > -1 and index < len(self._modus_list):
 			self._modus = index
+			if not listener_called:
+				self.song().scale_name = str(self._modus_names[self._modus])
 			if message:
 				self._control_surface.show_message(str("selected scale: " + KEY_NAMES[self._key])+" "+str(self._modus_names[self._modus]))
-	
+
 	def set_drumrack(self, drumrack):
 		self._is_drumrack = drumrack
 		self._set_top_octave(True)
-		
+
 	#def set_matrix(self, matrix):
 	#	if not matrix or not self._layout_set:
 	#		self._matrix = matrix
@@ -145,8 +124,21 @@ class ScaleComponent(ControlSurfaceComponent):
 			self._matrix.add_value_listener(self._matrix_pressed)
 		self.update()
 
+	def _register_scale_listeners(self):
+		self.song().add_root_note_listener(self.handle_root_note_changed)
+		self.song().add_scale_name_listener(self.handle_scale_name_changed)
 
-	
+	def handle_root_note_changed(self):
+		self.set_key(self.song().root_note, False, True)
+		self.update()
+		self._control_surface.update()
+
+
+	def handle_scale_name_changed(self):
+		self.set_modus(self._modus_names.index(self.song().scale_name), False, True)
+		self.update()
+		self._control_surface.update()
+
 	def set_osd(self, osd):
 		self._osd = osd
 
@@ -169,7 +161,7 @@ class ScaleComponent(ControlSurfaceComponent):
 			self._osd.attributes[7] = " "
 			self._osd.attribute_names[7] = " "
 			self._osd.update()
-			
+
 	def update(self):
 		if self.is_enabled() and self._matrix!=None:
 			#self._control_surface.log_message("update scale: "+str(self._matrix))
@@ -220,7 +212,7 @@ class ScaleComponent(ControlSurfaceComponent):
 							button.set_light("Scale.Mode.On")
 						else:
 							button.set_light("Scale.Mode.Off")
-				
+
 				elif row==1:
 					if self.is_drumrack:
 						if col==7:
@@ -264,45 +256,22 @@ class ScaleComponent(ControlSurfaceComponent):
 							button.set_light("Scale.Octave.Off")
 						else:
 							button.set_light("DefaultButton.Disabled")
-				elif row==4:
+				elif row>=4:
+					index = (row-4)*8+col
 					if self.is_drumrack:
 						button.set_light("DefaultButton.Disabled")
 					else:
-						if self._modus == col:
-							button.set_light("Scale.Modus.On")
-						else:
-							button.set_light("Scale.Modus.Off")
-				elif row==5:
-					if self.is_drumrack:
-						button.set_light("DefaultButton.Disabled")
-					else:
-						if self._modus == col+8:
-							button.set_light("Scale.Modus.On")
-						else:
-							button.set_light("Scale.Modus.Off")
-				elif row==6:
-					if self.is_drumrack:
-						button.set_light("DefaultButton.Disabled")
-					else:
-						if self._modus == col+16:
-							button.set_light("Scale.Modus.On")
-						else:
-							button.set_light("Scale.Modus.Off")
-				elif row==7:
-					if self.is_drumrack:
-						button.set_light("DefaultButton.Disabled")
-					else:
-						if col+24>len(self._modus_list):
+						if index>=len(self._modus_list):
 							button.set_light("DefaultButton.Disabled")
-						elif self._modus == col+24:
+						elif self._modus == index:
 							button.set_light("Scale.Modus.On")
 						else:
 							button.set_light("Scale.Modus.Off")
 				#button.set_enabled(False)
 				#button.update()
-			
-		
-		
+
+
+
 	#@matrix.pressed
 	def _matrix_pressed(self, value, x, y, is_momentary):
 		message = True
@@ -382,25 +351,25 @@ class ScaleComponent(ControlSurfaceComponent):
 				# 	elif selected_modus==12:
 				# 		selected_modus = 11
 
-				
+
 				# nav circle of 5th right ->
-				if y == 2 and x == 7:  
+				if y == 2 and x == 7:
 					root = CIRCLE_OF_FIFTHS[(CIRCLE_OF_FIFTHS.index(selected_key) + 1 + 12) % 12]
 					self._control_surface.show_message("circle of 5ths -> "+keys[selected_key]+" "+str(self._modus_names[selected_modus])+" => "+keys[root]+" "+str(self._modus_names[selected_modus]))
 					message = False
-				
+
 				# nav circle of 5th left <-
-				if y == 1 and x == 6:  
+				if y == 1 and x == 6:
 					root = CIRCLE_OF_FIFTHS[(CIRCLE_OF_FIFTHS.index(selected_key) - 1 + 12) % 12]
 					self._control_surface.show_message("circle of 5ths <- "+keys[selected_key]+" "+str(self._modus_names[selected_modus])+" => "+keys[root]+" "+str(self._modus_names[selected_modus]))
 					message = False
-				
-				# relative major/minor scale	
-				if y == 1 and x == 2:  
+
+				# relative major/minor scale
+				if y == 1 and x == 2:
 					if self._modus == 0: #Ionian Mode (Major)
 						selected_modus = self._current_minor_mode
 						root = CIRCLE_OF_FIFTHS[(CIRCLE_OF_FIFTHS.index(selected_key) + 3) % 12] # Jump up 3 steps in 5th Circle equals jumping a third minor down
-					elif self._modus in [1, 13, 14]:#Natural (Aeolian), Harmonic, Melodic Minor		
+					elif self._modus in [1, 13, 17]:#Natural (Aeolian), Harmonic, Melodic Minor
 						self._current_minor_mode = selected_modus
 						selected_modus = 0
 						root = CIRCLE_OF_FIFTHS[(CIRCLE_OF_FIFTHS.index(selected_key) - 3 + 12) % 12] # Jump down 3 steps in 5th Circle equals jumping a third minor up
@@ -431,9 +400,9 @@ class ScaleComponent(ControlSurfaceComponent):
 				self.set_modus(((y - 4) * 8 + x),message)
 				self._control_surface.show_message(str("Selected Scale: " + KEY_NAMES[self._key])+" "+str(self._modus_names[self._modus]))
 			self.update()
-	
-		
-	
+
+
+
 	#@matrix.released
 	def matrix_release(self, pad):
 		pass
@@ -443,13 +412,13 @@ class ScaleComponent(ControlSurfaceComponent):
 		# 	if not self._selected_pads:
 		# 		self._update_control_from_script()
 		# 	self.notify_pressed_pads()
-		# self._update_led_feedback()			
+		# self._update_led_feedback()
 
-			
+
 	@property
 	def is_drumrack(self):
 		return self._is_drumrack
-		
+
 	@property
 	def is_diatonic(self):
 		return not self.is_drumrack and (self._mode == "diatonic" or self._mode == "diatonic_ns" or self._mode == "diatonic_chords")
@@ -461,16 +430,16 @@ class ScaleComponent(ControlSurfaceComponent):
 	@property
 	def is_diatonic_ns(self):
 		return self._mode == "diatonic_ns"
-	
-	@property	
+
+	@property
 	def is_chromatic_gtr(self):
 		return self._mode == "chromatic_gtr"
-		
+
 	@property
 	def is_quick_scale(self):
 		return self._quick_scale
-	
-	
+
+
 	def get_pattern(self):
 		notes = self.notes
 		# origin
@@ -484,7 +453,7 @@ class ScaleComponent(ControlSurfaceComponent):
 					break
 		else:
 			origin = -notes[0]
-			
+
 		# interval
 		if self._interval == None:
 			interval = 8
@@ -492,7 +461,7 @@ class ScaleComponent(ControlSurfaceComponent):
 			interval = [0, 2, 4, 5, 7, 9, 10, 11][self._interval]
 		else:
 			interval = self._interval
-		
+
 		# layout
 		if self._is_horizontal:
 			steps = [1, interval]
@@ -500,17 +469,17 @@ class ScaleComponent(ControlSurfaceComponent):
 		else:
 			steps = [interval, 1]
 			origin = [0, origin]
-		
+
 		return MelodicPattern(
-			steps = steps, 
-			scale = notes, 
-			origin = origin, 
-			base_note = (self._octave + 1) * 12, 
-			chromatic_mode = self.is_chromatic, 
-			chromatic_gtr_mode = self.is_chromatic_gtr, 
+			steps = steps,
+			scale = notes,
+			origin = origin,
+			base_note = (self._octave + 1) * 12,
+			chromatic_mode = self.is_chromatic,
+			chromatic_gtr_mode = self.is_chromatic_gtr,
 			diatonic_ns_mode = self.is_diatonic_ns
 		)
-		
+
 
 class Scale(object):
 
@@ -536,11 +505,11 @@ class Modus(Scale):
 class MelodicPattern(object):
 
 	def __init__(self,
-	 		steps=[0, 0], 
-			scale=range(12), 
-			base_note=0, 
-			origin=[0, 0], 
-			valid_notes=xrange(128), 
+	 		steps=[0, 0],
+			scale=range(12),
+			base_note=0,
+			origin=[0, 0],
+			valid_notes=xrange(128),
 			chromatic_mode=False,
 			chromatic_gtr_mode=False,
 			diatonic_ns_mode=False,
@@ -590,13 +559,13 @@ class MelodicPattern(object):
 
 	def note(self, x, y):
 		octave, note = self._octave_and_note(x, y)
-		index = (self.base_note + 12 * octave + note) % 128 
+		index = (self.base_note + 12 * octave + note) % 128
 		root = note == self.scale[0]
 		highlight =  note == self.scale[2] or note == self.scale[4]
 		in_scale = note in self.scale
 		valid = index in self.valid_notes
 		return self.NoteInfo(
-			index, 
+			index,
 			x,
 			root = root,
 			highlight = highlight,
