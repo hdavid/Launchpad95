@@ -214,12 +214,12 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
             if self._value >= self._value_map[index] * self._range + self._min:
                 update_index = index
                 if Settings.USE_CUSTOM_DEVICE_CONTROL_COLORS:
-                    v[index] = f"Device.CustomSlider{self._column}.On"
+                    v[index] = "Device.CustomSlider"+str(self._column)+".On"
                 else:
                     v[index] = "Device.DefaultSlider.On"
             else:
                 if Settings.USE_CUSTOM_DEVICE_CONTROL_COLORS:
-                    v[index] = f"Device.CustomSlider{self._column}.Off"
+                    v[index] = "Device.CustomSlider"+str(self._column)+".Off"
                 else:
                     v[index] = "Device.DefaultSlider.Off"
         self._last_value_map_index = update_index
@@ -326,7 +326,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                         # log(f"A Current-{self._column}: RuntimeError for parameter {self._parameter_to_map_to.name}")
                         pass
                     if tries > 500:
-                        log(f"B Current-{self._column}: RuntimeError for parameter {self._parameter_to_map_to.name} !!!")
+                        log(" Current-"+str(self._column)+": RuntimeError for parameter "+self._parameter_to_map_to.name+" !!!")
                         break
                     continue
             self._current_value = self._parameter_to_map_to.value
@@ -401,7 +401,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                     else:
                         to_remove.append(param_id)
                 else:
-                    log(f"Parameter {parameter.name} is already at target value !!!!!!!!!!!!!!")
+                    log("Parameter "+parameter.name+" is already at target value !!!!!!!!!!!!!!")
                     to_remove.append(param_id)
             except Exception as e:
                 if "Python argument types in" in str(e):
@@ -451,7 +451,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                     self.update_parameter_stack()
 
         except Exception as e:
-            log(f"Run-Loop Exception in DCSServer {self._column}: Type {type(e)}\n {e}")
+            log("Run-Loop Exception in DCSServer "+str(self._column)+": Type "+type(e)+"\n "+str(e))
             log(traceback.format_stack())
             log(traceback.format_exc())
             self._response_queue.put((0, "ERROR"))
@@ -475,7 +475,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
         elif False:
             pass
         else:
-            log(f"DCSServer {self._column} _request_handler: unknown function {funct_name} with {args} and {kwargs}")
+            log("DCSServer "+str(self._column)+" _request_handler: unknown function "+str(funct_name))
             result = self._call_dispatcher(funct_name, *args, **kwargs)
 
         # log(f"DCSServer {self._column} Call dispatcher: {funct_name} returned {type(result)}")
@@ -545,11 +545,11 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                 if callable(method):
                     return method(*args, **kwargs)
                 else:
-                    log(f"DCSServer {self._column} method {method_name} is not callable")
+                    log("DCSServer "+str(self._column)+"method "+method_name+" is not callable")
             else:
-                log(f"DCSServer {self._column} has no method {method_name}")
+                log("DCSServer "+str(self._column)+" has no method "+method_name)
         except Exception as e:
-            log(f"Exception in DCSServer {self._column} _call_dispatcher :\n {e}")
+            log("Exception in DCSServer "+str(self._column)+" _call_dispatcher :\n "+str(e))
             log(traceback.print_exc())
             log(traceback.format_stack())
             raise e
