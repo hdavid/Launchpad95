@@ -18,7 +18,7 @@ non_returns = ["set_precision_mode", "set_stepless_mode", "shutdown", "update",
                "reset_if_no_parameter", "_button_value", "connect_to",
                "release_parameter", "set_parent", ]
 
-returning = ["set_enabled", "param_name", "param_value", ]
+returning = ["set_enabled", "param_name", "param_value","__ne__" ]
 
 
 class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
@@ -602,3 +602,6 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
         if (self._value // self._value_map[1]) != self._last_value_map_index:
             return True
         return False
+
+    def __ne__(self, other):
+        return not self == other

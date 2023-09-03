@@ -281,7 +281,7 @@ class DeviceControllerStrip(ButtonSliderElement):
 			if self._parent is not None:
 				self._parent._update_OSD()
 
-	def _on_parameter_changed(self):
+	def _on_parameter_changed(self,trigger_osd= True):
 		assert (self._parameter_to_map_to != None)
 		if self._parent is not None:
 			self._parent._update_OSD()

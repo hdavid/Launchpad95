@@ -3,7 +3,7 @@ import time
 from threading import Thread
 from functools import partial
 try:
-    import Queue
+    import Queue as queue
 except ModuleNotFoundError:
     import queue
 
@@ -14,7 +14,7 @@ non_returns = ["set_precision_mode", "set_stepless_mode", "shutdown",
                "update", "reset_if_no_parameter", "_button_value", "connect_to",
                "release_parameter", "set_parent", ]
 
-returning = ["set_enabled", "param_name", "param_value", ]
+returning = ["set_enabled", "param_name", "param_value","__ne__"]
 
 
 class DeviceControllerStripProxy():
