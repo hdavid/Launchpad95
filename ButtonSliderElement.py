@@ -2,9 +2,11 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import threading
-from builtins import range
-from past.utils import old_div
+try:
+    from past.utils import old_div
+except ImportError:
+    def old_div(a, b):
+        return a / b
 from _Framework.ButtonElement import ButtonElement
 from _Framework.InputControlElement import MIDI_INVALID_TYPE, InputControlElement
 from _Framework.SliderElement import SliderElement
@@ -22,7 +24,7 @@ class ButtonSliderElement(SliderElement, SlotManager):
         self._button_slots = self.register_slot_manager()
         for button in self._buttons:
             self._button_slots.register_slot(button,
-              (self._button_value), 'value', extra_kws={'identify_sender': True})
+                                             (self._button_value), 'value', extra_kws={'identify_sender': True})
 
     def disconnect(self):
         SliderElement.disconnect(self)

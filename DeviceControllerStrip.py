@@ -1,13 +1,6 @@
-import queue
-
-from .Log import log
 from .ButtonSliderElement import ButtonSliderElement
 
-from .SliderQueueProcessor import process_loop
-
-from multiprocessing import Process
-
-import time,sys
+import time
 SLIDER_MODE_OFF = 0
 SLIDER_MODE_TOGGLE = 1
 SLIDER_MODE_SLIDER = 2
@@ -32,20 +25,16 @@ class DeviceControllerStrip(ButtonSliderElement):
 		self._precision_mode = False
 		self._stepless_mode = False
 		self._enabled = True
-
-		#log('DCS {self._column} created')
 	def set_enabled(self,enabled):
 		self._enabled = enabled
 	
 	def set_precision_mode(self, precision_mode):
 		self._precision_mode = precision_mode
 		self.update()
-		log('precision mode: ' + str(precision_mode))
 
 	def set_stepless_mode(self, stepless_mode):
 		self._stepless_mode = stepless_mode
 		self.update()
-		log('stepless mode: ' + str(stepless_mode))
 
 	def shutdown(self):
 		self._control_surface = None
@@ -172,14 +161,14 @@ class DeviceControllerStrip(ButtonSliderElement):
 		else:
 			v[4]="Device.BigEnum.Off"
 		self._update_buttons(tuple(v))
-	
+
 	def _update_slider(self):
 		v =  ["DefaultButton.Disabled" for index in range(len(self._buttons))]
 		for index in range(len(self._buttons)):
 			if self._value >=self._value_map[index]*self._range+self._min:
-				v[index]=f"Device.Slider{self._column}.On"
+				v[index]="Device.Slider"+self._column+".On"
 			else:
-				v[index]=f"Device.Slider{self._column}.Off"
+				v[index]="Device.Slider"+self._column+".Off"
 		self._update_buttons(tuple(v))
 		
 	def _update_precision_slider(self):
@@ -208,7 +197,6 @@ class DeviceControllerStrip(ButtonSliderElement):
 	def _button_value(self, value, sender):
 		assert isinstance(value, int)
 		assert (sender in self._buttons)
-		log("Button value: " + str(value) + " sender: " + str(sender))
 		self._last_sent_value = -1
 		if (self._parameter_to_map_to != None and self._enabled and ((value != 0) or (not sender.is_momentary()))):
 			if (value != self._last_sent_value):
@@ -284,7 +272,6 @@ class DeviceControllerStrip(ButtonSliderElement):
 					velocity_factor = min(velocity_factor, max_diff)
 					new_value = current_value + velocity_factor if current_value < target_value else current_value - velocity_factor
 					new_value = max(min(new_value, self._parameter_to_map_to.max), self._parameter_to_map_to.min)
-					log("new_value: " + str(new_value) + " current_value: " + str(current_value) + " _target_value: " + str(target_value) + " velocity_factor: " + str(velocity_factor))
 					self._parameter_to_map_to.value = new_value
 					self.notify_value(value)
 					time.sleep(0.1)

@@ -1,9 +1,12 @@
 from _Framework.DeviceComponent import DeviceComponent
 from _Framework.ButtonElement import ButtonElement
-from .DeviceControllerStripProxy import DeviceControllerStripProxy
+import sys
+if sys.version_info[0] >= 3:
+    from .DeviceControllerStripProxy import DeviceControllerStripProxy as DeviceControllerStrip
+else:
+    from DeviceControllerStrip import DeviceControllerStrip
 import time
 import Live
-from .Log import log
 
 
 class DeviceControllerComponent(DeviceComponent):
@@ -120,7 +123,7 @@ class DeviceControllerComponent(DeviceComponent):
         if self._matrix:
             self._sliders = []
             for column in range(self._matrix.width()):
-                slider = DeviceControllerStripProxy(tuple([
+                slider = DeviceControllerStrip(tuple([
                     self._matrix.get_button(column,
                                             (self._matrix.height() - 1 - row))
                     for row in range(self._matrix.height())]), self, column, self)
