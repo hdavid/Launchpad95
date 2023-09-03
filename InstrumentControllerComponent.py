@@ -317,12 +317,11 @@ class InstrumentControllerComponent(CompoundComponent):
 						if root != -1:
 							self._scales.set_modus(selected_modus, False)
 							self._scales.set_key(root, False)
-							#TODO: save scale in clip or track name
+							# TODO: save scale in clip or track name
 							if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "track":
-								if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "track":
-									self._scales.update_object_name(self._track_controller.selected_track)
-								if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":
-									self._scales.update_object_name(self._track_controller.selected_clip)
+								self._scales.update_object_name(self._track_controller.selected_track)
+							if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":
+								self._scales.update_object_name(self._track_controller.selected_clip)
 							self.update()
 	
 					elif self._quick_scale_root==1:
