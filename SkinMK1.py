@@ -253,7 +253,7 @@ class Colors:
             Set = Rgb.RED_THIRD
             Locked = Rgb.RED
 
-        class Slider:
+        class DefaultSlider:
             On = Rgb.AMBER
             Off = Rgb.AMBER_THIRD
 
