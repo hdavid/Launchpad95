@@ -2,7 +2,11 @@ import traceback
 import time
 from threading import Thread
 from functools import partial
-import queue
+try:
+    import Queue
+except ModuleNotFoundError:
+    import queue
+
 from .DeviceControllerStripServer import DeviceControllerStripServer
 from .Log import log
 
@@ -37,7 +41,7 @@ class DeviceControllerStripProxy():
         elif item in returning:
             return partial(self._call_return_handler, item)
         else:
-            log(f'Proxy{self.column}: __getattr__ {item} not found !!!!!!!!!')
+            #log(f'Proxy{self.column}: __getattr__ {item} not found !!!!!!!!!')
             return partial(self._call_non_return_handler, item)
 
     def _call_non_return_handler(self, name, *args, **kwargs):
@@ -57,7 +61,7 @@ class DeviceControllerStripProxy():
                     #log(f'Proxy{self.column}: got old response {token} {response} instead of {current_id}')
                     pass
                 if response =="ERROR":
-                    log(f'Proxy{self.column}: RunLoop Died!!!!!!')
+                    #log(f'Proxy{self.column}: RunLoop Died!!!!!!')
                     self.failed = True
                 time.sleep(0.01)
             if response == 'None' and False:
@@ -65,6 +69,6 @@ class DeviceControllerStripProxy():
             return response
         except queue.Empty as e:
             self.failed = True
-            log(f'Proxy{self.column}: _call_return_handler {name} {args} {kwargs} failed')
+            #log(f'Proxy{self.column}: _call_return_handler {name} {args} {kwargs} failed')
             log(traceback.format_stack())
             return
