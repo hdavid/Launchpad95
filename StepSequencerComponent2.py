@@ -1,6 +1,9 @@
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
-from .StepSequencerComponent import StepSequencerComponent, ButtonElement, NoteSelectorComponent, LoopSelectorComponent, QUANTIZATION_NAMES
+from .StepSequencerComponent import StepSequencerComponent, ButtonElement, \
+	QUANTIZATION_NAMES
+from .LoopSelectorComponent import LoopSelectorComponent
+from .NoteSelectorComponent import NoteSelectorComponent
 from .ScaleComponent import MUSICAL_MODES, KEY_NAMES
 from .TrackControllerComponent import TrackControllerComponent
 from random import randrange
@@ -241,7 +244,7 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 						if(pitch >= 0 and pitch < 128 and velocity >= 0 and velocity < 128 and length >= 0):
 							note_cache.append([pitch, time, length, velocity, False])
 			self._clip.select_all_notes()
-			self._clip.replace_selected_notes(tuple(note_cache))	
+			self._clip.replace_selected_notes(tuple(note_cache)) # Todo : deprecated
 			#self._control_surface.schedule_message(1, self._sch_update, ([self._clip,tuple(note_cache)]))
 
 	def _sch_update(self, data):

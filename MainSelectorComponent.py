@@ -4,7 +4,7 @@ from _Framework.ModeSelectorComponent import ModeSelectorComponent
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
 from _Framework.SessionZoomingComponent import DeprecatedSessionZoomingComponent# noqa
-from .DeviceComponent import DeviceComponent
+from .DeviceControllerComponent import DeviceControllerComponent
 from .SpecialSessionComponent import SpecialSessionComponent
 from .InstrumentControllerComponent import InstrumentControllerComponent
 from .SubSelectorComponent import SubSelectorComponent  # noqa
@@ -106,7 +106,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 		#self._instrument_controller = None
 		
 		#User1 Device controller (Fx or Instrument parameters)
-		self._device_controller = DeviceComponent(control_surface = self._control_surface, matrix = self._matrix, side_buttons = self._side_buttons, top_buttons =  self._nav_buttons)
+		self._device_controller = DeviceControllerComponent(control_surface = self._control_surface, matrix = self._matrix, side_buttons = self._side_buttons, top_buttons =  self._nav_buttons)
 		self._device_controller.set_osd(self._osd)
 
 		self._init_session()
@@ -493,7 +493,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 				self._device_controller.update()
 			else:
 				self._device_controller._is_active = False
-				self._device_controller.set_enabled(False)
+				temp=self._device_controller.set_enabled(False)
 
 	def _setup_user_mode(self, release_matrix=True, release_side_buttons=True, release_nav_buttons=True, drum_rack_mode=True):
 		# user1 -> All True but release_nav_buttons / user2 -> All false 

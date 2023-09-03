@@ -1,4 +1,7 @@
 from __future__ import with_statement
+
+import traceback
+
 import Live
 from _Framework.ControlSurface import ControlSurface
 from _Framework.InputControlElement import MIDI_CC_TYPE, MIDI_NOTE_TYPE
@@ -8,6 +11,7 @@ from .ConfigurableButtonElement import ConfigurableButtonElement
 from .MainSelectorComponent import MainSelectorComponent
 from .NoteRepeatComponent import NoteRepeatComponent
 from .M4LInterface import M4LInterface
+from .Log import log
 try:
     exec("from .Settings import Settings")
 except ImportError:
@@ -153,7 +157,12 @@ class Launchpad(ControlSurface):
 			self._osd = M4LInterface()
 			self._osd.name = "OSD"
 			self._init_note_repeat()
-			self._selector = MainSelectorComponent(matrix, tuple(top_buttons), tuple(side_buttons), self._config_button, self._osd, self, self._note_repeat, self._c_instance)
+			try:
+				self._selector = MainSelectorComponent(matrix, tuple(top_buttons), tuple(side_buttons), self._config_button, self._osd, self, self._note_repeat, self._c_instance)
+			except Exception as e:
+				log("Could not create MainSelectorComponent: \n" + str(e))
+				log(traceback.format_exc())
+				raise e
 			self._selector.name = 'Main_Modes'
 			self._do_combine()
 			for control in self.controls:

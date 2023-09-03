@@ -70,6 +70,7 @@ class Colors:
         # stop button
         StopClip = Rgb.GREY
         StopClipTriggered = Rgb.GREY_BLINK
+
     # Enabled = Rgb.GREEN
     # Off = Rgb.GREEN_THIRD
 
@@ -254,13 +255,50 @@ class Colors:
             Set = Rgb.RED_THIRD
             Locked = Rgb.RED
 
-        class Slider:
+        class DefaultSlider:
             On = Rgb.PURPLE
             Off = Rgb.PURPLE_THIRD
+
+        class CustomSlider0:
+            On = Rgb.PURPLE
+            Off = Rgb.BLACK
+
+        class CustomSlider1:
+            On = Rgb.PURPLE
+            Off = Rgb.BLACK
+
+        class CustomSlider2:
+            On = Rgb.LIGHT_BLUE
+            Off = Rgb.BLACK
+
+        class CustomSlider3:
+            On = Rgb.LIGHT_BLUE
+            Off = Rgb.BLACK
+
+        class CustomSlider4:
+            On = Rgb.MINT
+            Off = Rgb.BLACK
+
+        class CustomSlider5:
+            On = Rgb.MINT
+            Off = Rgb.BLACK
+
+        class CustomSlider6:
+            On = Rgb.BLUE
+            Off = Rgb.BLACK
+
+        class CustomSlider7:
+            On = Rgb.BLUE
+            Off = Rgb.BLACK
 
         class PrecisionSlider:
             On = Rgb.LIGHT_BLUE
             Off = Rgb.LIGHT_BLUE_THIRD
+
+        class ModeToggle:
+            Precision = Rgb.LIGHT_BLUE
+            Normal = Rgb.LIGHT_BLUE_THIRD
+            Stepless = Rgb.MINT_THIRD
 
         class Enum:
             On = Rgb.MINT
@@ -334,8 +372,8 @@ class Colors:
             Velocity0 = Rgb.GREEN_THIRD
             Velocity1 = Rgb.GREEN_HALF
             Velocity2 = Rgb.GREEN
-            Velocity3 = Rgb.AMBER_HALF
-            Velocity4 = Rgb.AMBER
+            Velocity3 = Rgb.PINK_HALF
+            Velocity4 = Rgb.PINK
             Muted = Rgb.DARK_GREY
             Playing = Rgb.RED
             Metronome = Rgb.BLUE
