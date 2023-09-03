@@ -33,7 +33,7 @@ class DeviceControllerStrip(ButtonSliderElement):
 		self._stepless_mode = False
 		self._enabled = True
 
-		log(f'DCS {self._column} created')
+		#log('DCS {self._column} created')
 	def set_enabled(self,enabled):
 		self._enabled = enabled
 	
