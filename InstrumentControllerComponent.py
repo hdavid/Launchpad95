@@ -12,9 +12,9 @@ except ImportError:
 from .TrackControllerComponent import TrackControllerComponent
 from .ScaleComponent import ScaleComponent,CIRCLE_OF_FIFTHS,MUSICAL_MODES,KEY_NAMES
 try:
-    exec("from .Settings import Settings")
+    from .Settings import Settings
 except ImportError:
-    exec("from .Settings import *")
+    from .Settings import *
 	
 #fix for python3
 try:

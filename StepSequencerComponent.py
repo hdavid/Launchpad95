@@ -15,9 +15,9 @@ from .TrackControllerComponent import TrackControllerComponent
 import time
 from .ScaleComponent import ScaleComponent, MUSICAL_MODES, KEY_NAMES
 try:
-    exec("from .Settings import Settings")
+    from .Settings import Settings
 except ImportError:
-    exec("from .Settings import *")
+    from .Settings import *
 # quantization button colours. this must remain of length 4.
 QUANTIZATION_MAP = [1, 0.5, 0.25, 0.125]  # 1/4 1/8 1/16 1/32
 QUANTIZATION_NAMES = ["1/4", "1/8", "1/16", "1/32"]

@@ -16,9 +16,9 @@ from .SpecialProSessionComponent import SpecialProSessionComponent
 import Live
 import time
 try:
-    exec("from .Settings import Settings")
+    from .Settings import Settings
 except ImportError:
-    exec("from .Settings import *")
+    from .Settings import *
 
 class MainSelectorComponent(ModeSelectorComponent):
 
