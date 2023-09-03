@@ -20,11 +20,14 @@ class TrackControllerComponent(MixerComponent):
 		self._next_scene_button = None
 		self._start_stop_button = None
 		self._lock_button = None
+		self._locked_to_track = False
 		self._session_record_button = None
 		self._mute_button = None
 		self._solo_button = None
 		self._undo_button = None
 		self._arm_button = None
+		self._selected_track = None
+
 		self._control_surface = control_surface
 		self._implicit_arm = implicit_arm
 		self._skin_name = skin_name
@@ -104,6 +107,7 @@ class TrackControllerComponent(MixerComponent):
 			self._lock_button.add_value_listener(self._lock_value)
 			self._lock_button.turn_off()
 
+
 	def set_start_stop_button(self, button=None):
 		assert isinstance(button, (ButtonElement, type(None)))
 		if self._start_stop_button != None:
@@ -178,7 +182,7 @@ class TrackControllerComponent(MixerComponent):
 	def _next_track_value(self, value, sender):
 		assert (self._next_track_button != None)
 		assert (value in range(128))
-		if self.is_enabled():
+		if self.is_enabled() and not self._locked_to_track:
 			if not sender.is_momentary() or value is not 0:
 				if self.selected_track_idx < len(self.song().tracks) - 1:
 					self.song().view.selected_track = self.song().tracks[self.selected_track_idx + 1]
@@ -197,7 +201,7 @@ class TrackControllerComponent(MixerComponent):
 	def _prev_track_value(self, value, sender):
 		assert (self._prev_track_button != None)
 		assert (value in range(128))
-		if self.is_enabled():
+		if self.is_enabled() and not self._locked_to_track:
 			if not sender.is_momentary() or value is not 0:
 				if self.selected_track_idx > 0:
 					self.song().view.selected_track = self.song().tracks[self.selected_track_idx - 1]
@@ -281,14 +285,29 @@ class TrackControllerComponent(MixerComponent):
 		assert (self._lock_button != None)
 		assert (value in range(128))
 		if self.is_enabled():
-			if value != 0 or not self._lock_button.is_momentary():
-				self._lock_button.turn_on()
-				if self.selected_scene != None:
-					slot = self.selected_scene.clip_slots[self.selected_track_idx]
-					slot.fire()
-					self._control_surface.show_message("fire clip")
-			else:
-				self._lock_button.turn_off()
+			if value is not 0:
+				self._locked_to_track = not self._locked_to_track
+				if self._locked_to_track:
+					self._lock_button.turn_on()
+					self._control_surface.show_message("locked to track")
+				else:
+					self._lock_button.turn_off()
+					self._control_surface.show_message("unlocked from track")
+				self.update()
+
+
+	def update_lock_button(self):
+		if self.is_enabled():
+			if not self._locked_to_track or self._selected_track == None:
+				self._selected_track = self.song().view.selected_track
+				self._do_implicit_arm()
+			if self._lock_button != None:
+				self._lock_button.set_on_off_values("TrackController.Lock.On", "TrackController.Lock.Off")
+				if self._locked_to_track:
+					self._lock_button.turn_on()
+				else:
+					self._lock_button.turn_off()
+
 
 	def _start_stop_value(self, value):
 		assert (self._start_stop_button != None)
@@ -403,6 +422,7 @@ class TrackControllerComponent(MixerComponent):
 		if self.is_enabled():
 			self.update_track_buttons()
 			self.update_scene_buttons()
+			self.update_lock_button()
 
 			if self._session_record_button != None:
 				if self._implicit_arm:
@@ -413,15 +433,6 @@ class TrackControllerComponent(MixerComponent):
 					self._session_record_button.turn_on()
 				else:
 					self._session_record_button.turn_off()
-
-			if self._lock_button != None:
-				self._lock_button.set_on_off_values("TrackController.Lock.On", "TrackController.Lock.Off")
-				if self.selected_scene != None:
-					slot = self.selected_scene.clip_slots[self.selected_track_idx]
-					if slot and slot.has_clip:
-						self._lock_button.turn_on()
-					else:
-						self._lock_button.turn_off()
 				
 			if self._start_stop_button != None:
 				self._start_stop_button.set_on_off_values("TrackController.Stop.On", "TrackController.Stop.Off")
@@ -465,7 +476,7 @@ class TrackControllerComponent(MixerComponent):
 		return track.can_be_armed and track.has_midi_input
 
 	def _do_implicit_arm(self, arm = True):
-		if self.is_enabled():
+		if self.is_enabled() and not self._locked_to_track:
 			if self._implicit_arm:
 				self._control_surface.set_controlled_track(self.selected_track)
 			else:
