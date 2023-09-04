@@ -295,8 +295,8 @@ class TrackControllerComponent(MixerComponent):
 					self._lock_button.turn_off()
 					self._control_surface.show_message("unlocked from track")
 				self.update()
-				
-				
+
+
 	def update_lock_button(self):
 		if self.is_enabled():
 			if not self._locked_to_track or self._selected_track == None:
@@ -321,6 +321,8 @@ class TrackControllerComponent(MixerComponent):
 			else:
 				if now - self._last_start_stop_button_press > self._long_press:
 						slot = None
+						try:
+							slot = None
 						try:
 							slot = self.selected_scene.clip_slots[self.selected_track_idx]
 						except TypeError:
@@ -445,7 +447,7 @@ class TrackControllerComponent(MixerComponent):
 			if self._start_stop_button != None:
 				self._start_stop_button.set_on_off_values("TrackController.Stop.On", "TrackController.Stop.Off")
 				self._start_stop_button.turn_off()
-			
+
 			if self._mute_button != None:
 				self._mute_button.set_on_off_values("TrackController.Mute")
 				if(self.selected_track.mute):
