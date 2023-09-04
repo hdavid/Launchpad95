@@ -159,13 +159,13 @@ class TrackControllerComponent(MixerComponent):
 		if self.is_enabled():
 			if self._prev_track_button != None:
 				self._prev_track_button.set_on_off_values("Mode."+self._skin_name)
-				if self.selected_track_idx > 0:
+				if self.selected_track_idx is not None and self.selected_track_idx > 0:
 					self._prev_track_button.turn_on()
 				else:
 					self._prev_track_button.turn_off()
 			if self._next_track_button != None :
 				self._next_track_button.set_on_off_values("Mode."+self._skin_name)
-				if self.selected_track_idx < len(self.song().tracks) - 1:
+				if self.selected_track_idx is not None and self.selected_track_idx < len(self.song().tracks) - 1:
 					self._next_track_button.turn_on()
 				else:
 					self._next_track_button.turn_off()
@@ -320,16 +320,24 @@ class TrackControllerComponent(MixerComponent):
 			else:
 				if now - self._last_start_stop_button_press > self._long_press:
 					if self.selected_scene != None:
-						slot = self.selected_scene.clip_slots[self.selected_track_idx]
-						if slot and slot.has_clip:
+						slot = None
+						try:
+							slot = self.selected_scene.clip_slots[self.selected_track_idx]
+						except TypeError:
+							pass
+						if slot is not None and slot and slot.has_clip:
 							slot.delete_clip()
 							self._start_stop_button.turn_off()
 							self._control_surface.show_message("delete clip")
 
 				else:
 					if self.selected_scene != None:
-						slot = self.selected_scene.clip_slots[self.selected_track_idx]
-						if slot and slot.has_clip:
+						slot = None
+						try:
+							slot = self.selected_scene.clip_slots[self.selected_track_idx]
+						except TypeError:
+							pass
+						if slot is not None and slot and slot.has_clip:
 							if slot.is_triggered or slot.is_playing:
 								slot.stop()
 								self._start_stop_button.turn_off()
