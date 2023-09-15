@@ -35,9 +35,9 @@ class StepSequencerComponent(CompoundComponent):
 
     def __init__(self, matrix, side_buttons, top_buttons, control_surface):
         self._osd = None
-        self._control_surface = control_surface
-        self._number_of_lines_per_note = 1
         super(StepSequencerComponent, self).__init__()
+        self._control_surface = control_surface
+        self._number_of_lines_per_note = 1        
         self.QUANTIZATION_COLOR_MAP = ["StepSequencer.Quantization.One", "StepSequencer.Quantization.Two", "StepSequencer.Quantization.Three", "StepSequencer.Quantization.Four"]
         self.QUANTIZATION_COLOR_MAP_LOW = ["StepSequencer.QuantizationLow.One", "StepSequencer.QuantizationLow.Two", "StepSequencer.QuantizationLow.Three", "StepSequencer.QuantizationLow.Four"]
         self._name = "drum step sequencer"
