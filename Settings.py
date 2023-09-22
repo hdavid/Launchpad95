@@ -13,7 +13,7 @@ class Settings():
 	STEPSEQ__LINK_WITH_SESSION = False
 
 	# Should the step sequencer scroll automatically to the currently playing page
-	STEP_SEQ_AUTO_SCROLL = True
+	STEP_SEQ_AUTO_SCROLL = False
 
 	# configure what user modes buttons do.
 	# the 3 first value configure the 3 sub modes of button user mode 1, 
