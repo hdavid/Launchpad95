@@ -12,6 +12,9 @@ class Settings():
 	#STEPSEQ__LINK_WITH_SESSION = True
 	STEPSEQ__LINK_WITH_SESSION = False
 
+	# Should the step sequencer scroll automatically to the currently playing page
+	STEP_SEQ_AUTO_SCROLL = True
+
 	# configure what user modes buttons do.
 	# the 3 first value configure the 3 sub modes of button user mode 1, 
 	# and following ones are for user mode 2 button
@@ -26,14 +29,7 @@ class Settings():
 			 #,"user 2"
 	]
 
-	# allow sep seq and instrument modes to save their scale settings.
-	# as live does not offer any api we are stuck with using the track or clip name...
-	# possible values : "clip" to save in clip, set, None,  (case matter)
-	# Experimental
-	#STEPSEQ__SAVE_SCALE = "clip"
-	#INSTRUMENT__SAVE_SCALE = "clip"
-	STEPSEQ__SAVE_SCALE = None
-	INSTRUMENT__SAVE_SCALE = None
+
 
 	#device control stepless fader velocity thresholds
 	#if velocity is above threshold, the parameter will be changed instantly

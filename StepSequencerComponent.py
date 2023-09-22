@@ -297,12 +297,6 @@ class StepSequencerComponent(CompoundComponent):
             if(self._drum_group_device): #Select the note 
                 self._note_selector.set_selected_note(self.index_of(self._drum_group_device.drum_pads,self._drum_group_device.view.selected_drum_pad)) #FIX set view again
 
-            #load scale settings from clip
-            if Settings.STEPSEQ__SAVE_SCALE != None and Settings.STEPSEQ__SAVE_SCALE == "clip":  #????
-                self._scale_selector.from_object(self._clip)
-                self._note_selector.set_scale(self._scale_selector.notes, self._scale_selector._key)
-                self._note_selector.set_selected_note(self._scale_selector._octave * 12 + self._scale_selector._key)
-
             self._track_controller.set_enabled(enabled)    
             self._note_editor.set_enabled(enabled)
             # update clip notes as they might have changed while we were sleeping
@@ -538,17 +532,8 @@ class StepSequencerComponent(CompoundComponent):
                         self._clip.remove_loop_start_listener(self._on_loop_changed)
                     if self._clip.loop_end_has_listener(self._on_loop_changed):
                         self._clip.remove_loop_end_listener(self._on_loop_changed)
-                
-                #load scale settings from clip
-                if Settings.STEPSEQ__SAVE_SCALE != None and Settings.STEPSEQ__SAVE_SCALE == "clip":  
-                    self._scale_selector.from_object(self._clip_slot.clip)
-                    #must set clip to None otherwise it trigger a clip note update which we dont want.
-                    self._clip = None
-                    self._note_editor._clip = None
-                    self._note_selector.set_scale(self._scale_selector.notes, self._scale_selector._key)
-                    #self._control_surface.schedule_message(1, self._note_selector.set_selected_note,(self._scale_selector,self._scale_selector._octave * 12 + self._scale_selector._key))
-                    self._note_selector.set_selected_note(self._scale_selector._octave * 12 + self._scale_selector._key)
-                
+              
+
                 # link new clip
                 self._clip_slot.clip.add_notes_listener(self._on_notes_changed)
                 self._clip_slot.clip.add_playing_status_listener(self._on_playing_status_changed)
@@ -625,7 +610,7 @@ class StepSequencerComponent(CompoundComponent):
                 self._playhead = self._clip.playing_position
             else:
                 self._playhead = None
-            self._loop_selector.set_playhead(self._playhead)
+            self._loop_selector.set_playhead(self._playhead, Settings.STEPSEQ__AUTO_SCROLL)
             self._note_selector.set_playhead(self._playhead)
             self._note_editor.set_playhead(self._playhead)
             self.updateQuantizationButton()
@@ -700,9 +685,6 @@ class StepSequencerComponent(CompoundComponent):
                     self._note_selector.set_scale(self._scale_selector.notes, self._scale_selector._key)
                     self._note_selector.set_selected_note(self._scale_selector._octave * 12 + self._scale_selector._key)
                     self._scale_updated()
-                    #update clip name
-                    if Settings.STEPSEQ__SAVE_SCALE != None and Settings.STEPSEQ__SAVE_SCALE == "clip":  
-                        self._scale_selector.update_object_name(self._clip)
                 self.set_mode(self._mode_backup)
 
 

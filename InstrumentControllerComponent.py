@@ -133,10 +133,6 @@ class InstrumentControllerComponent(CompoundComponent):
 			self._track_controller.set_enabled(enabled)
 			
 		if enabled:
-			if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "track":  
-				self._scales.from_object(self._track_controller.selected_track)
-			if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":  
-				self._scales.from_object(self._track_controller.selected_clip)
 			self._update_OSD()
 			self.on_selected_track_changed()
 					
@@ -219,11 +215,6 @@ class InstrumentControllerComponent(CompoundComponent):
 			else:
 				self._scales_toggle_button.turn_off()
 				self._scales.set_enabled(False)
-				#TODO: save scale setting in track or clip. detect if changed
-				if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "track":
-					self._scales.update_object_name(self._track_controller.selected_track)
-				if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":
-					self._scales.update_object_name(self._track_controller.selected_clip)
 				self._osd.mode = self._osd_mode_backup
 				if(not self._scales.is_quick_scale):
 					self._note_repeat.set_enabled(False)
@@ -350,10 +341,6 @@ class InstrumentControllerComponent(CompoundComponent):
 						if root != -1:
 							self._scales.set_modus(selected_modus, False)
 							self._scales.set_key(root, False)
-							# TODO: save scale in clip or track name
-							if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "track":
-								self._scales.update_object_name(self._track_controller.selected_track)
-							if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":
 								self._scales.update_object_name(self._track_controller.selected_clip)
 							self.update()
 	
@@ -361,11 +348,6 @@ class InstrumentControllerComponent(CompoundComponent):
 						if(y == 0):
 							if x < 7 and self._quick_scales[x] != -1:
 								self._scales.set_modus(self._quick_scales[x])
-								#TODO: save scale in clip or track name
-								if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "track":
-									self._scales.update_object_name(self._track_controller.selected_track)
-								if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":
-									self._scales.update_object_name(self._track_controller.selected_clip)
 								self._control_surface.show_message("mode : "+str(self._scales._modus_names[self._scales._modus]))
 								self.update()
 							if x == 7:
@@ -374,11 +356,6 @@ class InstrumentControllerComponent(CompoundComponent):
 						if(y == 1):
 							if x < 8 and self._quick_scales[x + 7] != -1:
 								self._scales.set_modus(self._quick_scales[x + 7])
-								#TODO: save scale in clip or track name
-								if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "track":
-									self._scales.update_object_name(self._track_controller.selected_track)
-								if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":
-									self._scales.update_object_name(self._track_controller.selected_clip)
 								self._control_surface.show_message("mode : "+str(self._scales._modus_names[self._scales._modus]))
 								self.update()
 					else:
@@ -506,22 +483,11 @@ class InstrumentControllerComponent(CompoundComponent):
 			else:
 				self._scales.set_drumrack(False)
 				
-			#load scale settings from track
-			if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "track":  
-				self._scales.from_object(self._track_controller.selected_track)
-			if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":  
-				self._scales.from_object(self._track_controller.selected_clip)
-				# must be delayed.... self._scales.update_object_name(track)
 			self._note_repeat.set_enabled(False)		
 			self.update()
 	
 	def on_selected_scene_changed(self):
-		if self._track_controller._implicit_arm:
-			#load scale settings from track
-			if Settings.INSTRUMENT__SAVE_SCALE != None and Settings.INSTRUMENT__SAVE_SCALE == "clip":  
-				self._scales.from_object(self._track_controller.selected_clip)
-				# must be delayed.... self._scales.update_object_name(track)
-					
+		if self._track_controller._implicit_arm:		
 			self.update()
 
 	#Set the drum rack instrument to _drum_group_device variable, if it exists

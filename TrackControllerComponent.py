@@ -48,7 +48,7 @@ class TrackControllerComponent(MixerComponent):
 		self.set_prev_track_button(None)
 		self.set_next_track_button(None)
 		self.set_mute_button(None)
-		self.set_play_stop_button(None)
+		self.set_start_stop_button(None)
 		self.set_session_record_button(None)
 		self.set_solo_button(None)
 		self.set_arm_button(None)

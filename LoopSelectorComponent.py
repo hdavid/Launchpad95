@@ -1,6 +1,5 @@
 import time
 
-
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
 
@@ -60,8 +59,11 @@ class LoopSelectorComponent(ControlSurfaceComponent):
     def set_note_cache(self, note_cache):
         self._note_cache = note_cache
 
-    def set_playhead(self, playhead):
+    def set_playhead(self, playhead, updateBlock=False):
         self._playhead = playhead
+        if updateBlock and self._playhead is not None:
+            self._block = int(self._playhead / self._blocksize / self._quantization)
+            self._step_sequencer.set_page(self._block)
         self.update()
 
     @property
