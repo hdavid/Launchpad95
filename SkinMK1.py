@@ -427,6 +427,10 @@ class Colors:
         class Play:
             On = Rgb.RED
             Off = Rgb.RED_THIRD
+		
+        class Lock:
+            On = Rgb.RED
+            Off = Rgb.RED_THIRD
 
         class Stop:
             On = Rgb.ORANGE

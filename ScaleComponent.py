@@ -1,5 +1,5 @@
 from _Framework.ControlSurfaceComponent import ControlSurfaceComponent
-
+import Live
 #fix for python3
 try:
     xrange
@@ -10,38 +10,11 @@ KEY_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 CIRCLE_OF_FIFTHS = [7 * k % 12 for k in range(12)]
 # KEY_CENTERS = CIRCLE_OF_FIFTHS[0:6] + CIRCLE_OF_FIFTHS[-1:5:-1]
 
-MUSICAL_MODES = [
 
-	'Major',			[0, 2, 4, 5, 7, 9, 11],
-	'Minor',			[0, 2, 3, 5, 7, 8, 10],
-	'Dorian',			[0, 2, 3, 5, 7, 9, 10],
-	'Mixolydian',		[0, 2, 4, 5, 7, 9, 10],
-	'Lydian',			[0, 2, 4, 6, 7, 9, 11],
-	'Phrygian',			[0, 1, 3, 5, 7, 8, 10],
-	'Locrian',			[0, 1, 3, 5, 6, 8, 10],
-	'Diminished',		[0, 1, 3, 4, 6, 7, 9, 10],
-
-	'Whole-half',		[0, 2, 3, 5, 6, 8, 9, 11],
-	'Whole Tone',		[0, 2, 4, 6, 8, 10],
-	'Minor Blues',		[0, 3, 5, 6, 7, 10],
-	'Minor Pentatonic', [0, 3, 5, 7, 10],
-	'Major Pentatonic', [0, 2, 4, 7, 9],
-	'Harmonic Minor',	[0, 2, 3, 5, 7, 8, 11],
-	'Melodic Minor',	[0, 2, 3, 5, 7, 9, 11],
-	'Super Locrian',	[0, 1, 3, 4, 6, 8, 10],
-
-	'Bhairav',			[0, 1, 4, 5, 7, 8, 11],
-	'Hungarian Minor',	[0, 2, 3, 6, 7, 8, 11],
-	'Minor Gypsy',		[0, 1, 4, 5, 7, 8, 10],
-	'Hirojoshi',		[0, 2, 3, 7, 8],
-	'In-Sen',			[0, 1, 5, 7, 10],
-	'Iwato',			[0, 1, 5, 6, 10],
-	'Kumoi',			[0, 2, 3, 7, 9],
-	'Pelog',			[0, 1, 3, 4, 7, 8],
-
-	'Spanish',			[0, 1, 3, 4, 5, 6, 8, 10],
-	'IonEol',			[0, 2, 3, 4, 5, 7, 8, 9, 10, 11]
-]
+MUSICAL_MODES = []
+for name,notes in Live.Song.get_all_scales_ordered():
+	MUSICAL_MODES.append(name)
+	MUSICAL_MODES.append(list(notes))
 
 TOP_OCTAVE = {"chromatic_gtr": 7, "diatonic_ns": 2, "diatonic_chords": 7, "diatonic": 6,  
 			"chromatic": 7}
@@ -77,6 +50,45 @@ class ScaleComponent(ControlSurfaceComponent):
 		
 		super(ScaleComponent, self).__init__(*a, **k)
 		self.set_enabled(enabled)
+
+	def _remove_scale_listeners(self):
+		try:
+			self.song().remove_root_note_listener(self.handle_root_note_changed)
+		except RuntimeError:
+			pass
+		try:
+			self.song().remove_scale_name_listener(self.handle_scale_name_changed)
+		except RuntimeError:
+			pass
+		
+	
+	def _register_scale_listeners(self):
+		try:
+			self.song().add_root_note_listener(self.handle_root_note_changed)
+		except RuntimeError:
+			pass
+		try:
+			self.song().add_scale_name_listener(self.handle_scale_name_changed)
+		except RuntimeError:
+			pass
+
+	def handle_root_note_changed(self):
+		self.set_key(self.song().root_note, False, True)
+		self.update()
+
+
+	def handle_scale_name_changed(self):
+		self.set_modus(self._modus_names.index(self.song().scale_name), False, True)
+		self.update()
+		
+		
+
+	def set_enabled(self, enabled):
+		ControlSurfaceComponent.set_enabled(self, enabled)
+		if not enabled:
+			self._remove_scale_listeners()
+		else:
+			self._register_scale_listeners()
 		
 	@property
 	def notes(self):
@@ -86,9 +98,11 @@ class ScaleComponent(ControlSurfaceComponent):
 	def modus(self):
 		return self._modus_list[self._modus]
 
-	def set_key(self, key, message = True):
+	def set_key(self, key, message = True, listener_called = False):
 		if key>=0 and key<=11:
 			self._key = key % 12
+			if not listener_called:
+				self.song().root_note=self._key
 			if message:
 				self._control_surface.show_message(str("Selected Scale: " + KEY_NAMES[self._key])+" "+str(self._modus_names[self._modus]))
 		
@@ -115,9 +129,11 @@ class ScaleComponent(ControlSurfaceComponent):
 	def octave_down(self, message = True):
 		self.set_octave(self._octave - 1, message) 
 		
-	def set_modus(self, index, message = True):
+	def set_modus(self, index, message = True, listener_called = False):
 		if index > -1 and index < len(self._modus_list):
 			self._modus = index
+			if not listener_called:
+				self.song().scale_name = self._modus_names[self._modus]
 			if message:
 				self._control_surface.show_message(str("selected scale: " + KEY_NAMES[self._key])+" "+str(self._modus_names[self._modus]))
 	

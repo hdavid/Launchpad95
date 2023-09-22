@@ -114,6 +114,46 @@ class MelodicNoteEditorComponent(ControlSurfaceComponent):
 		self._notes_octaves = None
 		self._notes_lengths = None
 		self._clip = None
+	
+	
+	def _remove_scale_listeners(self):
+		try:
+			self.song().remove_root_note_listener(self.handle_root_note_changed)
+		except RuntimeError:
+			pass
+		try:
+			self.song().remove_scale_name_listener(self.handle_scale_name_changed)
+		except RuntimeError:
+			pass
+		
+	
+	def _register_scale_listeners(self):
+		try:
+			self.song().add_root_note_listener(self.handle_root_note_changed)
+		except RuntimeError:
+			pass
+		try:
+			self.song().add_scale_name_listener(self.handle_scale_name_changed)
+		except RuntimeError:
+			pass
+
+	def handle_root_note_changed(self):
+		self._scale_selector.set_key(self.song().root_note, False, True)
+		self.update()
+
+
+	def handle_scale_name_changed(self):
+		self._scale_selector.set_modus(self._scale_selector._modus_names.index(self.song().scale_name), False, True)
+		self.update()
+		
+		
+
+	def set_enabled(self, enabled):
+		ControlSurfaceComponent.set_enabled(self, enabled)
+		if not enabled:
+			self._remove_scale_listeners()
+		else:
+			self._register_scale_listeners()
 
 	def _init_data(self):
 		pages = 128
