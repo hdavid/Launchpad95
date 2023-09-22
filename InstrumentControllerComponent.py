@@ -4,23 +4,23 @@ from _Framework.SubjectSlot import subject_slot
 from _Framework.ButtonElement import ButtonElement
 from _Framework.Util import find_if, clamp
 try:
-    from itertools import imap
+	from itertools import imap
 except ImportError:
-    # Python 3...
-    imap=map
+	# Python 3...
+	imap=map
 	
 from .TrackControllerComponent import TrackControllerComponent
 from .ScaleComponent import ScaleComponent,CIRCLE_OF_FIFTHS,MUSICAL_MODES,KEY_NAMES
 try:
-    from .Settings import Settings
+	from .Settings import Settings
 except ImportError:
-    from .Settings import *
+	from .Settings import *
 	
 #fix for python3
 try:
-    xrange
+	xrange
 except NameError:
-    xrange = range
+	xrange = range
 
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
 KEY_MODE = 0
@@ -341,7 +341,6 @@ class InstrumentControllerComponent(CompoundComponent):
 						if root != -1:
 							self._scales.set_modus(selected_modus, False)
 							self._scales.set_key(root, False)
-								self._scales.update_object_name(self._track_controller.selected_clip)
 							self.update()
 	
 					elif self._quick_scale_root==1:
