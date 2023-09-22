@@ -224,7 +224,7 @@
 			<td class="amber">&nbsp;</td>
 			<td class="green">&nbsp;</td>
 			<td class="green">&nbsp;</td>
-			<td class="side red"><div class="note">stop selected clip</div>stop</td>
+			<td class="side red"><div class="note">start/stop selected clip. long press to delete</div>start stop</td>
 		</tr>
 		<tr>
 			<td class="green">&nbsp;</td>
@@ -235,7 +235,7 @@
 			<td class="green">&nbsp;</td>
 			<td class="green">&nbsp;</td>
 			<td class="green">&nbsp;</td>
-			<td class="side red"><div class="note">start selected clip</div>start</td>
+			<td class="side red"><div class="note">lock to track</div>lock</td>
 		</tr>
 		<tr>
 			<td class="green">&nbsp;</td>
@@ -265,6 +265,8 @@
 	<h4>scale edition mode</h4>
 	<p>
 		To enter scale edition mode press (and keep pressed) the 1st scene button from Instrument mode.
+		The image is exemplary for Ableton 9. Scales and their order is taken from Ableton itself.
+		The selected key and scale is synchronized between the Launchpad and Ableton Live Clips.
 	</p>
 	
 	<table class="launchpad">
@@ -331,7 +333,7 @@
 			<td class="green">Phrygian</td>
 			<td class="green">Locrian</td>
 			<td class="green" title="Diminished">Diminish.</td>
-			<td class="side red"><div class="note">stop selected clip</div>stop</td>
+			<td class="side red"><div class="note">start/stop selected clip. long press to delete</div>start stop</td>
 		</tr>
 		<tr>
 			<td class="green">Whole-half</td>
@@ -343,7 +345,7 @@
 			<td class="green">Melodic Minor</td>
 			<td class="green">Super Locrian</td>
 
-			<td class="side red"><div class="note">start selected clip</div>start</td>
+			<td class="side red"><div class="note">lock to track</div>lock</td>
 		</tr>
 		<tr>
 			<td class="green">Bhairav</td>
@@ -631,7 +633,7 @@
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>
-			<td class="side amber"><div class="note">cycle thru available quantisations</div>quant.</td>
+			<td class="side amber"><div class="note">cycle thru available quantisations. long press to duplicate clip and select new</div>quant.</td>
 		</tr>
 		<tr>
 			<td>&nbsp;</td>
@@ -862,7 +864,7 @@
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>
-			<td class="side amber"><div class="note">cycle thru available quantisations</div>quant.</td>
+			<td class="side amber"><div class="note">cycle thru available quantisations.</div>quant.</td>
 		</tr>
 		<tr>
 			<td>&nbsp;</td>
@@ -948,6 +950,10 @@
 			by default Launchpad displays the parameter like a volume slider on the mixer mode.
 			if you activate the precision slider mode (by pressing scene 4 button), the sliders will then work in the similar way to the case of parameter with list of values.
 		</dd>
+		<dt>Stepless sliders</dt>
+		<dd>for the parameters that have a continuous value, like Volume, Panning, etc you can activate stepless sliders by long pressing the scene 4 button.
+			The harder you press any of the sliders, the faster the value will change.(if hard enough, the value will change instantly).
+		</dd>
 	<dl>
 	<h4>Locking to devices</h4>
 	<p>		
@@ -959,11 +965,11 @@
 	<br/><br/>
 	<table class="launchpad">
 			<tr class="top">
-				<td class="red">Device+</td>
-				<td class="red">Device-</td>
-				<td class="red">Track-</td>
-				<td class="red">Track+</td>
-				<td>Session mode</td>
+				<td class="red">device+</td>
+				<td class="red">device-</td>
+				<td class="red">track-</td>
+				<td class="red">track+</td>
+				<td>session mode</td>
 				<td class="red">user&nbsp;1 device</td>
 				<td><div class="noteTop" style="width:160px">cycle thru StepSequencers and User Moder 2</div>user&nbsp;2 step</td>
 				<td>mixer mode</td>
@@ -977,7 +983,7 @@
 				<td class="pad ">&nbsp;</td>
 				<td class="pad ">&nbsp;</td>
 				<td class="pad ">&nbsp;</td>
-				<td class="side red">On/Off</td>
+				<td class="side red">on/off</td>
 			</tr>
 			<tr>
 				<td class="pad green ">&nbsp;</td>
@@ -988,7 +994,7 @@
 				<td class="pad ">&nbsp;</td>
 				<td class="pad ">&nbsp;</td>
 				<td class="pad ">&nbsp;</td>
-				<td class="side green">Bank+</td>
+				<td class="side green">bank+</td>
 			</tr>
 			<tr>
 				<td class="pad green ">&nbsp;</td>
@@ -999,7 +1005,7 @@
 				<td class="pad ">&nbsp;</td>
 				<td class="pad ">&nbsp;</td>
 				<td class="pad ">&nbsp;</td>
-				<td class="side green">Bank-</td>
+				<td class="side green">bank-</td>
 			</tr>
 			<tr>
 				<td class="pad green ">&nbsp;</td>
@@ -1010,7 +1016,7 @@
 				<td class="pad ">&nbsp;</td>
 				<td class="pad ">&nbsp;</td>
 				<td class="pad ">&nbsp;</td>
-				<td class="side amber">Precision</td>
+				<td class="side amber">precision stepless</td>
 			</tr>
 			<tr>
 				<td class="pad green ">&nbsp;</td>
@@ -1021,7 +1027,7 @@
 				<td class="pad ">&nbsp;</td>
 				<td class="pad ">&nbsp;</td>
 				<td class="pad green ">&nbsp;</td>
-				<td class="side amber">Lock1</td>
+				<td class="side amber">lock1</td>
 			</tr>
 			<tr>
 				<td class="pad green ">&nbsp;</td>
@@ -1032,7 +1038,7 @@
 				<td class="pad ">&nbsp;</td>
 				<td class="pad ">&nbsp;</td>
 				<td class="pad green ">&nbsp;</td>
-				<td class="side amber">Lock2</td>
+				<td class="side amber">lock2</td>
 			</tr>
 			<tr>
 				<td class="pad green ">&nbsp;</td>
@@ -1043,7 +1049,7 @@
 				<td class="pad green ">&nbsp;</td>
 				<td class="pad green ">&nbsp;</td>
 				<td class="pad green ">&nbsp;</td>
-				<td class="side amber">Lock3</td>
+				<td class="side amber">lock3</td>
 			</tr>
 				<td class="pad green">&nbsp;</td>
 				<td class="pad green ">&nbsp;</td>
@@ -1053,7 +1059,7 @@
 				<td class="pad green ">&nbsp;</td>
 				<td class="pad green ">&nbsp;</td>
 				<td class="pad green ">&nbsp;</td>
-				<td class="side amber">Lock4</td>
+				<td class="side amber">lock4</td>
 			</tr>
 		</table>
 	</section>
@@ -1832,6 +1838,7 @@
 	<section>
 	<h2>History</h2>
 	<ul>
+		<li>2023-09-25 - Added Stepless faders for device controller. Scale and root note are now synced with clip scales in instrument mode and step sequencers. Thanks to MrMatch246</li>
 		<li>2022-10-20 - Added <a href="#toc_3_session_pro">Session Pro mode</a> from Pablo Torres <a href="https://github.com/poltow/Launchpad97">poltow/Launchpad97</a></li>
 		<li>2021-04-07 - fixes for backward compatiblity with Live9</li>
 		<li>2021-02-24 - fix for older launchpads + Live11</li>

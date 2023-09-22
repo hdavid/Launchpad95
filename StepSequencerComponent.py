@@ -15,9 +15,9 @@ from .TrackControllerComponent import TrackControllerComponent
 import time
 from .ScaleComponent import ScaleComponent, MUSICAL_MODES, KEY_NAMES
 try:
-    exec("from .Settings import Settings")
+    from .Settings import Settings
 except ImportError:
-    exec("from .Settings import *")
+    from .Settings import *
 # quantization button colours. this must remain of length 4.
 QUANTIZATION_MAP = [1, 0.5, 0.25, 0.125]  # 1/4 1/8 1/16 1/32
 QUANTIZATION_NAMES = ["1/4", "1/8", "1/16", "1/32"]
@@ -37,7 +37,7 @@ class StepSequencerComponent(CompoundComponent):
         self._osd = None
         super(StepSequencerComponent, self).__init__()
         self._control_surface = control_surface
-        self._number_of_lines_per_note = 1        
+        self._number_of_lines_per_note = 1
         self.QUANTIZATION_COLOR_MAP = ["StepSequencer.Quantization.One", "StepSequencer.Quantization.Two", "StepSequencer.Quantization.Three", "StepSequencer.Quantization.Four"]
         self.QUANTIZATION_COLOR_MAP_LOW = ["StepSequencer.QuantizationLow.One", "StepSequencer.QuantizationLow.Two", "StepSequencer.QuantizationLow.Three", "StepSequencer.QuantizationLow.Four"]
         self._name = "drum step sequencer"
@@ -247,6 +247,38 @@ class StepSequencerComponent(CompoundComponent):
                 return i
         return(-1)
 
+    def _remove_scale_listeners(self):
+        try:
+            self.song().remove_root_note_listener(self.handle_root_note_changed)
+        except RuntimeError:
+            pass
+        try:
+            self.song().remove_scale_name_listener(self.handle_scale_name_changed)
+        except RuntimeError:
+            pass
+        
+    
+    def _register_scale_listeners(self):
+        try:
+            self.song().add_root_note_listener(self.handle_root_note_changed)
+        except RuntimeError:
+            pass
+        try:
+            self.song().add_scale_name_listener(self.handle_scale_name_changed)
+        except RuntimeError:
+            pass
+
+    def handle_root_note_changed(self):
+        self._scale_selector.set_key(self.song().root_note, False, True)
+        self.update()
+
+
+    def handle_scale_name_changed(self):
+        self._scale_selector.set_modus(self._scale_selector._modus_names.index(self.song().scale_name), False, True)
+        self.update()
+        
+
+
 # enabled
     def set_enabled(self, enabled):
         if enabled:
@@ -288,6 +320,10 @@ class StepSequencerComponent(CompoundComponent):
             self._note_selector.set_enabled(enabled)
             self._note_editor.set_enabled(enabled)
             CompoundComponent.set_enabled(self, enabled)
+        if not enabled:
+            self._remove_scale_listeners()
+        else:
+            self._register_scale_listeners()
 
     def set_mode(self, mode, number_of_lines_per_note=1):
         if self._mode != mode or number_of_lines_per_note != self._number_of_lines_per_note:

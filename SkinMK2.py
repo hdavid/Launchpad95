@@ -428,10 +428,16 @@ class Colors:
         class Play:
             On = Rgb.RED
             Off = Rgb.RED_THIRD
+			
+        class Lock:
+            On = Rgb.PURPLE
+            Off = Rgb.PURPLE_THIRD
 
         class Stop:
             On = Rgb.RED
+            On = Rgb.GREEN_HALF_PULSE
             Off = Rgb.RED_THIRD
+
 
         class Mute:
             On = Rgb.YELLOW

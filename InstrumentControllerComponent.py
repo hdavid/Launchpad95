@@ -12,9 +12,9 @@ except ImportError:
 from .TrackControllerComponent import TrackControllerComponent
 from .ScaleComponent import ScaleComponent,CIRCLE_OF_FIFTHS,MUSICAL_MODES,KEY_NAMES
 try:
-    exec("from .Settings import Settings")
+    from .Settings import Settings
 except ImportError:
-    exec("from .Settings import *")
+    from .Settings import *
 	
 #fix for python3
 try:
@@ -64,8 +64,8 @@ class InstrumentControllerComponent(CompoundComponent):
 		
 		#Clip edition buttons
 		self._track_controller.set_undo_button(side_buttons[1])
-		self._track_controller.set_stop_button(side_buttons[4])
-		self._track_controller.set_play_button(side_buttons[5])
+		self._track_controller.set_start_stop_button(side_buttons[4])
+		self._track_controller.set_lock_button(side_buttons[5])
 		self._track_controller.set_solo_button(side_buttons[6])
 		self._track_controller.set_session_record_button(side_buttons[7])
 
@@ -80,6 +80,37 @@ class InstrumentControllerComponent(CompoundComponent):
 		self._on_swing_amount_changed_in_live.subject = self.song()
 		self._note_repeat_selector = False
 		self._note_repeat.set_enabled(False)
+	
+	def _remove_scale_listeners(self):
+		try:
+			self.song().remove_root_note_listener(self.handle_root_note_changed)
+		except RuntimeError:
+			pass
+		try:
+			self.song().remove_scale_name_listener(self.handle_scale_name_changed)
+		except RuntimeError:
+			pass
+	
+	def _register_scale_listeners(self):
+		try:
+			self.song().add_root_note_listener(self.handle_root_note_changed)
+		except RuntimeError:
+			pass
+		try:
+			self.song().add_scale_name_listener(self.handle_scale_name_changed)
+		except RuntimeError:
+			pass
+
+	def handle_root_note_changed(self):
+		self._scales.set_key(self.song().root_note, False, True)
+		self.update()
+
+
+	def handle_scale_name_changed(self):
+		self._scales.set_modus(self._scales._modus_names.index(self.song().scale_name), False, True)
+		self.update()
+		
+		
 
 	def set_enabled(self, enabled):
 		CompoundComponent.set_enabled(self, enabled)
@@ -92,10 +123,12 @@ class InstrumentControllerComponent(CompoundComponent):
 		if not enabled:
 			self._control_surface.release_controlled_track()
 			self._note_repeat.set_enabled(False)
+			self._remove_scale_listeners()
 		else:
 			self._control_surface.set_controlled_track(self._track_controller.selected_track)
 
 		if self._track_controller != None:
+			self._register_scale_listeners()
 			self._track_controller._do_implicit_arm(enabled)
 			self._track_controller.set_enabled(enabled)
 			
