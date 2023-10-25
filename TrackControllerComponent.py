@@ -324,7 +324,11 @@ class TrackControllerComponent(MixerComponent):
 						try:
 							slot = None
 						try:
+							slot = None
+						try:
 							slot = self.selected_scene.clip_slots[self.selected_track_idx]
+						except TypeError:
+							pass
 						except TypeError:
 							pass
 						if slot is not None and slot and slot.has_clip:
