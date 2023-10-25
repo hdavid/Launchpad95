@@ -13,9 +13,9 @@ from .NoteRepeatComponent import NoteRepeatComponent
 from .M4LInterface import M4LInterface
 from .Log import log
 try:
-    from .Settings import Settings
+	from .Settings import Settings
 except ImportError:
-    from .Settings import *
+	from .Settings import *
 
 #fix for python3
 try:

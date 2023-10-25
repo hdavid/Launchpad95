@@ -38,7 +38,7 @@ class Settings():
 	#used for the gradient of the parameter change
 	#the higher the value, the slower the parameter change
 	VELOCITY_FACTOR = (127**2) * (127/2)
-	USE_CUSTOM_DEVICE_CONTROL_COLORS = False
+	USE_CUSTOM_DEVICE_CONTROL_COLORS = True
 
 
 	#Logging feature for debugging (creates C:/Users/{USERNAME}/Documents/Ableton/User Library/Remote Scripts/log.txt)

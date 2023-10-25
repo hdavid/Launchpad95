@@ -53,7 +53,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		
 		self._osd_mode_backup = "Instrument"
 		
-		self._track_controller = self.register_component(TrackControllerComponent(control_surface = control_surface, implicit_arm = True))
+		self._track_controller: TrackControllerComponent = self.register_component(TrackControllerComponent(control_surface = control_surface, implicit_arm = True))
 		self._track_controller.set_enabled(False)
 		
 		#Clip navigation buttons
@@ -69,7 +69,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		self._track_controller.set_solo_button(side_buttons[6])
 		self._track_controller.set_session_record_button(side_buttons[7])
 
-		self._scales = self.register_component(ScaleComponent(self._control_surface))
+		self._scales: ScaleComponent = self.register_component(ScaleComponent(self._control_surface))
 		#self._scales.set_enabled(False)
 		self._scales.set_matrix(matrix)
 		self._scales.set_osd(self._osd)
@@ -80,7 +80,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		self._on_swing_amount_changed_in_live.subject = self.song()
 		self._note_repeat_selector = False
 		self._note_repeat.set_enabled(False)
-	
+
 	def _remove_scale_listeners(self):
 		try:
 			self.song().remove_root_note_listener(self.handle_root_note_changed)
@@ -90,7 +90,7 @@ class InstrumentControllerComponent(CompoundComponent):
 			self.song().remove_scale_name_listener(self.handle_scale_name_changed)
 		except RuntimeError:
 			pass
-	
+
 	def _register_scale_listeners(self):
 		try:
 			self.song().add_root_note_listener(self.handle_root_note_changed)
@@ -109,8 +109,8 @@ class InstrumentControllerComponent(CompoundComponent):
 	def handle_scale_name_changed(self):
 		self._scales.set_modus(self._scales._modus_names.index(self.song().scale_name), False, True)
 		self.update()
-		
-		
+
+
 
 	def set_enabled(self, enabled):
 		CompoundComponent.set_enabled(self, enabled)
@@ -481,12 +481,12 @@ class InstrumentControllerComponent(CompoundComponent):
 				self._scales.set_drumrack(True)
 			else:
 				self._scales.set_drumrack(False)
-				
+
 			self._note_repeat.set_enabled(False)		
 			self.update()
 	
 	def on_selected_scene_changed(self):
-		if self._track_controller._implicit_arm:		
+		if self._track_controller._implicit_arm:
 			self.update()
 
 	#Set the drum rack instrument to _drum_group_device variable, if it exists
