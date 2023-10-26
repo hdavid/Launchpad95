@@ -322,10 +322,6 @@ class TrackControllerComponent(MixerComponent):
 				if now - self._last_start_stop_button_press > self._long_press:
 						slot = None
 						try:
-							slot = None
-						try:
-							slot = None
-						try:
 							slot = self.selected_scene.clip_slots[self.selected_track_idx]
 						except TypeError:
 							pass
