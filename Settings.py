@@ -33,8 +33,6 @@ class Settings():
     USE_CUSTOM_DEVICE_CONTROL_COLORS = False
     # time sensitive stepless fader
     ENABLE_TDC = True
-    TDC_VELOCITY_FACTOR = 1.0
-
     # Time you have to keep the button pressed for the slowest velocity
     TDC_MAX_TIME = 2.0
     # The number of seconds it takes for a parameter to change from min to max value for each step
