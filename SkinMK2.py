@@ -261,36 +261,63 @@ class Colors:
 
         class CustomSlider0:
             On = Rgb.PURPLE
+            Third = Rgb.PURPLE_THIRD
+            Half = Rgb.PURPLE_HALF
             Off = Rgb.BLACK
 
         class CustomSlider1:
             On = Rgb.PURPLE
+            Third = Rgb.PURPLE_THIRD
+            Half = Rgb.PURPLE_HALF
             Off = Rgb.BLACK
 
         class CustomSlider2:
             On = Rgb.LIGHT_BLUE
+            Third = Rgb.LIGHT_BLUE_THIRD
+            Half = Rgb.LIGHT_BLUE_HALF
             Off = Rgb.BLACK
 
         class CustomSlider3:
             On = Rgb.LIGHT_BLUE
+            Third = Rgb.LIGHT_BLUE_THIRD
+            Half = Rgb.LIGHT_BLUE_HALF
             Off = Rgb.BLACK
 
         class CustomSlider4:
             On = Rgb.MINT
+            Third = Rgb.MINT_THIRD
+            Half = Rgb.MINT_HALF
             Off = Rgb.BLACK
 
         class CustomSlider5:
             On = Rgb.MINT
+            Third = Rgb.MINT_THIRD
+            Half = Rgb.MINT_HALF
             Off = Rgb.BLACK
 
         class CustomSlider6:
             On = Rgb.BLUE
+            Third = Rgb.BLUE_THIRD
+            Half = Rgb.BLUE_HALF
             Off = Rgb.BLACK
 
         class CustomSlider7:
             On = Rgb.BLUE
+            Third = Rgb.BLUE_THIRD
+            Half = Rgb.BLUE_HALF
             Off = Rgb.BLACK
 
+        class ColorSteps:
+            Step0 = Rgb.RED
+            Step1 = Rgb.AMBER
+            Step2 = Rgb.YELLOW
+            Step3 = Rgb.GREEN
+            Step4 = Rgb.MINT
+            Step5 = Rgb.LIGHT_BLUE
+            Step6 = Rgb.BLUE
+            Step7 = Rgb.PINK
+            Step8 = Rgb.PURPLE
+            Step9 = Rgb.WHITE
         class PrecisionSlider:
             On = Rgb.LIGHT_BLUE
             Off = Rgb.LIGHT_BLUE_THIRD
@@ -436,7 +463,6 @@ class Colors:
         class Stop:
             On = Rgb.GREEN_HALF_PULSE
             Off = Rgb.RED_THIRD
-
 
         class Mute:
             On = Rgb.YELLOW
