@@ -655,8 +655,7 @@ class DeviceControllerComponent(DeviceComponent):
             if ((not sender.is_momentary()) or (value is not 0)):
                 if self.selected_track() is not None and len(
                     self.selected_track().devices) > 0:
-                    if (self.selected_device_idx < len(
-                        self.selected_track().devices) - 1 and not self._is_locked_to_device):
+                    if self.selected_device_idx is not None and self.selected_device_idx < len(self.selected_track().devices) - 1 and not self._is_locked_to_device:
                         direction = Live.Application.Application.View.NavDirection.right
                         self._control_surface.application().view.scroll_view(
                             direction, 'Detail/DeviceChain', True)
@@ -680,10 +679,8 @@ class DeviceControllerComponent(DeviceComponent):
         assert (value in range(128))
         if self.is_enabled():
             if ((not sender.is_momentary()) or (value is not 0)):
-                if self.selected_track() is not None and len(
-                    self.selected_track().devices) > 0:
-                    if (
-                        self.selected_device_idx > 0 and not self._is_locked_to_device):
+                if self.selected_track() is not None and len(self.selected_track().devices) > 0:
+                    if self.selected_device_idx is not None and self.selected_device_idx > 0 and not self._is_locked_to_device:
                         direction = Live.Application.Application.View.NavDirection.left
                         self._control_surface.application().view.scroll_view(
                             direction, 'Detail/DeviceChain', True)
