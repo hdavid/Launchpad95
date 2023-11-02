@@ -1,3 +1,4 @@
+
 class Settings():
     # Add Stop buttons at the bottom of the Session. Experimental
     # SESSION__STOP_BUTTONS = True
@@ -17,9 +18,15 @@ class Settings():
     # configure what user modes buttons do.
     # the 3 first value configure the 3 sub modes of button user mode 1,
     # and following ones are for user mode 2 button
-    USER_MODES_1 = ["instrument", "device"# ,"user 1"
+    USER_MODES_1 = [
+		"instrument"
+		, "device"
+		# ,"user 1"
     ]
-    USER_MODES_2 = ["drum stepseq", "melodic stepseq"# ,"user 2"
+    USER_MODES_2 = [
+		"drum stepseq"
+		, "melodic stepseq"
+		# ,"user 2"
     ]
 
     # Device control mode
@@ -39,7 +46,7 @@ class Settings():
     TDC_MAP = [0, 0.75, 1.5, 3, 5, 8, 12, 17, 25, 40]
 
     # Logging feature for debugging (creates C:/Users/{USERNAME}/Documents/Ableton/User Library/Remote Scripts/log.txt)
-    LOGGING = True
+    LOGGING = False
 
     # Map buttons to levels in volume slider. Exactly 7 values must be provided.
     # The lowest button is always set to -inf. Lowest supported value is -69 dB.

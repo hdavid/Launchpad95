@@ -1,4 +1,4 @@
-from .Log import log
+
 from _Framework.MixerComponent import MixerComponent
 from _Framework.ButtonElement import ButtonElement
 import time
@@ -181,7 +181,7 @@ class TrackControllerComponent(MixerComponent):
 	def _next_track_value(self, value, sender):
 		assert (self._next_track_button != None)
 		assert (value in range(128))
-		if self.is_enabled() and not self._locked_to_track:
+		if self.is_enabled():
 			if not sender.is_momentary() or value is not 0:
 				if self.selected_track_idx < len(self.song().tracks) - 1:
 					self.song().view.selected_track = self.song().tracks[self.selected_track_idx + 1]
@@ -201,7 +201,7 @@ class TrackControllerComponent(MixerComponent):
 	def _prev_track_value(self, value, sender):
 		assert (self._prev_track_button != None)
 		assert (value in range(128))
-		if self.is_enabled() and not self._locked_to_track:
+		if self.is_enabled():
 			if not sender.is_momentary() or value is not 0:
 				if self.selected_track_idx > 0:
 					self.song().view.selected_track = self.song().tracks[self.selected_track_idx - 1]
@@ -295,8 +295,8 @@ class TrackControllerComponent(MixerComponent):
 					self._lock_button.turn_off()
 					self._control_surface.show_message("unlocked from track")
 				self.update()
-
-
+				
+				
 	def update_lock_button(self):
 		if self.is_enabled():
 			if not self._locked_to_track or self._selected_track == None:
@@ -308,7 +308,6 @@ class TrackControllerComponent(MixerComponent):
 					self._lock_button.turn_on()
 				else:
 					self._lock_button.turn_off()
-
 
 	def _start_stop_value(self, value):
 		assert (self._start_stop_button != None)
@@ -325,13 +324,10 @@ class TrackControllerComponent(MixerComponent):
 							slot = self.selected_scene.clip_slots[self.selected_track_idx]
 						except TypeError:
 							pass
-						except TypeError:
-							pass
 						if slot is not None and slot and slot.has_clip:
 							slot.delete_clip()
 							self._start_stop_button.turn_off()
 							self._control_surface.show_message("delete clip")
-
 				else:
 					if self.selected_scene != None:
 						slot = None
@@ -348,7 +344,7 @@ class TrackControllerComponent(MixerComponent):
 								slot.fire()
 								self._start_stop_button.turn_on()
 								self._control_surface.show_message("fire clip")
-
+								
 	def _mute_value(self, value):
 		assert (self._mute_button != None)
 		assert (value in range(128))
@@ -443,11 +439,11 @@ class TrackControllerComponent(MixerComponent):
 					self._session_record_button.turn_on()
 				else:
 					self._session_record_button.turn_off()
-				
+
 			if self._start_stop_button != None:
 				self._start_stop_button.set_on_off_values("TrackController.Stop.On", "TrackController.Stop.Off")
 				self._start_stop_button.turn_off()
-
+			
 			if self._mute_button != None:
 				self._mute_button.set_on_off_values("TrackController.Mute")
 				if(self.selected_track.mute):
