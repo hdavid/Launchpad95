@@ -19,26 +19,26 @@ class Settings():
     # the 3 first value configure the 3 sub modes of button user mode 1,
     # and following ones are for user mode 2 button
     USER_MODES_1 = [
-		"instrument"
-		, "device"
-		# ,"user 1"
+        "instrument"
+        , "device"
+        # ,"user 1"
     ]
     USER_MODES_2 = [
-		"drum stepseq"
-		, "melodic stepseq"
-		# ,"user 2"
+        "drum stepseq"
+        , "melodic stepseq"
+        # ,"user 2"
     ]
 
 
 
-	#device control stepless fader velocity thresholds
-	#if velocity is above threshold, the parameter will be changed instantly
-	VELOCITY_THRESHOLD_MAX = 100
-	VELOCITY_THRESHOLD_MIN = 40
-	#used for the gradient of the parameter change
-	#the higher the value, the slower the parameter change
-	VELOCITY_FACTOR = (127**2) * (127/2)
-	USE_CUSTOM_DEVICE_CONTROL_COLORS = False
+    #device control stepless fader velocity thresholds
+    #if velocity is above threshold, the parameter will be changed instantly
+    VELOCITY_THRESHOLD_MAX = 100
+    VELOCITY_THRESHOLD_MIN = 40
+    #used for the gradient of the parameter change
+    #the higher the value, the slower the parameter change
+    VELOCITY_FACTOR = (127**2) * (127/2)
+    USE_CUSTOM_DEVICE_CONTROL_COLORS = False
 
 
     # Logging feature for debugging (creates C:/Users/{USERNAME}/Documents/Ableton/User Library/Remote Scripts/log.txt)
