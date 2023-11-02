@@ -416,7 +416,7 @@ class ScaleComponent(ControlSurfaceComponent):
 					if self._modus == 0: #Ionian Mode (Major)
 						selected_modus = self._current_minor_mode
 						root = CIRCLE_OF_FIFTHS[(CIRCLE_OF_FIFTHS.index(selected_key) + 3) % 12] # Jump up 3 steps in 5th Circle equals jumping a third minor down
-					elif self._modus in [1, 13, 14]:#Natural (Aeolian), Harmonic, Melodic Minor		
+					elif self._modus in [1, 13, 17]:#Natural (Aeolian), Harmonic, Melodic Minor
 						self._current_minor_mode = selected_modus
 						selected_modus = 0
 						root = CIRCLE_OF_FIFTHS[(CIRCLE_OF_FIFTHS.index(selected_key) - 3 + 12) % 12] # Jump down 3 steps in 5th Circle equals jumping a third minor up
