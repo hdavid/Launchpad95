@@ -255,18 +255,26 @@ class Colors:
 
         class DefaultSlider:
             On = Rgb.AMBER
+            Third = Rgb.AMBER
+            Half = Rgb.AMBER_HALF
             Off = Rgb.AMBER_THIRD
 
         class CustomSlider0:
             On = Rgb.AMBER
+            Third = Rgb.AMBER
+            Half = Rgb.AMBER_HALF
             Off = Rgb.AMBER_THIRD
 
         class CustomSlider1:
             On = Rgb.AMBER
+            Third = Rgb.AMBER
+            Half = Rgb.AMBER_HALF
             Off = Rgb.AMBER_THIRD
 
         class CustomSlider2:
             On = Rgb.AMBER
+            Third = Rgb.AMBER
+            Half = Rgb.AMBER_HALF
             Off = Rgb.AMBER_THIRD
 
         class CustomSlider3:
@@ -275,10 +283,14 @@ class Colors:
 
         class CustomSlider4:
             On = Rgb.AMBER
+            Third = Rgb.AMBER
+            Half = Rgb.AMBER_HALF
             Off = Rgb.AMBER_THIRD
 
         class CustomSlider5:
             On = Rgb.AMBER
+            Third = Rgb.AMBER
+            Half = Rgb.AMBER_HALF
             Off = Rgb.AMBER_THIRD
 
         class CustomSlider6:
@@ -287,7 +299,21 @@ class Colors:
 
         class CustomSlider7:
             On = Rgb.AMBER
+            Third = Rgb.AMBER
+            Half = Rgb.AMBER_HALF
             Off = Rgb.AMBER_THIRD
+        
+        class ColorSteps:
+            Step0 = Rgb.RED
+            Step1 = Rgb.RED_THIRD
+            Step2 = Rgb.RED
+            Step3 = Rgb.RED_THIRD
+            Step4 = Rgb.RED
+            Step5 = Rgb.RED_THIRD
+            Step6 = Rgb.RED
+            Step7 = Rgb.RED_THIRD
+            Step8 = Rgb.RED
+            Step9 = Rgb.RED_THIRD
 
         class PrecisionSlider:
             On = Rgb.AMBER
