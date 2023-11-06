@@ -497,7 +497,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
                         self._request_handler(funct_name, token, *args,
                                               **kwargs)
                 roundtrip_time = time.time() - self.roundtrip_start
-                time.sleep(max(0.0, self.roundtrip_target - roundtrip_time))
+                time.sleep(max(0.0, self.roundtrip_target/10 - roundtrip_time))
                 if self._request_queue.empty() or roundtrip_time > self.roundtrip_target:
 
                     self.roundtrip_end = time.time()
