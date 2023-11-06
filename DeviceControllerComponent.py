@@ -32,7 +32,7 @@ class DeviceControllerComponent(DeviceComponent):
         self._mode_toggle_button = None
         self._last_mode_toggle_button_press = time.time()
         self._precision_mode = False
-        self._stepless_mode = False
+        self._stepless_mode = True
 
         # Lock logic
         self._lock_button_slots = [None, None, None, None]
@@ -143,6 +143,7 @@ class DeviceControllerComponent(DeviceComponent):
         # disable matrix.
         for slider in self._sliders:
             temp=slider.set_enabled(active)
+            slider.set_stepless_mode(self._stepless_mode)
         # ping parent
         DeviceComponent.set_enabled(self, active)
         return True
