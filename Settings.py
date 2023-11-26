@@ -45,6 +45,7 @@ class Settings():
     # The number of seconds it takes for a parameter to change from min to max value for each step
     TDC_MAP = [0, 0.75, 1.5, 3, 5, 8, 12, 17, 25, 40]
 
+
     # Logging feature for debugging (creates C:/Users/{USERNAME}/Documents/Ableton/User Library/Remote Scripts/log.txt)
     LOGGING = False
 
