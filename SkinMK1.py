@@ -195,35 +195,35 @@ class Colors:
             Off = Rgb.AMBER_THIRD
 
         class Volume:
-            On = Rgb.GREEN_THIRD
-            Off = Rgb.GREEN
+            On = Rgb.GREEN
+            Off = Rgb.GREEN_THIRD
 
         class VolumeSlider:
             On = Rgb.GREEN
             Off = Rgb.BLACK
 
         class Pan:
-            On = Rgb.GREEN_THIRD
-            Off = Rgb.GREEN
+            On = Rgb.GREEN
+            Off = Rgb.GREEN_THIRD
 
         class PanSlider:
             On = Rgb.AMBER
             Off = Rgb.BLACK
 
         class Sends:
-            On = Rgb.GREEN_THIRD
-            Off = Rgb.GREEN
+            On = Rgb.GREEN
+            Off = Rgb.GREEN_THIRD
 
         class SendsSlider:
-            On = Rgb.GREEN_THIRD
-            Off = Rgb.GREEN
+            On = Rgb.GREEN
+            Off = Rgb.GREEN_THIRD
         class SendsSlider_1:
-            On = Rgb.GREEN_THIRD
-            Off = Rgb.GREEN
+            On = Rgb.GREEN
+            Off = Rgb.GREEN_THIRD
 
         class SendsSlider_2:
-            On = Rgb.GREEN_THIRD
-            Off = Rgb.GREEN
+            On = Rgb.GREEN
+            Off = Rgb.GREEN_THIRD
 
     class Sends:  # not used yet on legacy launchpad
         A = Rgb.RED
