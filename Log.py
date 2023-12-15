@@ -3,18 +3,20 @@ from .Settings import Settings
 
 USER_HOME = os.path.expanduser('~')
 LOG_DIRECTORY = USER_HOME+"/Documents/Ableton/User Library/Remote Scripts"
-try:
-    os.makedirs(LOG_DIRECTORY, exist_ok=True)
-except TypeError:
-    try:
-        os.makedirs(LOG_DIRECTORY)
-    except OSError:
-        pass
 LOG_FILE = LOG_DIRECTORY + "/log.txt"
 
 if Settings.LOGGING:
+    try:
+        os.makedirs(LOG_DIRECTORY, exist_ok=True)
+    except TypeError:
+        try:
+            os.makedirs(LOG_DIRECTORY)
+        except OSError:
+            pass
+            
     with open(LOG_FILE, 'a') as f:
         f.write('====================\n')
+
 log_num = 0
 
 def log(message):
