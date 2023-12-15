@@ -30,6 +30,7 @@ class Settings():
     ]
 
     # Device control mode
+    DEVICE_CONTROLLER__STEPLESS_MODE = True
     # device control stepless fader velocity thresholds
     # if velocity is above threshold, the parameter will be changed instantly
     VELOCITY_THRESHOLD_MAX = 100

@@ -32,7 +32,7 @@ class DeviceControllerComponent(DeviceComponent):
         self._mode_toggle_button = None
         self._last_mode_toggle_button_press = time.time()
         self._precision_mode = False
-        self._stepless_mode = True
+        self._stepless_mode = Settings.DEVICE_CONTROLLER__STEPLESS_MODE
 
         # Lock logic
         self._lock_button_slots = [None, None, None, None]
