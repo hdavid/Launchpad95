@@ -4,6 +4,10 @@ import sys
 from .DeviceControllerStripProxy import DeviceControllerStripProxy
 import time
 import Live
+try:
+    from .Settings import Settings
+except ImportError:
+    from .Settings import *
 
 
 class DeviceControllerComponent(DeviceComponent):
