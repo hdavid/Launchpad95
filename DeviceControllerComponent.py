@@ -614,12 +614,10 @@ class DeviceControllerComponent(DeviceComponent):
     def update_device_buttons(self):
 
         if self.is_enabled():
-            if (self._prev_device_button is not None):
-                self._prev_device_button.set_on_off_values("Mode.Device.On",
-                                                           "Mode.Device.Off")
-                if self.selected_track().devices is not None and self.selected_device_idx is not None:
-                    if len(
-                        self.selected_track().devices) > 0 and self.selected_device_idx > 0 and not self._is_locked_to_device:
+            if self._prev_device_button is not None:
+                self._prev_device_button.set_on_off_values("Mode.Device.On", "Mode.Device.Off")
+                if self.song().appointed_device:
+                    if self._get_previous_device(self.song().appointed_device):
                         self._prev_device_button.turn_on()
                     else:
                         self._prev_device_button.turn_off()
@@ -627,13 +625,9 @@ class DeviceControllerComponent(DeviceComponent):
                     self._prev_device_button.turn_off()
 
             if self._next_device_button is not None:
-                self._next_device_button.set_on_off_values("Mode.Device.On",
-                                                           "Mode.Device.Off")
-
-                if self.selected_track().devices is not None and self.selected_device_idx is not None:
-                    if len(
-                        self.selected_track().devices) > 0 and self.selected_device_idx < len(
-                        self.selected_track().devices) - 1 and not self._is_locked_to_device:
+                self._next_device_button.set_on_off_values("Mode.Device.On", "Mode.Device.Off")
+                if self.song().appointed_device:
+                    if self._get_next_device(self.song().appointed_device):
                         self._next_device_button.turn_on()
                     else:
                         self._next_device_button.turn_off()
@@ -657,14 +651,11 @@ class DeviceControllerComponent(DeviceComponent):
         assert (self._next_device_button is not None)
         assert (value in range(128))
         if self.is_enabled():
-            if ((not sender.is_momentary()) or (value is not 0)):
-                if self.selected_track() is not None and len(
-                    self.selected_track().devices) > 0:
-                    if self.selected_device_idx is not None and self.selected_device_idx < len(self.selected_track().devices) - 1 and not self._is_locked_to_device:
-                        direction = Live.Application.Application.View.NavDirection.right
-                        self._control_surface.application().view.scroll_view(
-                            direction, 'Detail/DeviceChain', True)
-                        # self.song().view.select_device(self.selected_track().devices[self.selected_device_idx + 1])
+            if ((not sender.is_momentary()) or (value != 0)):
+                if self.selected_track() is not None:
+                    device = self._get_next_device(self.song().appointed_device)
+                    if device:
+                        self.song().view.select_device(device)
                         self.update()
 
     def set_prev_device_button(self, button):
@@ -683,14 +674,95 @@ class DeviceControllerComponent(DeviceComponent):
         assert (self._prev_device_button is not None)
         assert (value in range(128))
         if self.is_enabled():
-            if ((not sender.is_momentary()) or (value is not 0)):
-                if self.selected_track() is not None and len(self.selected_track().devices) > 0:
-                    if self.selected_device_idx is not None and self.selected_device_idx > 0 and not self._is_locked_to_device:
-                        direction = Live.Application.Application.View.NavDirection.left
-                        self._control_surface.application().view.scroll_view(
-                            direction, 'Detail/DeviceChain', True)
-                        # self.song().view.select_device(self.selected_track().devices[self.selected_device_idx - 1])
+            if ((not sender.is_momentary()) or (value != 0)):
+                if self.selected_track() is not None:
+                    device = self._get_previous_device(self.song().appointed_device)
+                    if device:
+                        self.song().view.select_device(device)
                         self.update()
+                        
+    def _get_next_device(self, device):
+        if device is None:
+            return self.selected_track().devices[0] if len(self.selected_track().devices) > 0 else None
+        if isinstance(device, Live.Device.Device):
+            if device.can_have_chains and len(device.chains) > 0:
+                return device.chains[0].devices[0]
+            else:
+                next_device = self._get_next_sibling_device(device)
+                if next_device:
+                    return next_device
+                else:
+                    return self._get_next_device_from_parent(device)
+        return None
+        
+    def _get_previous_device(self, device):
+        if device is None:
+            return self.selected_track().devices[-1] if len(self.selected_track().devices) > 0 else None
+        if isinstance(device, Live.Device.Device):
+            previous_sibling = self._get_previous_sibling_device(device)
+            if previous_sibling:
+                return self._get_last_device_in_chain(previous_sibling)
+            elif device.canonical_parent and isinstance(device.canonical_parent, Live.Chain.Chain):
+                return device.canonical_parent.canonical_parent
+            else:
+                return self._get_previous_device_from_parent(device)
+        return None
+
+    def _get_next_sibling_device(self, device):
+        parent = device.canonical_parent
+        if isinstance(parent, Live.Chain.Chain):
+            devices = parent.devices
+            index = list(devices).index(device)
+            if index + 1 < len(devices):
+                return devices[index + 1]
+            elif isinstance(parent.canonical_parent, Live.Device.Device):
+                return self._get_next_sibling_device(parent.canonical_parent)
+            elif isinstance(parent.canonical_parent, Live.Track.Track):
+                return self._get_next_device(None)
+        return None
+        
+    def _get_previous_sibling_device(self, device):
+        parent = device.canonical_parent
+        if isinstance(parent, Live.Chain.Chain):
+            devices = parent.devices
+            index = list(devices).index(device)
+            if index > 0:
+                return devices[index - 1]
+        return None
+        
+    def _get_last_device_in_chain(self, device):
+        if isinstance(device, Live.Device.Device):
+            if device.can_have_chains and len(device.chains) > 0:
+                return self._get_last_device_in_chain(device.chains[-1].devices[-1])
+            else:
+                return device
+        return None
+        
+    def _get_next_device_from_parent(self, device):
+        parent = device.canonical_parent
+        if isinstance(parent, Live.Chain.Chain):
+            parent_device = parent.canonical_parent
+            if isinstance(parent_device, Live.Device.Device):
+                next_sibling = self._get_next_sibling_device(parent_device)
+                if next_sibling:
+                    return next_sibling
+                else:
+                    return self._get_next_device_from_parent(parent_device)
+        elif isinstance(parent, Live.Track.Track):
+            devices = list(parent.devices)
+            if device in devices and devices.index(device) < len(devices) - 1:
+                return devices[devices.index(device) + 1]
+        return None
+        
+    def _get_previous_device_from_parent(self, device):
+        parent = device.canonical_parent
+        if isinstance(parent, Live.Chain.Chain):
+            return parent.canonical_parent
+        elif isinstance(parent, Live.Track.Track):
+            devices = list(parent.devices)
+            if device in devices and devices.index(device) > 0:
+                return self._get_last_device_in_chain(devices[devices.index(device) - 1])
+        return None
 
     @property
     def selected_device_idx(self):
