@@ -233,7 +233,7 @@ class DeviceControllerComponent(DeviceComponent):
 
     def set_device(self, device):
         if (device != self._device):
-            if self._number_of_parameter_banks() <= self._bank_index:
+            if self._bank_index is None or self._number_of_parameter_banks() <= self._bank_index:
                 self._bank_index = 0
             self._device = device
             self.set_device_view()
@@ -250,7 +250,7 @@ class DeviceControllerComponent(DeviceComponent):
     def update(self):
 
         if self.is_enabled():
-            if self._number_of_parameter_banks() <= self._bank_index:
+            if self._bank_index is None or self._number_of_parameter_banks() <= self._bank_index:
                 self._bank_index = 0
 
             if not self._is_locked_to_device:
