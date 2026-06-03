@@ -718,10 +718,16 @@ class StepSequencerComponent(CompoundComponent):
             if ((value is not 0) or (not sender.is_momentary())):
                 self._is_mute_shifted = not self._is_mute_shifted
             else:
-                if now - self._last_mute_shift_button_press> 0.25:
+                if now - self._last_mute_shift_button_press > 0.25:
                     self._is_mute_shifted = not self._is_mute_shifted
+                else:
+                    if self._is_mute_shifted:
+                        self._control_surface.show_message(
+                            "Mute mode locked ON (double-tap mute to unlock)")
+                    else:
+                        self._control_surface.show_message("Mute mode unlocked")
                 self._last_mute_shift_button_press = now
-                
+
             self._note_editor._is_mute_shifted = self._is_mute_shifted
             self._update_mute_shift_button()
             
