@@ -1,0 +1,87 @@
+name: Build, deploy, release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release tag (e.g. v1.2.3). Leave blank to use v<date>-<run>.'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_HOST: motscousus.com
+      DEPLOY_USER: mots
+      DEPLOY_PATH: /home/mots/www/motscousus.com/stuff/2011-07_Novation_Launchpad_Ableton_Live_Scripts/
+      ZIP_NAME: Launchpad95.zip
+      PKG_DIR: Launchpad95
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve version tag
+        id: ver
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "tag=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=v$(date -u +%Y%m%d)-${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build zip
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          # Stage repo contents into build/Launchpad95/ excluding dev cruft
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.idea' \
+            --exclude='.ruff_cache' \
+            --exclude='__pycache__' \
+            --exclude='.DS_Store' \
+            --exclude='build' \
+            --exclude='*.pyc' \
+            ./ "build/${PKG_DIR}/"
+          cd build
+          zip -r -X "../${ZIP_NAME}" "${PKG_DIR}"
+          cd ..
+          unzip -l "${ZIP_NAME}" | head -30
+          ls -la "${ZIP_NAME}"
+
+      - name: Set up SSH
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Deploy to VPS
+        run: |
+          set -euo pipefail
+          SSH_OPTS="-i ~/.ssh/id_deploy -o UserKnownHostsFile=~/.ssh/known_hosts -o StrictHostKeyChecking=yes"
+          ssh $SSH_OPTS "${DEPLOY_USER}@${DEPLOY_HOST}" "mkdir -p '${DEPLOY_PATH}'"
+          scp $SSH_OPTS "${ZIP_NAME}" "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}"
+          # Upload web assets (index.html + images + manual PDF)
+          scp $SSH_OPTS -p web/*.html web/*.png web/*.pdf "${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}"
+          ssh $SSH_OPTS "${DEPLOY_USER}@${DEPLOY_HOST}" "ls -la '${DEPLOY_PATH}'"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ver.outputs.tag }}
+          name: ${{ steps.ver.outputs.tag }}
+          generate_release_notes: true
+          files: ${{ env.ZIP_NAME }}
